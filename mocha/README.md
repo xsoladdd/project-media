@@ -1,34 +1,44 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Project Media landingpage (Mocha)
 
-## Getting Started
+This is the landing page for Project Media. This is built with Next JS for scalability.
 
-First, run the development server:
+<!-- ## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+- Singe
+- System tray
+- Global keybinds
+- Splash screen
+- Localization
+- Discord RPC -->
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How to run
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+<!-- > NOTE: Windows users may have to install Visual Studio 2019 and the workload `Desktop Development with C++`. -->
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.tsx`.
+- Run `yarn install`
+- Populate your env using the given format "example.env"
+- Run `yarn dev`
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+<!-- - Ensure [Rust](https://www.rust-lang.org/learn/get-started) is installed -->
+<!-- - Install `nj-cli` by running `cargo install nj-cli`
+- Run `yarn build:globalkey`
+- Run `yarn start`
+- _(Optional)_ Run `yarn build:%YOUR_PLATFORM_CODE%` and install the app from the build _(located in `/builds`)_ -->
 
-## Learn More
+<!-- If you encounter any errors while building please create a new issue for it or ask for help on the [Discord](https://discord.gg/wCbKBZF9cV0). -->
 
-To learn more about Next.js, take a look at the following resources:
+<!-- ## Using hot reload
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The electron wrapper has the capability for hot reloads during development.
+You can run the app in hot reload mode using `yarn dev`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+While in hot reload mode, any time you save changes to a `ts` file, the electron app will recompile and relaunch itself.
+To exit hot reload mode, use `Ctrl+C` in the console. This will however, leave the current app window open, so be sure to close that also, as it will no longer have access to hot reload. -->
 
-## Deploy on Vercel
+<!-- ## Translations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Translations are stored in `baklava/locales` and loaded using the `i18next` library.
+You can add new languages by creating a folder with the correct [language code](https://www.electronjs.org/docs/api/locales) and adding the `translate.json` file.
+All keys are present in `baklava/src/generated/translationKeys.ts`, so it's a good idea to use it for reference.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+You can sync the files and generate missing keys using `yarn i18`. -->
