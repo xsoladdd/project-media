@@ -15,11 +15,12 @@
 
 ## Structure
 
-| Codebase             |   Description    |
-| :------------------- | :--------------: |
-| [espresso](espresso) |  GraphQL Server  |
-| [black](black)       | Next.js Frontend |
-| [affogato](affogato) | React Native App |
+| Codebase                 |     Description      |
+| :----------------------- | :------------------: |
+| [espresso](espresso)     |    GraphQL Server    |
+| [black](black)           | Next.js Application  |
+| [cappuccino](cappuccino) |   React Native App   |
+| [mocha](mocha)           | Next.js Landing Page |
 
 <!-- ## Branches
 
