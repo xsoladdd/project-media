@@ -30,7 +30,10 @@ const main = async () => {
   });
 
   await apolloServer.start();
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({
+    app,
+    cors: { origin: true, credentials: false },
+  });
   app.listen(PORT, () => {
     if (conn.isConnected) {
       console.log(colors.yellow(`Database Connected`));

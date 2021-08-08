@@ -34,12 +34,12 @@ export class Profile {
   birthday: Date;
 
   @Field(() => String)
-  @Column()
+  @Column({ nullable: true })
   nickname: string;
 
   // Only URL. will save to cloud storage if needed
   @Field(() => String)
-  @Column("text")
+  @Column("text", { nullable: true })
   display_image!: string;
 
   @OneToOne(() => User, (user) => user.profile) // specify inverse side as a second parameter

@@ -20,6 +20,7 @@ const authChecker: AuthChecker = ({ context }): boolean => {
   // Validate token
   // Decrypt token
   const tokenData: tokenObject = verify(tokenValue);
+  console.log(tokenData);
   return isExpired(tokenData.exp);
 };
 

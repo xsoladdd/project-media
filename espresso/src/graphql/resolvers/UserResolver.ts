@@ -10,6 +10,7 @@ import {
   ObjectType,
   Authorized,
   Args,
+  Ctx,
 } from "type-graphql";
 import { getRepository, Raw } from "typeorm";
 import { User } from "../../entity/User";
@@ -24,34 +25,38 @@ class InputRegistration implements Partial<User & Profile> {
   // User Side
   @Field()
   email: string;
-  @Field()
-  username: string;
-  @Field()
-  mobileNumber: string;
-  @Field()
+  @Field({ nullable: true })
   password: string;
+}
 
-  // Profile side
+@InputType()
+class InputSetupProfile implements Partial<Profile> {
   @Field()
   firstName: string;
   @Field({ nullable: true })
   middleName: string;
   @Field()
   lastName: string;
-  @Field()
-  birthday: Date;
-  @Field()
+  @Field({ nullable: true })
   nickname: string;
   @Field({ nullable: true })
-  displayImage: string;
+  display_image: string;
+  @Field({})
+  birthday: Date;
 }
 
 @InputType()
-class InputLogin {
+class InputLoginNormal {
   @Field()
-  usernameOrEmail: string;
+  email: string;
   @Field()
   password: string;
+}
+
+@InputType()
+class InputLoginSocialmedia {
+  @Field()
+  email: string;
 }
 
 @ObjectType()
@@ -69,64 +74,23 @@ export class UserResolver {
   async registerUser(
     @Arg("input", { nullable: false }) input: InputRegistration
   ): Promise<ReturnRegisterLogin> {
-    const {
-      birthday,
-      displayImage,
-      email,
-      firstName,
-      lastName,
-      middleName,
-      mobileNumber,
-      nickname,
-      password,
-      username,
-    } = input;
+    const { email, password } = input;
     const userRepo = getRepository(User);
 
     // Check if email existing
-    if (await userRepo.findOne({ email })) {
+    const userRes = await userRepo.findOne({ email });
+    if (userRes) {
       return {
         message: "Email already used",
         status: 0,
+        token: sign(userRes),
+        user: userRes,
       };
     }
-    // Check if email existing
-    if (await userRepo.findOne({ username })) {
-      return {
-        message: "Username already used",
-        status: 0,
-      };
-    }
-    // Check if email existing
-    if (await userRepo.findOne({ mobile_number: mobileNumber })) {
-      return {
-        message: "Mobile Number already used",
-        status: 0,
-      };
-    }
-
-    const profileRepo = getRepository(Profile);
-
-    const profile = profileRepo.create({
-      first_name: firstName,
-      last_name: lastName,
-      middle_name: middleName,
-      birthday,
-      nickname,
-      display_image: displayImage,
-    });
-    await profileRepo.save(profile).catch((err) => {
-      return {
-        message: err.message,
-        status: 0,
-      };
-    });
     const user: User = userRepo.create({
       email,
-      password: await hash(password),
-      username,
-      mobile_number: mobileNumber,
-      profile,
+      password:
+        typeof password !== "undefined" ? await hash(password) : undefined,
     });
     await userRepo.save(user).catch((err) => {
       return {
@@ -135,6 +99,95 @@ export class UserResolver {
       };
     });
 
+    return {
+      message: "Succesfully",
+      status: 1,
+      token: sign(user),
+      user,
+    };
+  }
+
+  @Mutation(() => ReturnStructure)
+  async setupProfile(
+    @Arg("input", { nullable: true }) input: InputSetupProfile,
+    @Ctx("user") { id }: User
+  ): Promise<ReturnStructure> {
+    const userRepo = getRepository(User);
+
+    const user = await userRepo
+      .createQueryBuilder("user")
+      .leftJoinAndSelect(`user.profile`, `profile`)
+      .where("user.id = :id", { id })
+      .getOne();
+
+    if (user?.profile !== null) {
+      return {
+        message: "Profile already setup",
+        status: 0,
+      };
+    }
+
+    const {
+      birthday,
+      display_image,
+      firstName,
+      lastName,
+      middleName,
+      nickname,
+    } = input;
+
+    const profileRepo = getRepository(Profile);
+
+    console.log(user);
+
+    const profile = profileRepo.create({
+      first_name: firstName,
+      display_image,
+      last_name: lastName,
+      middle_name: middleName,
+      nickname,
+      birthday,
+      user,
+    });
+
+    await profileRepo.save(profile).catch((err) => {
+      return {
+        message: err.message,
+        status: 0,
+      };
+    });
+
+    return {
+      message: "Profile succesfully save",
+      status: 1,
+    };
+  }
+
+  @Query(() => ReturnRegisterLogin)
+  async login(
+    @Arg("input", { nullable: false }) input: InputLoginNormal
+  ): Promise<ReturnRegisterLogin> {
+    const { password, email } = input;
+    const userRepo = getRepository(User);
+    const user = await userRepo
+      .createQueryBuilder("user")
+      .leftJoinAndSelect(`user.profile`, `profile`)
+      .where("user.email = :email", { email })
+      .getOne();
+    // Guard for social media Oauth
+    if (!user) {
+      return {
+        message: "Account doesn't exist",
+        status: 0,
+      };
+    }
+    if (!(await checkHash(password, user.password))) {
+      return {
+        message: "Invalid password",
+        status: 1,
+      };
+    }
+    // Create Token
     const token = sign(user);
     return {
       message: "Succesfully",
@@ -145,36 +198,23 @@ export class UserResolver {
   }
 
   @Query(() => ReturnRegisterLogin)
-  async login(
-    @Arg("input", { nullable: false }) input: InputLogin
+  async loginSocialMedia(
+    @Arg("input", { nullable: false }) input: InputLoginSocialmedia
   ): Promise<ReturnRegisterLogin> {
-    const { password, usernameOrEmail } = input;
+    const { email } = input;
     const userRepo = getRepository(User);
-    let user = await userRepo
+    const user = await userRepo
       .createQueryBuilder("user")
       .leftJoinAndSelect(`user.profile`, `profile`)
-      .where("user.username = :username", { username: usernameOrEmail })
+      .where("user.email = :email", { email })
       .getOne();
-    if (!user) {
-      user = await userRepo
-        .createQueryBuilder("user")
-        .leftJoinAndSelect(`user.profile`, `profile`)
-        .where("user.email = :email", { email: usernameOrEmail })
-        .getOne();
-    }
+    // Guard for social media Oauth
     if (!user) {
       return {
-        message: "Username/Email doesn't exist",
+        message: "Account doesn't exist",
         status: 0,
       };
     }
-    if (!(await checkHash(password, user.password))) {
-      return {
-        message: "Invalid password",
-        status: 1,
-      };
-    }
-
     // Create Token
     const token = sign(user);
     return {

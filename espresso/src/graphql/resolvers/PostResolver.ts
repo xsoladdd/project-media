@@ -43,7 +43,7 @@ export class PostResolver {
   @Mutation(() => ReturnStructure)
   async newPost(
     @Arg("input", { nullable: false }) input: InputNewPost,
-    @Ctx("user") userToken: User
+    @Ctx("user") userContext: User
   ): Promise<ReturnStructure> {
     const { content, title } = input;
     const postRepo = getRepository(Post);
@@ -51,7 +51,7 @@ export class PostResolver {
 
     // console.log(verify(token));
 
-    const user = await userRepo.findOne({ id: userToken.id });
+    const user = await userRepo.findOne({ id: userContext.id });
     const post = postRepo.create({
       title,
       content,

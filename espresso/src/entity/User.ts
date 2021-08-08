@@ -24,19 +24,23 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Field(() => String)
-  @Column({ unique: true })
+  @Field(() => String, { nullable: true })
+  @Column({ unique: true, nullable: true })
   username: string;
 
-  @Field(() => String)
-  @Column({ unique: true })
+  @Field(() => String, { nullable: true })
+  @Column({ unique: true, nullable: true })
   mobile_number: string;
 
-  @Column({ length: "255" })
+  @Column({ length: "255", nullable: true })
   password: string;
 
   @Column({ type: "tinyint", default: 1 })
   is_active: number;
+
+  @Field(() => Int)
+  @Column({ type: "tinyint", default: 0 })
+  has_profile: number;
 
   @Field(() => Profile)
   @OneToOne(() => Profile, (profile) => profile.user)

@@ -1,0 +1,14 @@
+query Login($loginInput: InputLogin!) {
+  login(input: $loginInput) {
+    message
+    status
+    token
+    user {
+      id
+      email
+      username
+      mobile_number
+      has_profile
+    }
+  }
+}
