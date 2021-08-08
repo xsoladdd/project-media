@@ -1,0 +1,7 @@
+query loginNormal($loginNormalInput: InputLoginNormal!) {
+  loginNormal(input: $loginNormalInput) {
+    message
+    status
+    token
+  }
+}

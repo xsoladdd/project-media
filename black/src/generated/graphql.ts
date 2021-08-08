@@ -20,9 +20,13 @@ export type Scalars = {
 
 
 
-export type InputLogin = {
+export type InputLoginNormal = {
   email: Scalars['String'];
-  password?: Maybe<Scalars['String']>;
+  password: Scalars['String'];
+};
+
+export type InputLoginSocialmedia = {
+  email: Scalars['String'];
 };
 
 export type InputNewPost = {
@@ -48,6 +52,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   registerUser: ReturnRegisterLogin;
   setupProfile: ReturnStructure;
+  oauthHandler: ReturnRegisterLogin;
   newPost: ReturnStructure;
 };
 
@@ -59,6 +64,11 @@ export type MutationRegisterUserArgs = {
 
 export type MutationSetupProfileArgs = {
   input?: Maybe<InputSetupProfile>;
+};
+
+
+export type MutationOauthHandlerArgs = {
+  input: InputLoginSocialmedia;
 };
 
 
@@ -86,14 +96,14 @@ export type Profile = {
 
 export type Query = {
   __typename?: 'Query';
-  login: ReturnRegisterLogin;
+  loginNormal: ReturnRegisterLogin;
   ping: Scalars['String'];
   allPost: ReturnPosts;
 };
 
 
-export type QueryLoginArgs = {
-  input: InputLogin;
+export type QueryLoginNormalArgs = {
+  input: InputLoginNormal;
 };
 
 
@@ -139,12 +149,19 @@ export type RegisterUserMutationVariables = Exact<{
 
 export type RegisterUserMutation = { __typename?: 'Mutation', registerUser: { __typename?: 'ReturnRegisterLogin', message: string, status: number, token?: Maybe<string>, user?: Maybe<{ __typename?: 'User', email: string, id: any }> } };
 
-export type LoginQueryVariables = Exact<{
-  loginInput: InputLogin;
+export type LoginNormalQueryVariables = Exact<{
+  loginNormalInput: InputLoginNormal;
 }>;
 
 
-export type LoginQuery = { __typename?: 'Query', login: { __typename?: 'ReturnRegisterLogin', message: string, status: number, token?: Maybe<string>, user?: Maybe<{ __typename?: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, has_profile: number }> } };
+export type LoginNormalQuery = { __typename?: 'Query', loginNormal: { __typename?: 'ReturnRegisterLogin', message: string, status: number, token?: Maybe<string> } };
+
+export type OauthHandlerMutationVariables = Exact<{
+  oauthHandlerInput: InputLoginSocialmedia;
+}>;
+
+
+export type OauthHandlerMutation = { __typename?: 'Mutation', oauthHandler: { __typename?: 'ReturnRegisterLogin', message: string, status: number, token?: Maybe<string> } };
 
 export type PingQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -191,50 +208,78 @@ export function useRegisterUserMutation(baseOptions?: Apollo.MutationHookOptions
 export type RegisterUserMutationHookResult = ReturnType<typeof useRegisterUserMutation>;
 export type RegisterUserMutationResult = Apollo.MutationResult<RegisterUserMutation>;
 export type RegisterUserMutationOptions = Apollo.BaseMutationOptions<RegisterUserMutation, RegisterUserMutationVariables>;
-export const LoginDocument = gql`
-    query Login($loginInput: InputLogin!) {
-  login(input: $loginInput) {
+export const LoginNormalDocument = gql`
+    query loginNormal($loginNormalInput: InputLoginNormal!) {
+  loginNormal(input: $loginNormalInput) {
     message
     status
     token
-    user {
-      id
-      email
-      username
-      mobile_number
-      has_profile
-    }
   }
 }
     `;
 
 /**
- * __useLoginQuery__
+ * __useLoginNormalQuery__
  *
- * To run a query within a React component, call `useLoginQuery` and pass it any options that fit your needs.
- * When your component renders, `useLoginQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useLoginNormalQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLoginNormalQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useLoginQuery({
+ * const { data, loading, error } = useLoginNormalQuery({
  *   variables: {
- *      loginInput: // value for 'loginInput'
+ *      loginNormalInput: // value for 'loginNormalInput'
  *   },
  * });
  */
-export function useLoginQuery(baseOptions: Apollo.QueryHookOptions<LoginQuery, LoginQueryVariables>) {
+export function useLoginNormalQuery(baseOptions: Apollo.QueryHookOptions<LoginNormalQuery, LoginNormalQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<LoginQuery, LoginQueryVariables>(LoginDocument, options);
+        return Apollo.useQuery<LoginNormalQuery, LoginNormalQueryVariables>(LoginNormalDocument, options);
       }
-export function useLoginLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<LoginQuery, LoginQueryVariables>) {
+export function useLoginNormalLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<LoginNormalQuery, LoginNormalQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<LoginQuery, LoginQueryVariables>(LoginDocument, options);
+          return Apollo.useLazyQuery<LoginNormalQuery, LoginNormalQueryVariables>(LoginNormalDocument, options);
         }
-export type LoginQueryHookResult = ReturnType<typeof useLoginQuery>;
-export type LoginLazyQueryHookResult = ReturnType<typeof useLoginLazyQuery>;
-export type LoginQueryResult = Apollo.QueryResult<LoginQuery, LoginQueryVariables>;
+export type LoginNormalQueryHookResult = ReturnType<typeof useLoginNormalQuery>;
+export type LoginNormalLazyQueryHookResult = ReturnType<typeof useLoginNormalLazyQuery>;
+export type LoginNormalQueryResult = Apollo.QueryResult<LoginNormalQuery, LoginNormalQueryVariables>;
+export const OauthHandlerDocument = gql`
+    mutation oauthHandler($oauthHandlerInput: InputLoginSocialmedia!) {
+  oauthHandler(input: $oauthHandlerInput) {
+    message
+    status
+    token
+  }
+}
+    `;
+export type OauthHandlerMutationFn = Apollo.MutationFunction<OauthHandlerMutation, OauthHandlerMutationVariables>;
+
+/**
+ * __useOauthHandlerMutation__
+ *
+ * To run a mutation, you first call `useOauthHandlerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useOauthHandlerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [oauthHandlerMutation, { data, loading, error }] = useOauthHandlerMutation({
+ *   variables: {
+ *      oauthHandlerInput: // value for 'oauthHandlerInput'
+ *   },
+ * });
+ */
+export function useOauthHandlerMutation(baseOptions?: Apollo.MutationHookOptions<OauthHandlerMutation, OauthHandlerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<OauthHandlerMutation, OauthHandlerMutationVariables>(OauthHandlerDocument, options);
+      }
+export type OauthHandlerMutationHookResult = ReturnType<typeof useOauthHandlerMutation>;
+export type OauthHandlerMutationResult = Apollo.MutationResult<OauthHandlerMutation>;
+export type OauthHandlerMutationOptions = Apollo.BaseMutationOptions<OauthHandlerMutation, OauthHandlerMutationVariables>;
 export const PingDocument = gql`
     query Ping {
   ping

@@ -42,7 +42,7 @@ export class User {
   @Column({ type: "tinyint", default: 0 })
   has_profile: number;
 
-  @Field(() => Profile)
+  @Field(() => Profile, { nullable: true })
   @OneToOne(() => Profile, (profile) => profile.user)
   @JoinColumn()
   profile: Profile;

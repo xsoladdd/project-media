@@ -63,10 +63,13 @@ class InputLoginSocialmedia {
 class ReturnRegisterLogin extends ReturnStructure {
   @Field(() => String, { nullable: true })
   token?: string | null;
+}
+
+@ObjectType()
+class ReturnMe extends ReturnStructure {
   @Field(() => User, { nullable: true })
   user?: User | null;
 }
-
 @Resolver()
 export class UserResolver {
   // Registration
@@ -84,7 +87,6 @@ export class UserResolver {
         message: "Email already used",
         status: 0,
         token: sign(userRes),
-        user: userRes,
       };
     }
     const user: User = userRepo.create({
@@ -103,7 +105,6 @@ export class UserResolver {
       message: "Succesfully",
       status: 1,
       token: sign(user),
-      user,
     };
   }
 
@@ -147,7 +148,6 @@ export class UserResolver {
       middle_name: middleName,
       nickname,
       birthday,
-      user,
     });
 
     await profileRepo.save(profile).catch((err) => {
@@ -164,7 +164,7 @@ export class UserResolver {
   }
 
   @Query(() => ReturnRegisterLogin)
-  async login(
+  async loginNormal(
     @Arg("input", { nullable: false }) input: InputLoginNormal
   ): Promise<ReturnRegisterLogin> {
     const { password, email } = input;
@@ -181,37 +181,17 @@ export class UserResolver {
         status: 0,
       };
     }
+    if (!user.password) {
+      return {
+        message:
+          "Seems like account is associated with OAuth Login.Please kindly login via that and setup password under profile -> password ",
+        status: 0,
+      };
+    }
+
     if (!(await checkHash(password, user.password))) {
       return {
         message: "Invalid password",
-        status: 1,
-      };
-    }
-    // Create Token
-    const token = sign(user);
-    return {
-      message: "Succesfully",
-      status: 1,
-      token,
-      user,
-    };
-  }
-
-  @Query(() => ReturnRegisterLogin)
-  async loginSocialMedia(
-    @Arg("input", { nullable: false }) input: InputLoginSocialmedia
-  ): Promise<ReturnRegisterLogin> {
-    const { email } = input;
-    const userRepo = getRepository(User);
-    const user = await userRepo
-      .createQueryBuilder("user")
-      .leftJoinAndSelect(`user.profile`, `profile`)
-      .where("user.email = :email", { email })
-      .getOne();
-    // Guard for social media Oauth
-    if (!user) {
-      return {
-        message: "Account doesn't exist",
         status: 0,
       };
     }
@@ -221,13 +201,72 @@ export class UserResolver {
       message: "Succesfully",
       status: 1,
       token,
-      user,
+    };
+  }
+
+  @Mutation(() => ReturnRegisterLogin)
+  async oauthHandler(
+    @Arg("input", { nullable: false }) input: InputLoginSocialmedia
+  ): Promise<ReturnRegisterLogin> {
+    const { email } = input;
+    const userRepo = getRepository(User);
+    const user = await userRepo
+      .createQueryBuilder("user")
+      .where("user.email = :email", { email })
+      .getOne();
+    // Guard for social media Oauth
+    if (!user) {
+      // Insert Record if not existing
+      const user: User = userRepo.create({
+        email,
+      });
+      userRepo.save(user).catch((err) => {
+        return {
+          message: err.message,
+          status: 0,
+        };
+      });
+      return {
+        message: "Account succesfully created",
+        status: 1,
+        token: sign(user),
+      };
+    }
+    // Create Token
+    const token = sign(user);
+    return {
+      message: "Succesfully",
+      status: 1,
+      token,
     };
   }
 
   @Query(() => String)
   async ping(): Promise<String> {
     return "Ping successfull. hey thanks for the ping";
+  }
+
+  @Query(() => ReturnMe)
+  async me(@Ctx("user") { id }: User): Promise<ReturnMe> {
+    const userRepo = getRepository(User);
+    console.log(id);
+    const user = await userRepo
+      .createQueryBuilder("user")
+      .leftJoinAndSelect(`user.profile`, `profile`)
+
+      // .where("user.email = :email", { email })
+      .getOne();
+    if (!user) {
+      return {
+        message: "No User",
+        status: 0,
+      };
+    }
+    return {
+      message: "Succsefully fetched",
+      status: 1,
+      user,
+    };
   }
 
   // @Mutation(() => RUser)

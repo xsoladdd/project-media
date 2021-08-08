@@ -1,0 +1,7 @@
+mutation oauthHandler($oauthHandlerInput: InputLoginSocialmedia!) {
+  oauthHandler(input: $oauthHandlerInput) {
+    message
+    status
+    token
+  }
+}
