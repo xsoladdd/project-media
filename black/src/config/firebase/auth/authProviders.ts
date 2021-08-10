@@ -1,3 +1,5 @@
+// import firebase from "../firebase-config";
+
 import firebase from "firebase";
 // import firebase from "../../../config/firebase-config";
 

@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from "react";
 import RegisterBanner from "../../assets/images/registerbanner.jpg";
 import Link from "next/link";
-import { useRegisterUserMutation } from "../../generated/graphql";
-import { setAccessToken } from "../../utils/jscookies";
+import {
+  PingDocument,
+  usePingQuery,
+  useRegisterUserMutation,
+} from "../../generated/graphql";
+import { setAccessToken } from "../../lib/jscookies";
 import { OAuthButtons } from "./OAuthButtons";
 import { PublicPageWrapper } from "./PublicPageWrapper";
+import { client } from "../../providers/ApolloProvider";
 
 export const RegisterPage: React.FC = ({}) => {
   const [error, setError] = useState<string | null>(null);
+
   const [register, { loading }] = useRegisterUserMutation({
     onCompleted: ({ registerUser: data }) => {
       const { message, status, token } = data;

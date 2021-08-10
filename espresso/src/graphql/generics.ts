@@ -7,3 +7,11 @@ export class ReturnStructure {
   @Field(() => Int)
   status: number;
 }
+
+@ObjectType()
+export class ErrorReturnStructure {
+  @Field(() => String)
+  message: string;
+  @Field(() => Int)
+  status: number;
+}

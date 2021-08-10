@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
-import LoginBanner from "../../assets/images/loginbanner.jpg";
+import { usePingQuery } from "../../generated/graphql";
+import NextLink from "next/link";
 
 interface PublicPageWrapperProps {
   image: StaticImageData;

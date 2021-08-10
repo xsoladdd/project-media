@@ -12,6 +12,7 @@ import { ObjectType, Field, Int } from "type-graphql";
 import { EncryptedID } from "../graphql/scalars";
 import { Profile } from "./Profile";
 import { Post } from "./Post";
+import { RefreshToken } from "./RefreshToken";
 
 @Entity()
 @ObjectType()
@@ -44,11 +45,13 @@ export class User {
 
   @Field(() => Profile, { nullable: true })
   @OneToOne(() => Profile, (profile) => profile.user)
-  @JoinColumn()
   profile: Profile;
 
   @OneToOne(() => Post, (post) => post.user)
   post: Post;
+
+  @OneToOne(() => RefreshToken, (refresh_token) => refresh_token.user)
+  refresh_token: RefreshToken;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;

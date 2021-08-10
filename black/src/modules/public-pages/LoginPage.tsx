@@ -2,9 +2,10 @@ import React, { Fragment } from "react";
 import LoginBanner from "../../assets/images/loginbanner.jpg";
 import Link from "next/link";
 import { useState } from "react";
-import { setAccessToken } from "../../utils/jscookies";
+import { setAccessToken } from "../../lib/jscookies";
 import {
   InputLoginNormal,
+  PingDocument,
   useLoginNormalLazyQuery,
 } from "../../generated/graphql";
 import { OAuthButtons } from "./OAuthButtons";
@@ -27,7 +28,6 @@ export const LoginPage: React.FC = ({}) => {
       if (token) {
         setAccessToken(token);
       }
-      console.log();
     },
   });
 
@@ -38,6 +38,7 @@ export const LoginPage: React.FC = ({}) => {
       <h2 className="text-2xl font-semibold text-gray-700 text-center">
         Project Media
       </h2>
+
       <p className="text-md pt-1 text-gray-600 text-center">Welcome back!</p>
       <OAuthButtons disabled={normalLoading} />
       <div className="mt-4 flex items-center justify-between">

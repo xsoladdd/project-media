@@ -4,7 +4,11 @@ import { config } from "dotenv";
 import colors from "colors";
 import { Connection } from "typeorm";
 import connection from "../config/typeorm";
-import { ApolloServer } from "apollo-server-express";
+import {
+  ApolloError,
+  ApolloServer,
+  AuthenticationError,
+} from "apollo-server-express";
 import buildSchema from "../graphql";
 import { contextObject } from "../types";
 import { verify } from "../utils";
@@ -16,6 +20,17 @@ const main = async () => {
   const schema = await buildSchema;
   const apolloServer: ApolloServer = new ApolloServer({
     schema: schema,
+    formatError: (err) => {
+      if (err.message.includes("jwt expired")) {
+        return new ApolloError("TOKEN_EXPIRE_ERROR", "TOKEN_EXPIRE_ERROR");
+        // return new AuthenticationError("Token Expire Error");
+        // return new Error();
+      }
+      if (err.message.startsWith("Database Error: ")) {
+        return new ApolloError("INTERNAL_SERVICE_ERROR");
+      }
+      return err;
+    },
     context: ({ req }) => {
       const token = req.headers.authorization;
       const user =

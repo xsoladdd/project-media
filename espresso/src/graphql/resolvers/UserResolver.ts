@@ -1,4 +1,12 @@
-import { hash, checkHash, sign, verify, isExpired, encrypt } from "../../utils";
+import {
+  hash,
+  checkHash,
+  sign,
+  verify,
+  isExpired,
+  encrypt,
+  signRefreshToken,
+} from "../../utils";
 import {
   Resolver,
   Mutation,
@@ -17,7 +25,8 @@ import { User } from "../../entity/User";
 import { EncryptedID } from "../scalars";
 // import { tokenObject } from "../../types";
 import { Profile } from "../../entity/Profile";
-import { ReturnStructure } from "../generics";
+import { ErrorReturnStructure, ReturnStructure } from "../generics";
+import { RefreshToken } from "../../entity/RefreshToken";
 // import { isNullableType } from "graphql";
 
 @InputType()
@@ -62,13 +71,17 @@ class InputLoginSocialmedia {
 @ObjectType()
 class ReturnRegisterLogin extends ReturnStructure {
   @Field(() => String, { nullable: true })
-  token?: string | null;
+  token?: string;
+  @Field(() => String, { nullable: true })
+  refresh_token?: string;
+  @Field(() => User, { nullable: true })
+  user?: User | null;
 }
 
 @ObjectType()
 class ReturnMe extends ReturnStructure {
   @Field(() => User, { nullable: true })
-  user?: User | null;
+  user?: User;
 }
 @Resolver()
 export class UserResolver {
@@ -86,7 +99,6 @@ export class UserResolver {
       return {
         message: "Email already used",
         status: 0,
-        token: sign(userRes),
       };
     }
     const user: User = userRepo.create({
@@ -100,11 +112,14 @@ export class UserResolver {
         status: 0,
       };
     });
+    console.log(user);
 
     return {
       message: "Succesfully",
       status: 1,
       token: sign(user),
+      refresh_token: signRefreshToken(user),
+      user,
     };
   }
 
@@ -174,7 +189,6 @@ export class UserResolver {
       .leftJoinAndSelect(`user.profile`, `profile`)
       .where("user.email = :email", { email })
       .getOne();
-    // Guard for social media Oauth
     if (!user) {
       return {
         message: "Account doesn't exist",
@@ -195,12 +209,34 @@ export class UserResolver {
         status: 0,
       };
     }
+    const refreshTokenRepo = getRepository(RefreshToken);
+    // Check if refresh token on storage
+    // Delete first before inserting new one
+    await refreshTokenRepo
+      .createQueryBuilder()
+      .delete()
+      .from(RefreshToken)
+      .where("userId = :id", { id: user.id })
+      .execute();
+    const rt = signRefreshToken(user);
+    const refresh_token = refreshTokenRepo.create({
+      user,
+      refresh_token: rt,
+    });
+    await refreshTokenRepo.save(refresh_token).catch((err) => {
+      return {
+        message: err.message,
+        status: 0,
+      };
+    });
     // Create Token
-    const token = sign(user);
+    console.log(user);
     return {
       message: "Succesfully",
       status: 1,
-      token,
+      token: sign(user),
+      refresh_token: rt,
+      user,
     };
   }
 
@@ -210,34 +246,49 @@ export class UserResolver {
   ): Promise<ReturnRegisterLogin> {
     const { email } = input;
     const userRepo = getRepository(User);
-    const user = await userRepo
+    const refreshTokenRepo = getRepository(RefreshToken);
+    let user = await userRepo
       .createQueryBuilder("user")
       .where("user.email = :email", { email })
       .getOne();
     // Guard for social media Oauth
     if (!user) {
       // Insert Record if not existing
-      const user: User = userRepo.create({
+      user = userRepo.create({
         email,
       });
-      userRepo.save(user).catch((err) => {
+      await userRepo.save(user).catch((err) => {
         return {
           message: err.message,
           status: 0,
         };
       });
-      return {
-        message: "Account succesfully created",
-        status: 1,
-        token: sign(user),
-      };
     }
-    // Create Token
-    const token = sign(user);
+    // Delete old token first
+    await refreshTokenRepo
+      .createQueryBuilder()
+      .delete()
+      .from(RefreshToken)
+      .where("userId = :id", { id: user.id })
+      .execute();
+    // Save refresh token
+    const rt = signRefreshToken(user);
+    const refresh_token = refreshTokenRepo.create({
+      user,
+      refresh_token: rt,
+    });
+    await refreshTokenRepo.save(refresh_token).catch((err) => {
+      return {
+        message: err.message,
+        status: 0,
+      };
+    });
     return {
-      message: "Succesfully",
+      message: "Account succesfully created",
       status: 1,
-      token,
+      token: sign(user),
+      refresh_token: rt,
+      user,
     };
   }
 
@@ -246,6 +297,7 @@ export class UserResolver {
     return "Ping successfull. hey thanks for the ping";
   }
 
+  @Authorized()
   @Query(() => ReturnMe)
   async me(@Ctx("user") { id }: User): Promise<ReturnMe> {
     const userRepo = getRepository(User);
@@ -253,8 +305,7 @@ export class UserResolver {
     const user = await userRepo
       .createQueryBuilder("user")
       .leftJoinAndSelect(`user.profile`, `profile`)
-
-      // .where("user.email = :email", { email })
+      .where("user.id = :id", { id })
       .getOne();
     if (!user) {
       return {

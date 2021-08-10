@@ -1,0 +1,28 @@
+
+POST http://localhost:5001/refreshToken HTTP/1.1
+content-type: application/json
+
+{
+    "refresh_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Mjg1OTM3MzgsInVzZXIiOnsiaWQiOjI3LCJlbWFpbCI6ImVmdW50YW5hckBjbG91ZHBhbmRhLmNvbSIsInVzZXJuYW1lIjpudWxsLCJtb2JpbGVfbnVtYmVyIjpudWxsLCJwYXNzd29yZCI6bnVsbCwiaXNfYWN0aXZlIjoxLCJoYXNfcHJvZmlsZSI6MCwiY3JlYXRlZEF0IjoiMjAyMS0wOC0wOVQxNDo0ODoyMi45NzlaIiwiVXBkYXRlZEF0IjoiMjAyMS0wOC0wOVQxNDo0ODoyMi45NzlaIn0sImlhdCI6MTYyODU5MzMxOH0.RhEqjodeeadHtvMzJX-OeK_IiikFu1tdHsquV_4is8M",
+    "user_id":"U2FsdGVkX1+M5x09yJ/ja8tLSAOWGfWAJNNBRRBFP+M="
+}
+
+###
+
+POST http://localhost:5001/graphql
+Content-Type: application/json
+X-REQUEST-TYPE: GraphQL
+
+mutation getFreshToken($getFreshTokenInput: InputGetFreshToken!) {
+  getFreshToken(input: $getFreshTokenInput) {
+    message
+    status
+    fresh_token
+  }
+}
+
+{
+    "getFreshTokenInput":{
+         "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjkxMjYzMjIsInVzZXIiOnsiaWQiOjI3LCJlbWFpbCI6ImVmdW50YW5hckBjbG91ZHBhbmRhLmNvbSIsInVzZXJuYW1lIjpudWxsLCJtb2JpbGVfbnVtYmVyIjpudWxsLCJwYXNzd29yZCI6bnVsbCwiaXNfYWN0aXZlIjoxLCJoYXNfcHJvZmlsZSI6MCwiY3JlYXRlZEF0IjoiMjAyMS0wOC0wOVQxNDo0ODoyMi45NzlaIiwiVXBkYXRlZEF0IjoiMjAyMS0wOC0wOVQxNDo0ODoyMi45NzlaIn0sImlhdCI6MTYyODUyMTUyMn0.BbufQ5oJDYyQvOsqBoXHpl5IkENYAxPNDejiLvIYYHw"
+    }
+}

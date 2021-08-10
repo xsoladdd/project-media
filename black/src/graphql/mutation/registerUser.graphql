@@ -1,10 +1,10 @@
-mutation RegisterUser($registerUserInput: InputRegistration!) {
+mutation registerUser($registerUserInput: InputRegistration!) {
   registerUser(input: $registerUserInput) {
     message
     status
     token
+    refresh_token
     user {
-      email
       id
     }
   }

@@ -3,5 +3,9 @@ query loginNormal($loginNormalInput: InputLoginNormal!) {
     message
     status
     token
+    refresh_token
+    user {
+      id
+    }
   }
 }

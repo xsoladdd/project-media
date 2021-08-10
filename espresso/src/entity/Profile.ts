@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { ObjectType, Field, Int } from "type-graphql";
 import { EncryptedID } from "../graphql/scalars";
@@ -43,6 +44,7 @@ export class Profile {
   display_image!: string;
 
   @OneToOne(() => User, (user) => user.profile) // specify inverse side as a second parameter
+  @JoinColumn()
   user: User;
 
   @CreateDateColumn({ name: "created_at" })

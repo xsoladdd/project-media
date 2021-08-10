@@ -4,14 +4,13 @@ import moment from "moment";
 import { User } from "../entity/User";
 import { tokenObject } from "../types";
 import { isProduction } from "../constants";
+import { ApolloError } from "apollo-server-core";
 
 config();
 
 export const sign = (user: User): string => {
   const obj: tokenObject = {
-    exp: isProduction
-      ? moment().add(7, "days").unix()
-      : moment().add(1, "hour").unix(),
+    exp: moment().add(15, "seconds").unix(),
     user,
   };
   const token = jwt.sign(obj, process.env.SECRET_KEY as string);
@@ -24,4 +23,34 @@ export const verify = (token: string): tokenObject => {
     process.env.SECRET_KEY as string
   ) as tokenObject;
   return decoded;
+};
+
+export const signRefreshToken = (user: User): string => {
+  const obj: tokenObject = {
+    exp: moment().add(7, "minutes").unix(),
+    user,
+  };
+  const token = jwt.sign(obj, process.env.SECRET_KEY_X as string);
+  return token;
+};
+export const verifyRefreshToken = (
+  token: string
+): tokenObject | "RESFRSEH_TOKEN_EXPIRE" => {
+  try {
+    const decoded: tokenObject = jwt.verify(
+      token,
+      process.env.SECRET_KEY_X as string
+    ) as tokenObject;
+    console.log(decoded);
+    return decoded;
+  } catch (error) {
+    if (error.toString().includes("jwt expired")) {
+      return "RESFRSEH_TOKEN_EXPIRE";
+    } else {
+      throw new ApolloError(
+        "INVALID_REFRESH_TOKEN_FORMAT",
+        "INVALID_REFRESH_TOKEN_FORMAT"
+      );
+    }
+  }
 };

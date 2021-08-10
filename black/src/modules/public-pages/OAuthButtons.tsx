@@ -3,12 +3,16 @@ import {
   githubProvider,
   googleProvider,
   signinWithProvider,
-} from "../../services/firebase/auth";
-import firebase from "firebase";
-import { setAccessToken } from "../../utils/jscookies";
+} from "../../config/firebase/auth";
+import {
+  setAccessToken,
+  setRefreshToken,
+  setUserIdentifier,
+} from "../../lib/jscookies";
 import { useOauthHandlerMutation } from "../../generated/graphql";
 import { FcGoogle } from "react-icons/fc";
 import { GoMarkGithub } from "react-icons/go";
+import firebase from "firebase";
 
 interface OAuthButtonsProps {
   type?: "register" | "login";
@@ -21,22 +25,25 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
 }) => {
   const [handleOAuth, { loading: OAuthLoading }] = useOauthHandlerMutation({
     onCompleted: ({ oauthHandler: data }) => {
-      const { status, message, token } = data;
-      if (token) {
+      const { token, refresh_token, user } = data;
+      if (token && refresh_token && user) {
         setAccessToken(token);
+        setRefreshToken(refresh_token);
+        setUserIdentifier(user.id);
       }
       console.log("redirect");
     },
   });
   const handleSocialMedia = async (provider: firebase.auth.AuthProvider) => {
-    const fbRes = await signinWithProvider(provider);
+    const res = await signinWithProvider(provider);
     let email;
     // Check if using google
-    if (fbRes.additionalUserInfo) {
-      email = fbRes.additionalUserInfo.profile.email;
-    } else if (fbRes.email) {
-      email = fbRes.email;
+    if (res.additionalUserInfo) {
+      email = res.additionalUserInfo.profile.email;
+    } else if (res.email) {
+      email = res.email;
     }
+    console.log(res);
     handleOAuth({
       variables: {
         oauthHandlerInput: {

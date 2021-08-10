@@ -1,5 +1,6 @@
+// import firebase from "firebase";
+import initializeFirebase from "../firebase-config";
 import firebase from "firebase";
-import initializeFirebase from "../../../config/firebase-config";
 export * from "./authProviders";
 
 initializeFirebase();

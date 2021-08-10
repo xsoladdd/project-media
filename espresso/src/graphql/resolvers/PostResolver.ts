@@ -13,13 +13,9 @@ import {
   Ctx,
 } from "type-graphql";
 import { getRepository, Raw } from "typeorm";
-import { EncryptedID } from "../scalars";
-// import { tokenObject } from "../../types";
-import { Profile } from "../../entity/Profile";
 import { ReturnStructure } from "../generics";
 import { Post } from "../../entity/Post";
 import { User } from "../../entity/User";
-import { contextObject } from "src/types";
 // import { isNullableType } from "graphql";
 
 @InputType()

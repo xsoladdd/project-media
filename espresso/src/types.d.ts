@@ -14,3 +14,5 @@ export type contextObject = {
   token: !string;
   user: User | null;
 };
+
+const;

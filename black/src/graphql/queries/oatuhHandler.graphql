@@ -3,5 +3,9 @@ mutation oauthHandler($oauthHandlerInput: InputLoginSocialmedia!) {
     message
     status
     token
+    refresh_token
+    user {
+      id
+    }
   }
 }

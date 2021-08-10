@@ -1,0 +1,7 @@
+mutation getFreshToken($getFreshTokenInput: InputGetFreshToken!) {
+  getFreshToken(input: $getFreshTokenInput) {
+    message
+    status
+    fresh_token
+  }
+}

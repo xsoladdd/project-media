@@ -1,6 +1,7 @@
 import firebase from "firebase";
+import "firebase/auth";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyBCnUq9fWjvMQQDS2zJVzbf3PIHZtellWc",
   authDomain: "project-media-5f4c1.firebaseapp.com",
   projectId: "project-media-5f4c1",
@@ -10,14 +11,10 @@ const firebaseConfig = {
   measurementId: "G-3GRJ930BQT",
 };
 
-// firebase.initializeApp();
-
 const initializeFirebase = () => {
   !firebase.apps.length
     ? firebase.initializeApp(firebaseConfig)
     : firebase.app();
 };
-
 export default initializeFirebase;
-
 // export const auth = typeof app !== "undefined" && app.auth();

@@ -20,6 +20,10 @@ export type Scalars = {
 
 
 
+export type InputGetFreshToken = {
+  refresh_token: Scalars['String'];
+};
+
 export type InputLoginNormal = {
   email: Scalars['String'];
   password: Scalars['String'];
@@ -54,6 +58,7 @@ export type Mutation = {
   setupProfile: ReturnStructure;
   oauthHandler: ReturnRegisterLogin;
   newPost: ReturnStructure;
+  getFreshToken: ReturnFreshToken;
 };
 
 
@@ -74,6 +79,11 @@ export type MutationOauthHandlerArgs = {
 
 export type MutationNewPostArgs = {
   input: InputNewPost;
+};
+
+
+export type MutationGetFreshTokenArgs = {
+  input: InputGetFreshToken;
 };
 
 export type Post = {
@@ -98,6 +108,7 @@ export type Query = {
   __typename?: 'Query';
   loginNormal: ReturnRegisterLogin;
   ping: Scalars['String'];
+  me: ReturnMe;
   allPost: ReturnPosts;
 };
 
@@ -109,6 +120,20 @@ export type QueryLoginNormalArgs = {
 
 export type QueryAllPostArgs = {
   limit?: Maybe<Scalars['Float']>;
+};
+
+export type ReturnFreshToken = {
+  __typename?: 'ReturnFreshToken';
+  message: Scalars['String'];
+  status: Scalars['Int'];
+  fresh_token?: Maybe<Scalars['String']>;
+};
+
+export type ReturnMe = {
+  __typename?: 'ReturnMe';
+  message: Scalars['String'];
+  status: Scalars['Int'];
+  user?: Maybe<User>;
 };
 
 export type ReturnPosts = {
@@ -123,6 +148,7 @@ export type ReturnRegisterLogin = {
   message: Scalars['String'];
   status: Scalars['Int'];
   token?: Maybe<Scalars['String']>;
+  refresh_token?: Maybe<Scalars['String']>;
   user?: Maybe<User>;
 };
 
@@ -139,29 +165,41 @@ export type User = {
   username?: Maybe<Scalars['String']>;
   mobile_number?: Maybe<Scalars['String']>;
   has_profile: Scalars['Int'];
-  profile: Profile;
+  profile?: Maybe<Profile>;
 };
+
+export type GetFreshTokenMutationVariables = Exact<{
+  getFreshTokenInput: InputGetFreshToken;
+}>;
+
+
+export type GetFreshTokenMutation = { __typename?: 'Mutation', getFreshToken: { __typename?: 'ReturnFreshToken', message: string, status: number, fresh_token?: Maybe<string> } };
 
 export type RegisterUserMutationVariables = Exact<{
   registerUserInput: InputRegistration;
 }>;
 
 
-export type RegisterUserMutation = { __typename?: 'Mutation', registerUser: { __typename?: 'ReturnRegisterLogin', message: string, status: number, token?: Maybe<string>, user?: Maybe<{ __typename?: 'User', email: string, id: any }> } };
+export type RegisterUserMutation = { __typename?: 'Mutation', registerUser: { __typename?: 'ReturnRegisterLogin', message: string, status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, user?: Maybe<{ __typename?: 'User', id: any }> } };
 
 export type LoginNormalQueryVariables = Exact<{
   loginNormalInput: InputLoginNormal;
 }>;
 
 
-export type LoginNormalQuery = { __typename?: 'Query', loginNormal: { __typename?: 'ReturnRegisterLogin', message: string, status: number, token?: Maybe<string> } };
+export type LoginNormalQuery = { __typename?: 'Query', loginNormal: { __typename?: 'ReturnRegisterLogin', message: string, status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, user?: Maybe<{ __typename?: 'User', id: any }> } };
+
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'ReturnMe', status: number, message: string, user?: Maybe<{ __typename?: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, has_profile: number, profile?: Maybe<{ __typename?: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname: string, display_image: string }> }> } };
 
 export type OauthHandlerMutationVariables = Exact<{
   oauthHandlerInput: InputLoginSocialmedia;
 }>;
 
 
-export type OauthHandlerMutation = { __typename?: 'Mutation', oauthHandler: { __typename?: 'ReturnRegisterLogin', message: string, status: number, token?: Maybe<string> } };
+export type OauthHandlerMutation = { __typename?: 'Mutation', oauthHandler: { __typename?: 'ReturnRegisterLogin', message: string, status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, user?: Maybe<{ __typename?: 'User', id: any }> } };
 
 export type PingQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -169,14 +207,49 @@ export type PingQueryVariables = Exact<{ [key: string]: never; }>;
 export type PingQuery = { __typename?: 'Query', ping: string };
 
 
+export const GetFreshTokenDocument = gql`
+    mutation getFreshToken($getFreshTokenInput: InputGetFreshToken!) {
+  getFreshToken(input: $getFreshTokenInput) {
+    message
+    status
+    fresh_token
+  }
+}
+    `;
+export type GetFreshTokenMutationFn = Apollo.MutationFunction<GetFreshTokenMutation, GetFreshTokenMutationVariables>;
+
+/**
+ * __useGetFreshTokenMutation__
+ *
+ * To run a mutation, you first call `useGetFreshTokenMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGetFreshTokenMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [getFreshTokenMutation, { data, loading, error }] = useGetFreshTokenMutation({
+ *   variables: {
+ *      getFreshTokenInput: // value for 'getFreshTokenInput'
+ *   },
+ * });
+ */
+export function useGetFreshTokenMutation(baseOptions?: Apollo.MutationHookOptions<GetFreshTokenMutation, GetFreshTokenMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<GetFreshTokenMutation, GetFreshTokenMutationVariables>(GetFreshTokenDocument, options);
+      }
+export type GetFreshTokenMutationHookResult = ReturnType<typeof useGetFreshTokenMutation>;
+export type GetFreshTokenMutationResult = Apollo.MutationResult<GetFreshTokenMutation>;
+export type GetFreshTokenMutationOptions = Apollo.BaseMutationOptions<GetFreshTokenMutation, GetFreshTokenMutationVariables>;
 export const RegisterUserDocument = gql`
-    mutation RegisterUser($registerUserInput: InputRegistration!) {
+    mutation registerUser($registerUserInput: InputRegistration!) {
   registerUser(input: $registerUserInput) {
     message
     status
     token
+    refresh_token
     user {
-      email
       id
     }
   }
@@ -214,6 +287,10 @@ export const LoginNormalDocument = gql`
     message
     status
     token
+    refresh_token
+    user {
+      id
+    }
   }
 }
     `;
@@ -245,12 +322,67 @@ export function useLoginNormalLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type LoginNormalQueryHookResult = ReturnType<typeof useLoginNormalQuery>;
 export type LoginNormalLazyQueryHookResult = ReturnType<typeof useLoginNormalLazyQuery>;
 export type LoginNormalQueryResult = Apollo.QueryResult<LoginNormalQuery, LoginNormalQueryVariables>;
+export const MeDocument = gql`
+    query me {
+  me {
+    user {
+      id
+      email
+      username
+      mobile_number
+      profile {
+        id
+        first_name
+        middle_name
+        last_name
+        birthday
+        nickname
+        display_image
+      }
+      has_profile
+    }
+    status
+    message
+  }
+}
+    `;
+
+/**
+ * __useMeQuery__
+ *
+ * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMeQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+      }
+export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+        }
+export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
+export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
+export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
 export const OauthHandlerDocument = gql`
     mutation oauthHandler($oauthHandlerInput: InputLoginSocialmedia!) {
   oauthHandler(input: $oauthHandlerInput) {
     message
     status
     token
+    refresh_token
+    user {
+      id
+    }
   }
 }
     `;
@@ -281,7 +413,7 @@ export type OauthHandlerMutationHookResult = ReturnType<typeof useOauthHandlerMu
 export type OauthHandlerMutationResult = Apollo.MutationResult<OauthHandlerMutation>;
 export type OauthHandlerMutationOptions = Apollo.BaseMutationOptions<OauthHandlerMutation, OauthHandlerMutationVariables>;
 export const PingDocument = gql`
-    query Ping {
+    query ping {
   ping
 }
     `;
