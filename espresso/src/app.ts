@@ -1,7 +1,12 @@
 import express from "express";
 import cors from "cors";
 import refreshToken from "./rest/refreshtoken";
-import { decrypt, sign, signRefreshToken, verifyRefreshToken } from "./utils";
+import {
+  decrypt,
+  signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
+} from "./utils";
 import { getRepository } from "typeorm";
 import { User } from "./entity/User";
 import { RefreshToken } from "./entity/RefreshToken";
@@ -62,14 +67,14 @@ app.post("/refreshToken", async (req, res) => {
     return res.json({
       message: `Success`,
       status: 1,
-      fresh_token: sign(user),
+      fresh_token: signAccessToken(user),
       resfresh_token: rt,
     });
   }
   return res.json({
     message: `Success`,
     status: 1,
-    fresh_token: sign(decrypted.user),
+    fresh_token: signAccessToken(decrypted.user),
   });
 });
 

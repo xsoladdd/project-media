@@ -19,10 +19,8 @@ const Header: React.FC<HeaderProps> = ({}) => {
   return (
     <>
       {/* Mobile Header */}
-      <div className="md:hidden">
+      <div className=" lg:hidden">
         <MobileNavPopout status={show} dismiss={() => setShow(false)} />
-      </div>
-      <div className=" md:hidden">
         <header className="text-gray-600 body-font  shadow-md ">
           <div className="  mx-auto flex flex-wrap py-4 px-5 flex-row items-center justify-between">
             <a className="flex mb-0">
@@ -43,10 +41,10 @@ const Header: React.FC<HeaderProps> = ({}) => {
         </header>
       </div>
       {/* Desktop Header */}
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         <header className="text-gray-600 body-font shadow-md ">
-          <div className=" container mx-auto flex flex-wrap py-3 px-10 flex-col md:flex-row items-center ">
-            <a className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
+          <div className=" container mx-auto  max-w-6xl  flex flex-wrap py-3 flex-row items-center ">
+            <a className="flex title-font font-medium items-center text-gray-900 mb-0">
               <div className="w-12 z-0">
                 <NextImage src={logoIllu} />
               </div>

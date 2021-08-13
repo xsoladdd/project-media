@@ -10,10 +10,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       <Header />
       {/* Body */}
-      <div className="flex h-full ">
-        <div className="hidden w-1/12 sm:block lg:w-1/6  "></div>
-        <div className="w-screen sm:w-11/12  lg:w-4/6  ">{children}</div>
-        <div className="hidden w-2/6 lg:block  ">Right sidebar</div>
+      <div className="flex h-full container mx-auto  max-w-6xl">
+        <div className="w-screen overflow-hidden md:w-9/12 ">{children}</div>
+        <div className="hidden md:block  md:w-3/12   "></div>
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 import {
   hash,
   checkHash,
-  sign,
-  verify,
+  signAccessToken,
+  verifyAccessToken,
   isExpired,
   encrypt,
   signRefreshToken,
@@ -68,6 +68,14 @@ class InputLoginSocialmedia {
   email: string;
 }
 
+@InputType()
+class InputCheckUnique {
+  @Field({ nullable: true })
+  username: string;
+  @Field({ nullable: true })
+  mobile_number: string;
+}
+
 @ObjectType()
 class ReturnRegisterLogin extends ReturnStructure {
   @Field(() => String, { nullable: true })
@@ -79,7 +87,7 @@ class ReturnRegisterLogin extends ReturnStructure {
 }
 
 @ObjectType()
-class ReturnMe extends ReturnStructure {
+class ReturnMeAndProfileUpdate extends ReturnStructure {
   @Field(() => User, { nullable: true })
   user?: User;
 }
@@ -117,17 +125,23 @@ export class UserResolver {
     return {
       message: "Succesfully",
       status: 1,
-      token: sign(user),
+      token: signAccessToken(user),
       refresh_token: signRefreshToken(user),
       user,
     };
   }
 
-  @Mutation(() => ReturnStructure)
+  @Mutation(() => ReturnMeAndProfileUpdate)
   async setupProfile(
     @Arg("input", { nullable: true }) input: InputSetupProfile,
     @Ctx("user") { id }: User
-  ): Promise<ReturnStructure> {
+  ): Promise<ReturnMeAndProfileUpdate> {
+    if (!id) {
+      return {
+        message: "Invalid User ID",
+        status: 0,
+      };
+    }
     const userRepo = getRepository(User);
 
     const user = await userRepo
@@ -135,7 +149,7 @@ export class UserResolver {
       .leftJoinAndSelect(`user.profile`, `profile`)
       .where("user.id = :id", { id })
       .getOne();
-
+    console.log(user);
     if (user?.profile !== null) {
       return {
         message: "Profile already setup",
@@ -158,11 +172,12 @@ export class UserResolver {
 
     const profile = profileRepo.create({
       first_name: firstName,
-      display_image,
+      display_image: display_image,
       last_name: lastName,
       middle_name: middleName,
       nickname,
       birthday,
+      user,
     });
 
     await profileRepo.save(profile).catch((err) => {
@@ -171,10 +186,16 @@ export class UserResolver {
         status: 0,
       };
     });
+    const userWithProfile = await userRepo
+      .createQueryBuilder("user")
+      .leftJoinAndSelect(`user.profile`, `profile`)
+      .where("user.id = :id", { id })
+      .getOne();
 
     return {
       message: "Profile succesfully save",
       status: 1,
+      user: userWithProfile,
     };
   }
 
@@ -229,14 +250,54 @@ export class UserResolver {
         status: 0,
       };
     });
-    // Create Token
-    console.log(user);
     return {
       message: "Succesfully",
       status: 1,
-      token: sign(user),
+      token: signAccessToken(user),
       refresh_token: rt,
       user,
+    };
+  }
+
+  @Query(() => ReturnStructure)
+  async checkUnique(
+    @Arg("input", { nullable: true }) input: InputCheckUnique
+  ): Promise<ReturnStructure> {
+    const { mobile_number, username } = input;
+    const userRepo = getRepository(User);
+
+    if (username) {
+      const user = await userRepo
+        .createQueryBuilder("user")
+        .where({ username })
+        .getOne();
+
+      if (user) {
+        return {
+          message: "Username already used",
+          status: 0,
+        };
+      }
+    }
+    if (mobile_number) {
+      const user = await userRepo
+        .createQueryBuilder("user")
+        .where({ mobile_number })
+        .getOne();
+
+      if (user) {
+        return {
+          message: "Mobile number already used",
+          status: 0,
+        };
+      }
+    }
+
+    // Check for username uniqueness
+
+    return {
+      message: "Data unique",
+      status: 1,
     };
   }
 
@@ -286,7 +347,7 @@ export class UserResolver {
     return {
       message: "Account succesfully created",
       status: 1,
-      token: sign(user),
+      token: signAccessToken(user),
       refresh_token: rt,
       user,
     };
@@ -298,8 +359,8 @@ export class UserResolver {
   }
 
   @Authorized()
-  @Query(() => ReturnMe)
-  async me(@Ctx("user") { id }: User): Promise<ReturnMe> {
+  @Query(() => ReturnMeAndProfileUpdate)
+  async me(@Ctx("user") { id }: User): Promise<ReturnMeAndProfileUpdate> {
     const userRepo = getRepository(User);
     console.log(id);
     const user = await userRepo

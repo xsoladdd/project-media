@@ -8,16 +8,16 @@ import { ApolloError } from "apollo-server-core";
 
 config();
 
-export const sign = (user: User): string => {
+export const signAccessToken = (user: User): string => {
   const obj: tokenObject = {
-    exp: moment().add(15, "seconds").unix(),
+    exp: moment().add(1, "hour").unix(),
     user,
   };
   const token = jwt.sign(obj, process.env.SECRET_KEY as string);
   return token;
 };
 
-export const verify = (token: string): tokenObject => {
+export const verifyAccessToken = (token: string): tokenObject => {
   const decoded = jwt.verify(
     token,
     process.env.SECRET_KEY as string
@@ -27,7 +27,7 @@ export const verify = (token: string): tokenObject => {
 
 export const signRefreshToken = (user: User): string => {
   const obj: tokenObject = {
-    exp: moment().add(7, "minutes").unix(),
+    exp: moment().add(7, "days").unix(),
     user,
   };
   const token = jwt.sign(obj, process.env.SECRET_KEY_X as string);

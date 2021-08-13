@@ -39,10 +39,6 @@ export class User {
   @Column({ type: "tinyint", default: 1 })
   is_active: number;
 
-  @Field(() => Int)
-  @Column({ type: "tinyint", default: 0 })
-  has_profile: number;
-
   @Field(() => Profile, { nullable: true })
   @OneToOne(() => Profile, (profile) => profile.user)
   profile: Profile;

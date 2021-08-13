@@ -15,7 +15,6 @@ module.exports = {
     colors: {
       transparent: "transparent",
       current: "currentColor",
-
       black: colors.black,
       white: colors.white,
       gray: colors.coolGray,
@@ -1029,6 +1028,9 @@ module.exports = {
     width: ["responsive"],
     wordBreak: ["responsive"],
     zIndex: ["responsive", "focus-within", "focus"],
+    extend: {
+      opacity: ["disabled"],
+    },
   },
   plugins: [],
 };

@@ -1,4 +1,11 @@
-import { hash, checkHash, sign, verify, isExpired, encrypt } from "../../utils";
+import {
+  hash,
+  checkHash,
+  signAccessToken,
+  verifyAccessToken,
+  isExpired,
+  encrypt,
+} from "../../utils";
 import {
   Resolver,
   Mutation,

@@ -2,7 +2,7 @@ import { contextObject } from "../types";
 import { AuthChecker } from "type-graphql";
 import { ApolloError } from "apollo-server-express";
 import { tokenObject } from "../types";
-import { verify, isExpired } from "../utils";
+import { verifyAccessToken, isExpired } from "../utils";
 
 const authChecker: AuthChecker = ({ context }): boolean => {
   const { token } = context as contextObject;
@@ -19,7 +19,7 @@ const authChecker: AuthChecker = ({ context }): boolean => {
   }
   // Validate token
   // Decrypt token
-  const tokenData: tokenObject = verify(tokenValue);
+  const tokenData: tokenObject = verifyAccessToken(tokenValue);
 
   return isExpired(tokenData.exp);
 };

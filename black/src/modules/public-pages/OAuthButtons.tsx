@@ -31,12 +31,12 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
         setRefreshToken(refresh_token);
         setUserIdentifier(user.id);
       }
-      console.log("redirect");
     },
   });
   const handleSocialMedia = async (provider: firebase.auth.AuthProvider) => {
     const res = await signinWithProvider(provider);
     let email;
+    console.log(res);
     // Check if using google
     if (res.additionalUserInfo) {
       email = res.additionalUserInfo.profile.email;

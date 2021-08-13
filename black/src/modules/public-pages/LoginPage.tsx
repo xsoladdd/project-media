@@ -51,7 +51,7 @@ export const LoginPage: React.FC = ({}) => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          console.log("trigger lazy query");
+          // console.log("trigger lazy query");
           loginNormal({
             variables: {
               loginNormalInput: loginCredential,

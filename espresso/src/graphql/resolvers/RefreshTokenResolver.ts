@@ -13,7 +13,7 @@ import {
 } from "type-graphql";
 import { RefreshToken } from "../../entity/RefreshToken";
 import { User } from "../../entity/User";
-import { decrypt, sign, verifyRefreshToken } from "../../utils";
+import { decrypt, signAccessToken, verifyRefreshToken } from "../../utils";
 import { ReturnStructure } from "../generics";
 
 @ObjectType()
@@ -45,7 +45,7 @@ export class ResfrsehTokenResolver {
     return {
       message: `Success`,
       status: 1,
-      fresh_token: sign(
+      fresh_token: signAccessToken(
         decrypted !== "RESFRSEH_TOKEN_EXPIRE" && decrypted.user
       ),
     };

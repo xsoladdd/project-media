@@ -1,0 +1,21 @@
+mutation setupProfile($setupProfileInput: InputSetupProfile) {
+  setupProfile(input: $setupProfileInput) {
+    message
+    status
+    user {
+      profile {
+        birthday
+        last_name
+        middle_name
+        first_name
+        id
+        display_image
+        nickname
+      }
+      mobile_number
+      username
+      email
+      id
+    }
+  }
+}

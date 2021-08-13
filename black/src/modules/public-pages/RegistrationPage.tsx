@@ -9,7 +9,6 @@ import {
 import { setAccessToken } from "../../lib/jscookies";
 import { OAuthButtons } from "./OAuthButtons";
 import { PublicPageWrapper } from "./PublicPageWrapper";
-import { client } from "../../providers/ApolloProvider";
 
 export const RegisterPage: React.FC = ({}) => {
   const [error, setError] = useState<string | null>(null);

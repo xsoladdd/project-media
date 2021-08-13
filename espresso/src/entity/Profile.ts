@@ -34,12 +34,12 @@ export class Profile {
   @Column()
   birthday: Date;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Column({ nullable: true })
   nickname: string;
 
   // Only URL. will save to cloud storage if needed
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Column("text", { nullable: true })
   display_image!: string;
 

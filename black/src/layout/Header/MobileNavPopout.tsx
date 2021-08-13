@@ -6,6 +6,7 @@ import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png
 import { MobileNavMenuItem } from "./MobileNavMenuItem";
 import { useRouter } from "next/router";
 import { navigationMenuItems } from "../NavigationMenuItems";
+import { useMeQuery } from "../../generated/graphql";
 
 interface MobileNavPopoutProps {
   status?: boolean;
@@ -14,9 +15,11 @@ interface MobileNavPopoutProps {
 
 const MobileNavPopout: React.FC<MobileNavPopoutProps> = ({
   status = false,
-  dismiss = () => console.log(),
+  dismiss = () => null,
 }) => {
   const { pathname } = useRouter();
+
+  const { data } = useMeQuery({ fetchPolicy: "cache-only" });
 
   return (
     <div className="w-full p-3 fixed  z-10">
@@ -68,8 +71,10 @@ const MobileNavPopout: React.FC<MobileNavPopoutProps> = ({
                       <NextImage src={defaultProfilePicture} className="" />
                     </div>
                     <div className="pl-2 flex flex-col place-content-center ">
-                      <h2 className="text-xl font-semibold">John Doe</h2>
-                      <p className="text-xs "> Johndoe@dummy.com</p>
+                      <h2 className="text-xl font-semibold capitalize">
+                        {`${data?.me.user?.profile?.first_name}  ${data?.me.user?.profile?.middle_name} ${data?.me.user?.profile?.last_name}`}
+                      </h2>
+                      <p className="text-xs "> {data?.me.user?.email}</p>
                     </div>
                   </div>
                   {/* Menu */}
@@ -78,7 +83,6 @@ const MobileNavPopout: React.FC<MobileNavPopoutProps> = ({
                       Navigate
                     </h6> */}
                     {navigationMenuItems.map(({ Icon, href, label }, idx) => {
-                      console.log();
                       return (
                         <MobileNavMenuItem
                           href={href}

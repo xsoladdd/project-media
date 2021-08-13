@@ -14,7 +14,6 @@ query me {
         nickname
         display_image
       }
-      has_profile
     }
     status
     message

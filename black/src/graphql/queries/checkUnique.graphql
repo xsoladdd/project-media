@@ -1,0 +1,6 @@
+query checkUnique($checkUniqueInput: InputCheckUnique) {
+  checkUnique(input: $checkUniqueInput) {
+    message
+    status
+  }
+}

@@ -11,7 +11,7 @@ import {
 } from "apollo-server-express";
 import buildSchema from "../graphql";
 import { contextObject } from "../types";
-import { verify } from "../utils";
+import { verifyAccessToken } from "../utils";
 
 config();
 const PORT = process.env.PORT || 5050;
@@ -34,7 +34,8 @@ const main = async () => {
     context: ({ req }) => {
       const token = req.headers.authorization;
       const user =
-        typeof token !== "undefined" && verify(token.split(" ")[1]).user;
+        typeof token !== "undefined" &&
+        verifyAccessToken(token.split(" ")[1]).user;
       const context: contextObject = {
         req,
         token: token || "",

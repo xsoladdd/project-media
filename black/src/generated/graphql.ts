@@ -20,6 +20,11 @@ export type Scalars = {
 
 
 
+export type InputCheckUnique = {
+  username?: Maybe<Scalars['String']>;
+  mobile_number?: Maybe<Scalars['String']>;
+};
+
 export type InputGetFreshToken = {
   refresh_token: Scalars['String'];
 };
@@ -55,7 +60,7 @@ export type InputSetupProfile = {
 export type Mutation = {
   __typename?: 'Mutation';
   registerUser: ReturnRegisterLogin;
-  setupProfile: ReturnStructure;
+  setupProfile: ReturnMeAndProfileUpdate;
   oauthHandler: ReturnRegisterLogin;
   newPost: ReturnStructure;
   getFreshToken: ReturnFreshToken;
@@ -100,21 +105,27 @@ export type Profile = {
   middle_name?: Maybe<Scalars['String']>;
   last_name: Scalars['String'];
   birthday: Scalars['DateTime'];
-  nickname: Scalars['String'];
-  display_image: Scalars['String'];
+  nickname?: Maybe<Scalars['String']>;
+  display_image?: Maybe<Scalars['String']>;
 };
 
 export type Query = {
   __typename?: 'Query';
   loginNormal: ReturnRegisterLogin;
+  checkUnique: ReturnStructure;
   ping: Scalars['String'];
-  me: ReturnMe;
+  me: ReturnMeAndProfileUpdate;
   allPost: ReturnPosts;
 };
 
 
 export type QueryLoginNormalArgs = {
   input: InputLoginNormal;
+};
+
+
+export type QueryCheckUniqueArgs = {
+  input?: Maybe<InputCheckUnique>;
 };
 
 
@@ -129,8 +140,8 @@ export type ReturnFreshToken = {
   fresh_token?: Maybe<Scalars['String']>;
 };
 
-export type ReturnMe = {
-  __typename?: 'ReturnMe';
+export type ReturnMeAndProfileUpdate = {
+  __typename?: 'ReturnMeAndProfileUpdate';
   message: Scalars['String'];
   status: Scalars['Int'];
   user?: Maybe<User>;
@@ -164,7 +175,6 @@ export type User = {
   email: Scalars['String'];
   username?: Maybe<Scalars['String']>;
   mobile_number?: Maybe<Scalars['String']>;
-  has_profile: Scalars['Int'];
   profile?: Maybe<Profile>;
 };
 
@@ -182,6 +192,20 @@ export type RegisterUserMutationVariables = Exact<{
 
 export type RegisterUserMutation = { __typename?: 'Mutation', registerUser: { __typename?: 'ReturnRegisterLogin', message: string, status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, user?: Maybe<{ __typename?: 'User', id: any }> } };
 
+export type SetupProfileMutationVariables = Exact<{
+  setupProfileInput?: Maybe<InputSetupProfile>;
+}>;
+
+
+export type SetupProfileMutation = { __typename?: 'Mutation', setupProfile: { __typename?: 'ReturnMeAndProfileUpdate', message: string, status: number, user?: Maybe<{ __typename?: 'User', mobile_number?: Maybe<string>, username?: Maybe<string>, email: string, id: any, profile?: Maybe<{ __typename?: 'Profile', birthday: any, last_name: string, middle_name?: Maybe<string>, first_name: string, id: any, display_image?: Maybe<string>, nickname?: Maybe<string> }> }> } };
+
+export type CheckUniqueQueryVariables = Exact<{
+  checkUniqueInput?: Maybe<InputCheckUnique>;
+}>;
+
+
+export type CheckUniqueQuery = { __typename?: 'Query', checkUnique: { __typename?: 'ReturnStructure', message: string, status: number } };
+
 export type LoginNormalQueryVariables = Exact<{
   loginNormalInput: InputLoginNormal;
 }>;
@@ -192,7 +216,7 @@ export type LoginNormalQuery = { __typename?: 'Query', loginNormal: { __typename
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me: { __typename?: 'ReturnMe', status: number, message: string, user?: Maybe<{ __typename?: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, has_profile: number, profile?: Maybe<{ __typename?: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname: string, display_image: string }> }> } };
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'ReturnMeAndProfileUpdate', status: number, message: string, user?: Maybe<{ __typename?: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename?: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<string> }> }> } };
 
 export type OauthHandlerMutationVariables = Exact<{
   oauthHandlerInput: InputLoginSocialmedia;
@@ -281,6 +305,91 @@ export function useRegisterUserMutation(baseOptions?: Apollo.MutationHookOptions
 export type RegisterUserMutationHookResult = ReturnType<typeof useRegisterUserMutation>;
 export type RegisterUserMutationResult = Apollo.MutationResult<RegisterUserMutation>;
 export type RegisterUserMutationOptions = Apollo.BaseMutationOptions<RegisterUserMutation, RegisterUserMutationVariables>;
+export const SetupProfileDocument = gql`
+    mutation setupProfile($setupProfileInput: InputSetupProfile) {
+  setupProfile(input: $setupProfileInput) {
+    message
+    status
+    user {
+      profile {
+        birthday
+        last_name
+        middle_name
+        first_name
+        id
+        display_image
+        nickname
+      }
+      mobile_number
+      username
+      email
+      id
+    }
+  }
+}
+    `;
+export type SetupProfileMutationFn = Apollo.MutationFunction<SetupProfileMutation, SetupProfileMutationVariables>;
+
+/**
+ * __useSetupProfileMutation__
+ *
+ * To run a mutation, you first call `useSetupProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetupProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setupProfileMutation, { data, loading, error }] = useSetupProfileMutation({
+ *   variables: {
+ *      setupProfileInput: // value for 'setupProfileInput'
+ *   },
+ * });
+ */
+export function useSetupProfileMutation(baseOptions?: Apollo.MutationHookOptions<SetupProfileMutation, SetupProfileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetupProfileMutation, SetupProfileMutationVariables>(SetupProfileDocument, options);
+      }
+export type SetupProfileMutationHookResult = ReturnType<typeof useSetupProfileMutation>;
+export type SetupProfileMutationResult = Apollo.MutationResult<SetupProfileMutation>;
+export type SetupProfileMutationOptions = Apollo.BaseMutationOptions<SetupProfileMutation, SetupProfileMutationVariables>;
+export const CheckUniqueDocument = gql`
+    query checkUnique($checkUniqueInput: InputCheckUnique) {
+  checkUnique(input: $checkUniqueInput) {
+    message
+    status
+  }
+}
+    `;
+
+/**
+ * __useCheckUniqueQuery__
+ *
+ * To run a query within a React component, call `useCheckUniqueQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCheckUniqueQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCheckUniqueQuery({
+ *   variables: {
+ *      checkUniqueInput: // value for 'checkUniqueInput'
+ *   },
+ * });
+ */
+export function useCheckUniqueQuery(baseOptions?: Apollo.QueryHookOptions<CheckUniqueQuery, CheckUniqueQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<CheckUniqueQuery, CheckUniqueQueryVariables>(CheckUniqueDocument, options);
+      }
+export function useCheckUniqueLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CheckUniqueQuery, CheckUniqueQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<CheckUniqueQuery, CheckUniqueQueryVariables>(CheckUniqueDocument, options);
+        }
+export type CheckUniqueQueryHookResult = ReturnType<typeof useCheckUniqueQuery>;
+export type CheckUniqueLazyQueryHookResult = ReturnType<typeof useCheckUniqueLazyQuery>;
+export type CheckUniqueQueryResult = Apollo.QueryResult<CheckUniqueQuery, CheckUniqueQueryVariables>;
 export const LoginNormalDocument = gql`
     query loginNormal($loginNormalInput: InputLoginNormal!) {
   loginNormal(input: $loginNormalInput) {
@@ -339,7 +448,6 @@ export const MeDocument = gql`
         nickname
         display_image
       }
-      has_profile
     }
     status
     message
