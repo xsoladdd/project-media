@@ -7,6 +7,14 @@ import { MobileNavMenuItem } from "./MobileNavMenuItem";
 import { useRouter } from "next/router";
 import { navigationMenuItems } from "../NavigationMenuItems";
 import { useMeQuery } from "../../generated/graphql";
+import { FiUser } from "react-icons/fi";
+import { replace } from "lodash";
+import apolloClient from "../../config/apollo-server/client";
+import {
+  removeAccessToken,
+  removeRefreshToken,
+  removeUserIdentifier,
+} from "../../lib/jscookies";
 
 interface MobileNavPopoutProps {
   status?: boolean;
@@ -17,7 +25,7 @@ const MobileNavPopout: React.FC<MobileNavPopoutProps> = ({
   status = false,
   dismiss = () => null,
 }) => {
-  const { pathname } = useRouter();
+  const { asPath, replace } = useRouter();
 
   const { data } = useMeQuery({ fetchPolicy: "cache-only" });
 
@@ -97,21 +105,40 @@ const MobileNavPopout: React.FC<MobileNavPopoutProps> = ({
                       Navigate
                     </h6> */}
                     {/* TODO Test this */}
-                    {navigationMenuItems.map(({ Icon, href, label }, idx) => {
-                      return (
-                        <MobileNavMenuItem
-                          href={
-                            label === "Profile"
-                              ? `/u/${data?.me.user?.username}`
-                              : href
-                          }
-                          key={idx}
-                          Icon={Icon}
-                          label={label}
-                          active={pathname === href}
-                        ></MobileNavMenuItem>
-                      );
-                    })}
+                    {navigationMenuItems
+                      .filter(({ label }) => label !== "Logout")
+                      .map(({ Icon, href, label }, idx) => {
+                        return (
+                          <MobileNavMenuItem
+                            href={
+                              label === "Profile"
+                                ? `/u/${data?.me.user?.username}`
+                                : href
+                            }
+                            key={idx}
+                            Icon={Icon}
+                            label={label}
+                            active={
+                              label === "Profile"
+                                ? asPath === `/u/${data?.me.user?.username}`
+                                : asPath === href
+                            }
+                          ></MobileNavMenuItem>
+                        );
+                      })}
+                    <a
+                      className={`flex w-full gap-5 px-2 py-4 cursor-pointer`}
+                      onClick={async () => {
+                        removeAccessToken();
+                        removeRefreshToken();
+                        removeUserIdentifier();
+                        await apolloClient.resetStore();
+                        replace("/");
+                      }}
+                    >
+                      <FiUser size="20" />{" "}
+                      <span className={`font-light`}>{`Logout`}</span>
+                    </a>
                   </div>
                 </div>
               </div>

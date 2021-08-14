@@ -1,4 +1,5 @@
 import { QueryResult } from "@apollo/client";
+import Link from "next/link";
 import React, { Profiler } from "react";
 import { usePrivateRoute } from "../../hooks/usePrivateRoute";
 import Layout from "../../layout/Layout";
@@ -31,6 +32,9 @@ export const Main: React.FC<MainProps> = ({}) => {
   return (
     <>
       <Layout>
+        <Link href={`/u/forwardlord`}>
+          <a> To Forward lord</a>
+        </Link>
         <h1>Media Feed</h1>
         {/* Post */}
         <div className="">

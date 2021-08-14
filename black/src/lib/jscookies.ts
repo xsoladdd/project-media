@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 
 export const setAccessToken = (token: string) => {
-  Cookies.set("access_token", token, { expires: 7, path: "" });
+  Cookies.set("access_token", token, { expires: 7, path: "/" });
 };
 
 export const getAccessToken = (): string | boolean => {
@@ -19,7 +19,7 @@ export const removeAccessToken = (): boolean => {
 };
 
 export const setRefreshToken = (token: string) => {
-  Cookies.set("refresh_token", token, { expires: 7, path: "" });
+  Cookies.set("refresh_token", token, { expires: 7, path: "/" });
 };
 
 export const getRefreshToken = (): string | boolean => {
@@ -37,7 +37,7 @@ export const removeRefreshToken = (): boolean => {
 };
 
 export const setUserIdentifier = (token: string) => {
-  Cookies.set("user_identifier", token, { expires: 7, path: "" });
+  Cookies.set("user_identifier", token, { expires: 7, path: "/" });
 };
 
 export const getUserIdentifier = (): string | boolean => {

@@ -7,11 +7,18 @@ import { useRouter } from "next/router";
 import { joinClass } from "../../lib/joinClass";
 import { FiLogOut } from "react-icons/fi";
 import { useMeQuery } from "../../generated/graphql";
+import { logout } from "../handleLogout";
+import {
+  removeAccessToken,
+  removeRefreshToken,
+  removeUserIdentifier,
+} from "../../lib/jscookies";
+import apolloClient from "../../config/apollo-server/client";
 
 interface NavbarDropdownButtonProps {}
 
 const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
-  const { push, pathname } = useRouter();
+  const { push, pathname, asPath, replace } = useRouter();
 
   const { data } = useMeQuery({ fetchPolicy: "cache-only" });
   return (
@@ -49,26 +56,44 @@ const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
             <div className="px-1 py-1 ">
               {navigationMenuItems
                 .filter(({ label }) => label !== "Logout" && label !== "Search")
-                .map(({ label, href, Icon }, idx) => (
-                  <Menu.Item key={idx}>
-                    <button
-                      className={joinClass(
-                        `text-gray-900 group flex rounded-md items-center w-full px-2 py-2 text-sm hover:bg-gray-100 gap-3`,
-                        pathname === href ? " font-semibold" : ""
-                      )}
-                      disabled={pathname === href}
-                      onClick={() => push(href)}
-                    >
-                      {Icon && <Icon />} {label}
-                    </button>
-                  </Menu.Item>
-                ))}
+                .map(({ label, href, Icon }, idx) => {
+                  const active =
+                    label === "Profile"
+                      ? asPath === `/u/${data?.me.user?.username}`
+                      : asPath === href;
+                  return (
+                    <Menu.Item key={idx}>
+                      <button
+                        className={joinClass(
+                          `text-gray-900 group flex rounded-md items-center w-full px-2 py-2 text-sm hover:bg-gray-100 gap-3`,
+                          active ? " font-semibold" : ""
+                        )}
+                        disabled={active}
+                        onClick={() =>
+                          push(
+                            label === "Profile"
+                              ? `/u/${data?.me.user?.username}`
+                              : href
+                          )
+                        }
+                      >
+                        {Icon && <Icon />} {label}
+                      </button>
+                    </Menu.Item>
+                  );
+                })}
             </div>
             <div className="px-1 py-1">
               <Menu.Item>
                 <button
                   className={`text-gray-900 group flex rounded-md items-center w-full px-2 py-2 text-sm hover:bg-gray-100 gap-3`}
-                  onClick={() => null}
+                  onClick={async () => {
+                    removeAccessToken();
+                    removeRefreshToken();
+                    removeUserIdentifier();
+                    await apolloClient.resetStore();
+                    replace("/");
+                  }}
                 >
                   <FiLogOut />
                   Logout
