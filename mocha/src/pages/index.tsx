@@ -19,7 +19,7 @@ const index: React.FC<indexProps> = ({}) => {
       <Container screen={true}>
         <div className="container mx-auto flex px-5 py-12 items-center justify-center flex-col mt-10 md:py-24 ">
           <div className=" w-2/3 md:w-1/3 ">
-            <Image src={HeroIllu} className=" " />
+            <Image src={HeroIllu} className=" " alt="illu" />
           </div>
           <div className="text-center lg:w-2/3 w-full pt-10">
             <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900">
