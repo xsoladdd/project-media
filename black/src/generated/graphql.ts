@@ -16,6 +16,8 @@ export type Scalars = {
   DateTime: any;
   /** Crypto protocol for IDS */
   EncryptedID: any;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 
@@ -23,6 +25,10 @@ export type Scalars = {
 export type InputCheckUnique = {
   username?: Maybe<Scalars['String']>;
   mobile_number?: Maybe<Scalars['String']>;
+};
+
+export type InputFileUpload = {
+  file: Scalars['Upload'];
 };
 
 export type InputGetFreshToken = {
@@ -53,7 +59,7 @@ export type InputSetupProfile = {
   middleName?: Maybe<Scalars['String']>;
   lastName: Scalars['String'];
   nickname?: Maybe<Scalars['String']>;
-  display_image?: Maybe<Scalars['String']>;
+  display_image?: Maybe<Scalars['Upload']>;
   birthday: Scalars['DateTime'];
 };
 
@@ -64,6 +70,7 @@ export type Mutation = {
   oauthHandler: ReturnRegisterLogin;
   newPost: ReturnStructure;
   getFreshToken: ReturnFreshToken;
+  TestFileUpload: ReturnStructure;
 };
 
 
@@ -89,6 +96,11 @@ export type MutationNewPostArgs = {
 
 export type MutationGetFreshTokenArgs = {
   input: InputGetFreshToken;
+};
+
+
+export type MutationTestFileUploadArgs = {
+  input: InputFileUpload;
 };
 
 export type Post = {
@@ -169,6 +181,7 @@ export type ReturnStructure = {
   status: Scalars['Int'];
 };
 
+
 export type User = {
   __typename?: 'User';
   id: Scalars['EncryptedID'];
@@ -198,6 +211,13 @@ export type SetupProfileMutationVariables = Exact<{
 
 
 export type SetupProfileMutation = { __typename?: 'Mutation', setupProfile: { __typename?: 'ReturnMeAndProfileUpdate', message: string, status: number, user?: Maybe<{ __typename?: 'User', mobile_number?: Maybe<string>, username?: Maybe<string>, email: string, id: any, profile?: Maybe<{ __typename?: 'Profile', birthday: any, last_name: string, middle_name?: Maybe<string>, first_name: string, id: any, display_image?: Maybe<string>, nickname?: Maybe<string> }> }> } };
+
+export type TestFileUploadMutationVariables = Exact<{
+  testFileUploadInput: InputFileUpload;
+}>;
+
+
+export type TestFileUploadMutation = { __typename?: 'Mutation', TestFileUpload: { __typename?: 'ReturnStructure', status: number, message: string } };
 
 export type CheckUniqueQueryVariables = Exact<{
   checkUniqueInput?: Maybe<InputCheckUnique>;
@@ -354,6 +374,40 @@ export function useSetupProfileMutation(baseOptions?: Apollo.MutationHookOptions
 export type SetupProfileMutationHookResult = ReturnType<typeof useSetupProfileMutation>;
 export type SetupProfileMutationResult = Apollo.MutationResult<SetupProfileMutation>;
 export type SetupProfileMutationOptions = Apollo.BaseMutationOptions<SetupProfileMutation, SetupProfileMutationVariables>;
+export const TestFileUploadDocument = gql`
+    mutation testFileUpload($testFileUploadInput: InputFileUpload!) {
+  TestFileUpload(input: $testFileUploadInput) {
+    status
+    message
+  }
+}
+    `;
+export type TestFileUploadMutationFn = Apollo.MutationFunction<TestFileUploadMutation, TestFileUploadMutationVariables>;
+
+/**
+ * __useTestFileUploadMutation__
+ *
+ * To run a mutation, you first call `useTestFileUploadMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useTestFileUploadMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [testFileUploadMutation, { data, loading, error }] = useTestFileUploadMutation({
+ *   variables: {
+ *      testFileUploadInput: // value for 'testFileUploadInput'
+ *   },
+ * });
+ */
+export function useTestFileUploadMutation(baseOptions?: Apollo.MutationHookOptions<TestFileUploadMutation, TestFileUploadMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<TestFileUploadMutation, TestFileUploadMutationVariables>(TestFileUploadDocument, options);
+      }
+export type TestFileUploadMutationHookResult = ReturnType<typeof useTestFileUploadMutation>;
+export type TestFileUploadMutationResult = Apollo.MutationResult<TestFileUploadMutation>;
+export type TestFileUploadMutationOptions = Apollo.BaseMutationOptions<TestFileUploadMutation, TestFileUploadMutationVariables>;
 export const CheckUniqueDocument = gql`
     query checkUnique($checkUniqueInput: InputCheckUnique) {
   checkUnique(input: $checkUniqueInput) {

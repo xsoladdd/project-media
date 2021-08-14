@@ -6,18 +6,33 @@ import { navigationMenuItems } from "../NavigationMenuItems";
 import { useRouter } from "next/router";
 import { joinClass } from "../../lib/joinClass";
 import { FiLogOut } from "react-icons/fi";
+import { useMeQuery } from "../../generated/graphql";
 
 interface NavbarDropdownButtonProps {}
 
 const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
   const { push, pathname } = useRouter();
+
+  const { data } = useMeQuery({ fetchPolicy: "cache-only" });
   return (
     <>
       <Menu as="div" className="relative inline-block text-left">
         <div>
           <Menu.Button className="ml-auto inline-flex items-center   border-0 py-1 px-3 focus:outline-none   rounded text-base mt-4 md:mt-0">
             <div className="w-10 h-10 rounded-full  overflow-hidden border-gray-900 border-2">
-              <NextImage src={defaultProfilePicture} className="" />
+              {/* <NextImage src={defaultProfilePicture} className="" /> */}
+              {data?.me.user?.profile?.display_image ? (
+                // <div className="w-16 h-16 rounded-full  overflow-hidden border-gray-800 border-2 flex">
+                <div className="w-full h-full relative">
+                  <NextImage
+                    src={data?.me.user?.profile?.display_image}
+                    layout="fill"
+                    objectFit="cover"
+                  />
+                </div>
+              ) : (
+                <NextImage src={defaultProfilePicture} className="" />
+              )}
             </div>
           </Menu.Button>
         </div>

@@ -56,7 +56,9 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
   });
 
   const [birthday, setBirthday] = useState(moment().toDate());
-  const [imageData, setImageData] = useState("");
+  const [imageData, setImageData] = useState<Blob | null>(null);
+
+  const [imagePreview, setImagePreview] = useState("");
 
   // Use to stop and disable next button
   const stepsCount = 7;
@@ -94,30 +96,37 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
   });
 
   const handleNextFinishButton = () => {
+    let error = 0;
     if (tabIndex === 1) {
       if (!nameData.firstName) {
-        return setFormError({
-          ...formError,
+        error++;
+        setFormError((oldProps) => ({
+          ...oldProps,
           firstName: "First name is required",
-        });
-      }
-      if (nameData.firstName.length < 4) {
-        return setFormError({
-          ...formError,
+        }));
+      } else if (nameData.firstName.length < 4) {
+        error++;
+        setFormError((oldProps) => ({
+          ...oldProps,
           firstName: "First name must be 4 or more character",
-        });
+        }));
       }
       if (!nameData.lastName) {
-        return setFormError({
-          ...formError,
+        error++;
+        setFormError((oldProps) => ({
+          ...oldProps,
           lastName: "Last name is required",
-        });
-      }
-      if (nameData.lastName.length < 4) {
-        return setFormError({
-          ...formError,
+        }));
+      } else if (nameData.lastName.length < 4) {
+        error++;
+        setFormError((oldProps) => ({
+          ...oldProps,
           lastName: "Last name must be 4 or more character",
-        });
+        }));
+      }
+
+      if (error !== 0) {
+        return;
       }
       setFormError({
         ...formError,
@@ -129,28 +138,35 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
 
     if (tabIndex === 2) {
       if (!uniqueData.username) {
-        return setFormError({
-          ...formError,
+        error++;
+        setFormError((oldProps) => ({
+          ...oldProps,
           username: "Username is required",
-        });
+        }));
       }
       if (uniqueData.username.length < 4) {
-        return setFormError({
-          ...formError,
+        error++;
+        setFormError((oldProps) => ({
+          ...oldProps,
           username: "Username must be 4 or more character",
-        });
+        }));
       }
       if (!uniqueData.mobileNumber) {
-        return setFormError({
-          ...formError,
+        error++;
+        setFormError((oldProps) => ({
+          ...oldProps,
           mobileNumber: "Mobile number is required",
-        });
+        }));
       }
       if (uniqueData.mobileNumber.length < 10) {
-        return setFormError({
-          ...formError,
+        error++;
+        setFormError((oldProps) => ({
+          ...oldProps,
           mobileNumber: "Mobile must be 10 or more character",
-        });
+        }));
+      }
+      if (error !== 0) {
+        return;
       }
       setFormError({
         ...formError,
@@ -161,19 +177,19 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
     }
 
     if (tabIndex === 5) {
-      setupProfile({
+      return setupProfile({
         variables: {
           setupProfileInput: {
             birthday,
             firstName: nameData.firstName,
             middleName: nameData.middleName,
             lastName: nameData.lastName,
+            // display_image: imageData,
             display_image: imageData,
             nickname: nameData.nickname,
           },
         },
       });
-      return console.log("hey");
     }
 
     // Reset errors
@@ -263,7 +279,12 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
             title="Profile Picture"
             subText="if you're not confident, you can always skip this part"
           >
-            <ProfilePicture imageData={imageData} setImageData={setImageData} />
+            <ProfilePicture
+              imageData={imageData}
+              setImageData={setImageData}
+              imagePreview={imagePreview}
+              setImagePreview={setImagePreview}
+            />
           </Stepper.Panel>
           <Stepper.Panel
             show={tabIndex === 5}
@@ -271,6 +292,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
             subText="Before we continue, please check all the data"
           >
             <FinalizeProfile
+              imagePreview={imagePreview}
               birthday={birthday}
               displayPhoto={imageData}
               nameData={nameData}

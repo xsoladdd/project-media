@@ -1,0 +1,6 @@
+mutation testFileUpload($testFileUploadInput: InputFileUpload!) {
+  TestFileUpload(input: $testFileUploadInput) {
+    status
+    message
+  }
+}

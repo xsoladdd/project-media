@@ -67,9 +67,23 @@ const MobileNavPopout: React.FC<MobileNavPopoutProps> = ({
                 <div className="px-2 divide-y ">
                   {/* Profile Area */}
                   <div className="px-3 flex w-full z-20 pb-5">
-                    <div className="w-16 h-16 rounded-full  overflow-hidden border-gray-800 border-2">
-                      <NextImage src={defaultProfilePicture} className="" />
-                    </div>
+                    {data?.me.user?.profile?.display_image ? (
+                      <div className="w-16 h-16 rounded-full  overflow-hidden border-gray-800 border-2 flex">
+                        <div className="w-full h-full relative">
+                          <NextImage
+                            src={data?.me.user?.profile?.display_image}
+                            layout="fill"
+                            objectFit="cover"
+
+                            // objectFit="unset"
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-full  overflow-hidden border-gray-800 border-2">
+                        <NextImage src={defaultProfilePicture} className="" />
+                      </div>
+                    )}
                     <div className="pl-2 flex flex-col place-content-center ">
                       <h2 className="text-xl font-semibold capitalize">
                         {`${data?.me.user?.profile?.first_name}  ${data?.me.user?.profile?.middle_name} ${data?.me.user?.profile?.last_name}`}

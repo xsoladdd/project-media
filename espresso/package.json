@@ -27,6 +27,8 @@
     "typescript": "3.8"
   },
   "dependencies": {
+    "@types/graphql-upload": "^8.0.6",
+    "@types/uuid": "^8.3.1",
     "apollo-server-core": "^3.1.2",
     "apollo-server-express": "3.1.2",
     "bcrypt": "^5.0.0",
@@ -39,12 +41,15 @@
     "express": "^4.17.1",
     "graphql": "^15.4.0",
     "graphql-tools": "^7.0.2",
+    "graphql-upload": "^12.0.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
     "mysql": "^2.14.1",
     "ntypescript": "^1.201706190042.1",
     "reflect-metadata": "^0.1.10",
+    "serverless-s3-local": "^0.6.19",
     "type-graphql": "^1.1.1",
-    "typeorm": "^0.2.30"
+    "typeorm": "^0.2.30",
+    "uuid": "^8.3.2"
   }
 }

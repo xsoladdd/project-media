@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Menu, Transition } from "@headlessui/react";
 import MobileNavPopout from "./Header/MobileNavPopout";
@@ -9,13 +9,11 @@ import { useRouter } from "next/router";
 import defaultProfilePicture from "../assets/images/defaultProfilePicture.png";
 import NavbarDropdownButton from "./Header/NavbarDropdownButton";
 import Search from "../components/Search";
-
 interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = ({}) => {
   const [show, setShow] = useState(false);
 
-  const { pathname } = useRouter();
   return (
     <>
       {/* Mobile Header */}

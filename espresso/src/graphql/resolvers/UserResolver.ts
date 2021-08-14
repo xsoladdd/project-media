@@ -27,6 +27,12 @@ import { EncryptedID } from "../scalars";
 import { Profile } from "../../entity/Profile";
 import { ErrorReturnStructure, ReturnStructure } from "../generics";
 import { RefreshToken } from "../../entity/RefreshToken";
+// import GraphQLUpload from "graphql-upload";
+// import { GraphQLUpload } from "graphql-upload";
+import { Upload } from "../scalars";
+import { UploadToS3 } from "../../utils/s3Bucket";
+import { FileUpload } from "graphql-upload";
+
 // import { isNullableType } from "graphql";
 
 @InputType()
@@ -39,7 +45,7 @@ class InputRegistration implements Partial<User & Profile> {
 }
 
 @InputType()
-class InputSetupProfile implements Partial<Profile> {
+class InputSetupProfile {
   @Field()
   firstName: string;
   @Field({ nullable: true })
@@ -48,8 +54,10 @@ class InputSetupProfile implements Partial<Profile> {
   lastName: string;
   @Field({ nullable: true })
   nickname: string;
-  @Field({ nullable: true })
-  display_image: string;
+  @Field(() => Upload, { nullable: true })
+  display_image?: FileUpload;
+  // @Field({ nullable: true })
+  // display_image?: string;
   @Field({})
   birthday: Date;
 }
@@ -167,12 +175,16 @@ export class UserResolver {
     } = input;
 
     const profileRepo = getRepository(Profile);
-
+    console.log(typeof display_image);
     console.log(user);
+    let display_image_name;
+    if (display_image) {
+      display_image_name = await UploadToS3(display_image);
+    }
 
     const profile = profileRepo.create({
       first_name: firstName,
-      display_image: display_image,
+      display_image: display_image_name,
       last_name: lastName,
       middle_name: middleName,
       nickname,

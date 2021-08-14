@@ -8,8 +8,9 @@ import {
   JoinColumn,
 } from "typeorm";
 import { ObjectType, Field, Int } from "type-graphql";
-import { EncryptedID } from "../graphql/scalars";
+import { EncryptedID, Upload } from "../graphql/scalars";
 import { User } from "./User";
+import { S3File } from "../graphql/scalars/S3File";
 
 @Entity()
 @ObjectType()
@@ -39,7 +40,7 @@ export class Profile {
   nickname: string;
 
   // Only URL. will save to cloud storage if needed
-  @Field(() => String, { nullable: true })
+  @Field(() => S3File, { nullable: true })
   @Column("text", { nullable: true })
   display_image!: string;
 

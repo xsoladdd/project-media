@@ -9,88 +9,37 @@ import Webcam from "react-webcam";
 import { Tab } from "@headlessui/react";
 import { joinClass } from "../../../lib/joinClass";
 import Button from "../../../ui/Button";
-import { getBase64 } from "../../../lib/imageToDataURI";
+import { getBase64, getBlobFromBase64 } from "../../../lib/files";
 import NextImage from "next/image";
 import defaultProfilePicture from "../../../assets/images/defaultProfilePicture.png";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 
 interface ProfilePictureProps {
-  imageData: string; //image_base_64
-  setImageData: React.Dispatch<SetStateAction<string>>;
+  imageData: Blob | null; //image_base_64
+  setImageData: React.Dispatch<SetStateAction<Blob | null>>;
+  imagePreview: string;
+  setImagePreview: React.Dispatch<SetStateAction<string>>;
 }
-
-const videoConstraints = {
-  width: 1920,
-  height: 1080,
-  facingMode: "user",
-};
 
 const ProfilePicture: React.FC<ProfilePictureProps> = ({
   imageData,
   setImageData,
+  imagePreview,
+  setImagePreview,
 }) => {
   // const [partialImage, setPartialImage] = useState("");
   const webcamRef = React.useRef<null | Webcam>(null);
 
-  const capture = React.useCallback(() => {
+  const capture = React.useCallback(async () => {
     const imageSrc = webcamRef.current?.getScreenshot();
+
     if (typeof imageSrc === "string") {
       // setPartialImage(imageSrc);
-      setImageData(imageSrc);
+      setImagePreview(imageSrc);
+      setImageData(await getBlobFromBase64(imageSrc));
     }
     // console.log(imageSrc);
   }, [webcamRef]);
-
-  let [categories] = useState({
-    Recent: [
-      {
-        id: 1,
-        title: "Does drinking coffee make you smarter?",
-        date: "5h ago",
-        commentCount: 5,
-        shareCount: 2,
-      },
-      {
-        id: 2,
-        title: "So you've bought coffee... now what?",
-        date: "2h ago",
-        commentCount: 3,
-        shareCount: 2,
-      },
-    ],
-    Popular: [
-      {
-        id: 1,
-        title: "Is tech making coffee better or worse?",
-        date: "Jan 7",
-        commentCount: 29,
-        shareCount: 16,
-      },
-      {
-        id: 2,
-        title: "The most innovative things happening in coffee",
-        date: "Mar 19",
-        commentCount: 24,
-        shareCount: 12,
-      },
-    ],
-    Trending: [
-      {
-        id: 1,
-        title: "Ask Me Anything: 10 answers to your questions about coffee",
-        date: "2d ago",
-        commentCount: 9,
-        shareCount: 5,
-      },
-      {
-        id: 2,
-        title: "The worst advice we've ever heard about coffee",
-        date: "4d ago",
-        commentCount: 1,
-        shareCount: 2,
-      },
-    ],
-  });
 
   return (
     <>
@@ -103,20 +52,20 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
                 "focus:outline-none focus:ring-2 ring-offset-2 ring-offset-green-400 ring-white ring-opacity-60 mx-2"
               )}
             >
-              {imageData ? (
+              {imagePreview ? (
                 <>
                   <div className=" py-24 md:py-40 w-full  relative ">
                     <Button
                       className="hidden md:block absolute z-20 right-5 top-5 "
                       variant="yellow"
                       onClick={() => {
-                        setImageData("");
+                        setImagePreview("");
                       }}
                     >
                       <AiOutlineCloseCircle size="20" />
                     </Button>
                     <NextImage
-                      src={imageData}
+                      src={imagePreview}
                       layout="fill"
                       objectFit="cover"
                     />
@@ -128,7 +77,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
                       variant="yellow"
                       size="xs"
                       onClick={() => {
-                        setImageData("");
+                        // setImageData("");
                       }}
                     >
                       <AiOutlineCloseCircle size="20" />
@@ -147,16 +96,17 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
                       name="file-upload"
                       type="file"
                       className="sr-only"
+                      accept="image/png, image/jpeg"
                       onChange={(e) => {
                         // console.log(e.target.files);
                         const files = e.target.files;
                         if (files !== null) {
                           let file = files[0];
+                          setImageData(file);
+
                           getBase64(file)
                             .then((result) => {
-                              console.log(typeof result);
-                              console.log(result);
-                              setImageData(result);
+                              setImagePreview(result);
                             })
                             .catch((err) => {
                               console.log(err);
@@ -179,7 +129,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
                   {imageData ? (
                     <div className=" py-24 md:py-40 w-full  relative ">
                       <NextImage
-                        src={imageData}
+                        src={imagePreview}
                         layout="fill"
                         objectFit="cover"
                       />
@@ -203,12 +153,12 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
                 </div>
 
                 <div className=" py-3 mx-auto flex gap-2">
-                  {imageData ? (
+                  {imagePreview ? (
                     <Button
                       className=""
                       variant="yellow"
                       onClick={() => {
-                        setImageData("");
+                        setImagePreview("");
                       }}
                     >
                       <AiOutlineCloseCircle size="20" />

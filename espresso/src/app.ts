@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import refreshToken from "./rest/refreshtoken";
+// import moduleName from "graph";
 import {
   decrypt,
   signAccessToken,
@@ -10,16 +10,17 @@ import {
 import { getRepository } from "typeorm";
 import { User } from "./entity/User";
 import { RefreshToken } from "./entity/RefreshToken";
+import { graphqlUploadExpress } from "graphql-upload";
+import path from "path";
 
-// import moment from "moment";
-// import { sign } from "./utils/jwt";
 const app = express();
 app.use(cors());
 app.use(express.json());
-// app.use(bodyPa)
-app.get("/", async (_, res) => {
-  res.send("hello world");
-});
+app.use(
+  "/graphql",
+  graphqlUploadExpress({ maxFieldSize: 10000000, maxFiles: 10 })
+);
+app.use("/public", express.static(path.join(__dirname, "./assets/images")));
 
 app.post("/refreshToken", async (req, res) => {
   const { refresh_token, user_id } = req.body;

@@ -1,7 +1,7 @@
 import User from "./entity/User";
 
 export type ast = {
-  value: !string;
+  value: string;
 };
 
 export type tokenObject = {
