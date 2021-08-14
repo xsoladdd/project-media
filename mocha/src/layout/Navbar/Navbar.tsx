@@ -32,7 +32,7 @@ const Navbar: React.FC<navbarProps> = ({}) => {
       <header className="hidden md:block text-gray-600 body-font bg-gray-50 border-b-2 border-gray-100">
         <div className="container mx-auto flex flex-wrap p-2  flex-row items-center">
           <a className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
-            <Image src={LogoIllu} height="50" width="50" />
+            <Image src={LogoIllu} height="50" width="50" alt="illu" />
             <span className="ml-3 text-xl">Project Media</span>
           </a>
           <nav className="md:ml-auto flex flex-wrap items-center text-base justify-end">
