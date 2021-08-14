@@ -6,23 +6,32 @@ import {
   usePingQuery,
   useRegisterUserMutation,
 } from "../../generated/graphql";
-import { setAccessToken } from "../../lib/jscookies";
+import {
+  setAccessToken,
+  setRefreshToken,
+  setUserIdentifier,
+} from "../../lib/jscookies";
 import { OAuthButtons } from "./OAuthButtons";
 import { PublicPageWrapper } from "./PublicPageWrapper";
+import { useRouter } from "next/router";
 
 export const RegisterPage: React.FC = ({}) => {
   const [error, setError] = useState<string | null>(null);
+  const { replace } = useRouter();
 
   const [register, { loading }] = useRegisterUserMutation({
     onCompleted: ({ registerUser: data }) => {
-      const { message, status, token } = data;
-      if (status === 0 || !token) {
+      const { message, status, token, refresh_token, user } = data;
+      if (status === 0 || !token || !refresh_token || !user) {
         setError(message);
       } else {
         setError(null);
         setAccessToken(token);
-        // TODO Redirect
+        setRefreshToken(refresh_token);
+        setUserIdentifier(user.id);
+        // TODO Test
         console.log("redirect");
+        replace("/dashboard");
       }
     },
   });

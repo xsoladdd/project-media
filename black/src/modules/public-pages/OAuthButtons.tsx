@@ -13,6 +13,7 @@ import { useOauthHandlerMutation } from "../../generated/graphql";
 import { FcGoogle } from "react-icons/fc";
 import { GoMarkGithub } from "react-icons/go";
 import firebase from "firebase";
+import { useRouter } from "next/router";
 
 interface OAuthButtonsProps {
   type?: "register" | "login";
@@ -23,6 +24,8 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
   type = "login",
   disabled = false,
 }) => {
+  const { replace } = useRouter();
+
   const [handleOAuth, { loading: OAuthLoading }] = useOauthHandlerMutation({
     onCompleted: ({ oauthHandler: data }) => {
       const { token, refresh_token, user } = data;
@@ -30,6 +33,8 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
         setAccessToken(token);
         setRefreshToken(refresh_token);
         setUserIdentifier(user.id);
+
+        replace("/dashboard");
       }
     },
   });

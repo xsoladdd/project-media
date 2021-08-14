@@ -14,6 +14,7 @@ import {
 } from "../../generated/graphql";
 import { OAuthButtons } from "./OAuthButtons";
 import { PublicPageWrapper } from "./PublicPageWrapper";
+import { useRouter } from "next/router";
 
 export const LoginPage: React.FC = ({}) => {
   const [error, setError] = useState<string | null>(null);
@@ -21,6 +22,8 @@ export const LoginPage: React.FC = ({}) => {
     email: "",
     password: "",
   });
+
+  const { replace } = useRouter();
 
   const [loginNormal, { loading: normalLoading }] = useLoginNormalLazyQuery({
     fetchPolicy: "network-only",
@@ -33,9 +36,13 @@ export const LoginPage: React.FC = ({}) => {
         setAccessToken(token);
         setRefreshToken(refresh_token);
         setUserIdentifier(user.id);
+        replace("/dashboard");
       }
     },
   });
+  // if (checkLoading) {
+  //   return <h1>Loading</h1>;
+  // }
 
   // console.log(`data`, loginResponse);
 

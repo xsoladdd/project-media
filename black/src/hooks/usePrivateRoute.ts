@@ -1,13 +1,18 @@
 import React, { useEffect } from "react";
-import { getAccessToken } from "../lib/jscookies";
+import {
+  getAccessToken,
+  getRefreshToken,
+  getUserIdentifier,
+} from "../lib/jscookies";
 import { useRouter, Router } from "next/router";
 
 export const usePrivateRoute = () => {
   const { replace } = useRouter();
   const token = getAccessToken();
+  const rttoken = getRefreshToken();
+  const uid = getUserIdentifier();
   useEffect(() => {
-    if (token === false) {
-      // window.location.href = "/"'
+    if (!token && !rttoken && !uid) {
       replace("/");
     }
     return () => {};

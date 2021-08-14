@@ -5,17 +5,22 @@ import ProfileSetup from "../modules/profile-setup-modal/ProfileSetup";
 import { CustomApolloError } from "../types/apollo";
 import Header from "./Header";
 import NextImage from "next/image";
+import { usePrivateRoute } from "../hooks/usePrivateRoute";
+import Loading from "../pages/test";
 
 interface LayoutProps {}
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  usePrivateRoute();
+
   const { data, loading, error }: QueryResult<MeQuery> = useMeQuery({
+    fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-only",
   });
   const apolloError = error as CustomApolloError | undefined;
   // console.log(data);
   if (loading) {
-    return <p>Loading</p>;
+    return <Loading />;
   }
   if (error) {
     return <p>{JSON.stringify(apolloError)}</p>;

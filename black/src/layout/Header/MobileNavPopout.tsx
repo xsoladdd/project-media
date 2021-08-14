@@ -96,6 +96,7 @@ const MobileNavPopout: React.FC<MobileNavPopoutProps> = ({
                     {/* <h6 className="text-center py-3 font-semibold text-xl">
                       Navigate
                     </h6> */}
+                    {/* TODO Test this */}
                     {navigationMenuItems.map(({ Icon, href, label }, idx) => {
                       return (
                         <MobileNavMenuItem

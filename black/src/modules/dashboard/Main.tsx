@@ -1,6 +1,5 @@
 import { QueryResult } from "@apollo/client";
 import React, { Profiler } from "react";
-import { MeQuery, useMeQuery } from "../../generated/graphql";
 import { usePrivateRoute } from "../../hooks/usePrivateRoute";
 import Layout from "../../layout/Layout";
 import { Exact, Maybe, User } from "../../types";

@@ -1,7 +1,9 @@
 import React from "react";
 import Image from "next/image";
-import { usePingQuery } from "../../generated/graphql";
+import { useMeQuery, usePingQuery } from "../../generated/graphql";
 import NextLink from "next/link";
+import { useRouter } from "next/router";
+import Loading from "../../pages/test";
 
 interface PublicPageWrapperProps {
   image: StaticImageData;
@@ -11,6 +13,18 @@ export const PublicPageWrapper: React.FC<PublicPageWrapperProps> = ({
   children,
   image,
 }) => {
+  const { push } = useRouter();
+
+  const { loading, data } = useMeQuery({
+    fetchPolicy: "network-only",
+  });
+  if (loading) {
+    return <Loading />;
+  }
+  if (data?.me.user) {
+    push("/dashboard");
+  }
+
   return (
     <div className="h-screen flex flex-col">
       <div className="py-6 my-auto">
