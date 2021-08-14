@@ -1,21 +1,21 @@
 mutation setupProfile($setupProfileInput: InputSetupProfile) {
   setupProfile(input: $setupProfileInput) {
-    message
     status
+    message
     user {
+      id
+      email
+      username
       profile {
-        birthday
         last_name
-        middle_name
         first_name
         id
-        display_image
+        middle_name
         nickname
+        display_image
+        birthday
       }
       mobile_number
-      username
-      email
-      id
     }
   }
 }

@@ -5,6 +5,7 @@ import {
   verifyAccessToken,
   isExpired,
   encrypt,
+  decrypt,
 } from "../../utils";
 import {
   Resolver,
@@ -40,5 +41,23 @@ export class DummyResolver {
       message: "hey",
       status: 1,
     };
+  }
+  @Query(() => String)
+  async getEncryptedValue(
+    @Arg("id", { nullable: false }) id: string
+  ): Promise<String> {
+    return encrypt(id);
+  }
+
+  @Query(() => String)
+  async getDecryptedValue(
+    @Arg("id", { nullable: false }) id: string
+  ): Promise<String> {
+    return decrypt(id);
+  }
+
+  @Query(() => String)
+  async ping(): Promise<String> {
+    return "Ping successfull. hey thanks for the ping";
   }
 }

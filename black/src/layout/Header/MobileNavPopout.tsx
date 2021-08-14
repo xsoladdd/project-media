@@ -99,7 +99,11 @@ const MobileNavPopout: React.FC<MobileNavPopoutProps> = ({
                     {navigationMenuItems.map(({ Icon, href, label }, idx) => {
                       return (
                         <MobileNavMenuItem
-                          href={href}
+                          href={
+                            label === "Profile"
+                              ? `/u/${data?.me.user?.username}`
+                              : href
+                          }
                           key={idx}
                           Icon={Icon}
                           label={label}

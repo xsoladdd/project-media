@@ -83,10 +83,18 @@ const errorLink = onError(
 const setTokenLink = setContext(async (_, { headers }) => {
   try {
     const accessToken = getAccessToken();
+
+    if (accessToken) {
+      return {
+        headers: {
+          ...headers,
+          authorization: `Bearer ${accessToken}`,
+        },
+      };
+    }
     return {
       headers: {
         ...headers,
-        authorization: accessToken ? `Bearer ${accessToken}` : "",
       },
     };
   } catch (error) {

@@ -1,7 +1,7 @@
 import { QueryResult } from "@apollo/client";
 import React from "react";
 import { MeQuery, useMeQuery } from "../generated/graphql";
-import ProfileSetup from "../modules/dashboard/profile-setup/ProfileSetup";
+import ProfileSetup from "../modules/profile-setup-modal/ProfileSetup";
 import { CustomApolloError } from "../types/apollo";
 import Header from "./Header";
 import NextImage from "next/image";
@@ -21,12 +21,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return <p>{JSON.stringify(apolloError)}</p>;
   }
 
-  console.log(data?.me.user?.profile?.display_image);
+  console.log(data);
 
   return (
     <>
       {!data?.me.user?.profile && <ProfileSetup />}
-      <div className="h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col">
         {/* Navbar */}
         {/* {data?.me.user?.profile?.display_image && (
           <NextImage

@@ -1,4 +1,6 @@
 import { FiCommand, FiUser, FiSettings, FiSearch } from "react-icons/fi";
+import apolloClient from "../config/apollo-server/client";
+import { MeDocument, MeQuery } from "../generated/graphql";
 import { NavMenuLink } from "../global";
 
 export const navigationMenuItems: Array<NavMenuLink> = [
@@ -13,7 +15,7 @@ export const navigationMenuItems: Array<NavMenuLink> = [
     label: `Search`,
   },
   {
-    href: "/profile",
+    href: ``,
     Icon: FiUser,
     label: "Profile",
   },

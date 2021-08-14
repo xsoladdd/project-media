@@ -2,7 +2,11 @@ import React, { Fragment } from "react";
 import LoginBanner from "../../assets/images/loginbanner.jpg";
 import Link from "next/link";
 import { useState } from "react";
-import { setAccessToken } from "../../lib/jscookies";
+import {
+  setAccessToken,
+  setRefreshToken,
+  setUserIdentifier,
+} from "../../lib/jscookies";
 import {
   InputLoginNormal,
   PingDocument,
@@ -21,12 +25,14 @@ export const LoginPage: React.FC = ({}) => {
   const [loginNormal, { loading: normalLoading }] = useLoginNormalLazyQuery({
     fetchPolicy: "network-only",
     onCompleted: ({ loginNormal: data }) => {
-      const { status, message, token } = data;
+      const { status, message, token, refresh_token, user } = data;
       if (status === 0) {
         setError(message);
       }
-      if (token) {
+      if (token && refresh_token && user) {
         setAccessToken(token);
+        setRefreshToken(refresh_token);
+        setUserIdentifier(user.id);
       }
     },
   });
