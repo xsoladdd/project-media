@@ -10,7 +10,7 @@ config();
 
 export const signAccessToken = (user: User): string => {
   const obj: tokenObject = {
-    exp: moment().add(1, "hour").unix(),
+    exp: moment().add(1, "month").unix(),
     user,
   };
   const token = jwt.sign(obj, process.env.SECRET_KEY as string);

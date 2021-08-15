@@ -43,8 +43,8 @@ export class User {
   @OneToOne(() => Profile, (profile) => profile.user)
   profile: Profile;
 
-  @OneToOne(() => Post, (post) => post.user)
-  post: Post;
+  @OneToMany(() => Post, (post) => post.user)
+  post: Post[];
 
   @OneToOne(() => RefreshToken, (refresh_token) => refresh_token.user)
   refresh_token: RefreshToken;

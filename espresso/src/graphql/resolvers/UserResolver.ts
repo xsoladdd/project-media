@@ -20,6 +20,7 @@ import { User } from "../../entity/User";
 import { Profile } from "../../entity/Profile";
 import { ReturnStructure, ReturnUserWithProfile } from "../generics";
 import { RefreshToken } from "../../entity/RefreshToken";
+import { validateEmail } from "../../utils/validation";
 
 // import { isNullableType } from "graphql";
 
@@ -161,6 +162,12 @@ export class UserResolver {
     @Arg("input", { nullable: false }) input: InputLoginSocialmedia
   ): Promise<ReturnRegisterLogin> {
     const { email } = input;
+    if (!validateEmail(email)) {
+      return {
+        message: "INVALID EMAIL FORMAT",
+        status: 0,
+      };
+    }
     const userRepo = getRepository(User);
     const refreshTokenRepo = getRepository(RefreshToken);
     let user = await userRepo

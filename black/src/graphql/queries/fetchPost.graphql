@@ -1,0 +1,26 @@
+query fetchPost($fetchPostInput: InputFetchPost) {
+  fetchPost(input: $fetchPostInput) {
+    message
+    status
+    posts {
+      id
+      content
+      UpdatedAt
+      user {
+        id
+        email
+        username
+        profile {
+          id
+          first_name
+          middle_name
+          last_name
+          birthday
+          nickname
+          display_image
+        }
+        mobile_number
+      }
+    }
+  }
+}

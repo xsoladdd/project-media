@@ -20,23 +20,21 @@ export class Post {
   id: number;
 
   @Field(() => String)
-  @Column({})
-  title: string;
-
-  @Field(() => String)
   @Column({ type: "text" })
   content: string;
 
   @Column({ type: "tinyint", default: 1 })
   is_active: number;
 
-  @OneToOne(() => User, (user) => user.post, { nullable: true })
+  @Field(() => User, { nullable: true })
+  @ManyToOne(() => User, (user) => user.post, { nullable: true })
   @JoinColumn()
   user: User;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;
 
+  @Field(() => String)
   @UpdateDateColumn({ name: "updated_at" })
   UpdatedAt!: Date;
 }

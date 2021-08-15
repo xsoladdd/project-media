@@ -31,6 +31,10 @@ export type InputCheckUnique = {
   mobile_number?: Maybe<Scalars["String"]>;
 };
 
+export type InputFetchPost = {
+  offset: Scalars["Float"];
+};
+
 export type InputFileUpload = {
   file: Scalars["Upload"];
 };
@@ -49,7 +53,6 @@ export type InputLoginSocialmedia = {
 };
 
 export type InputNewPost = {
-  title: Scalars["String"];
   content: Scalars["String"];
 };
 
@@ -106,8 +109,9 @@ export type MutationSetupProfileArgs = {
 export type Post = {
   __typename?: "Post";
   id: Scalars["EncryptedID"];
-  title: Scalars["String"];
   content: Scalars["String"];
+  user?: Maybe<User>;
+  UpdatedAt: Scalars["String"];
 };
 
 export type Profile = {
@@ -125,7 +129,7 @@ export type Query = {
   __typename?: "Query";
   loginNormal: ReturnRegisterLogin;
   me: ReturnUserWithProfile;
-  allPost: ReturnPosts;
+  fetchPost: ReturnPosts;
   getEncryptedValue: Scalars["String"];
   getDecryptedValue: Scalars["String"];
   ping: Scalars["String"];
@@ -137,8 +141,8 @@ export type QueryLoginNormalArgs = {
   input: InputLoginNormal;
 };
 
-export type QueryAllPostArgs = {
-  limit?: Maybe<Scalars["Float"]>;
+export type QueryFetchPostArgs = {
+  input?: Maybe<InputFetchPost>;
 };
 
 export type QueryGetEncryptedValueArgs = {
@@ -285,6 +289,42 @@ export type CheckUniqueQuery = {
     __typename?: "ReturnStructure";
     message: string;
     status: number;
+  };
+};
+
+export type FetchPostQueryVariables = Exact<{
+  fetchPostInput?: Maybe<InputFetchPost>;
+}>;
+
+export type FetchPostQuery = {
+  __typename?: "Query";
+  fetchPost: {
+    __typename?: "ReturnPosts";
+    message: string;
+    status: number;
+    posts: Array<{
+      __typename?: "Post";
+      id: any;
+      content: string;
+      UpdatedAt: string;
+      user?: Maybe<{
+        __typename?: "User";
+        id: any;
+        email: string;
+        username?: Maybe<string>;
+        mobile_number?: Maybe<string>;
+        profile?: Maybe<{
+          __typename?: "Profile";
+          id: any;
+          first_name: string;
+          middle_name?: Maybe<string>;
+          last_name: string;
+          birthday: any;
+          nickname?: Maybe<string>;
+          display_image?: Maybe<any>;
+        }>;
+      }>;
+    }>;
   };
 };
 
@@ -663,6 +703,80 @@ export type CheckUniqueLazyQueryHookResult = ReturnType<
 export type CheckUniqueQueryResult = Apollo.QueryResult<
   CheckUniqueQuery,
   CheckUniqueQueryVariables
+>;
+export const FetchPostDocument = gql`
+  query fetchPost($fetchPostInput: InputFetchPost) {
+    fetchPost(input: $fetchPostInput) {
+      message
+      status
+      posts {
+        id
+        content
+        UpdatedAt
+        user {
+          id
+          email
+          username
+          profile {
+            id
+            first_name
+            middle_name
+            last_name
+            birthday
+            nickname
+            display_image
+          }
+          mobile_number
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __useFetchPostQuery__
+ *
+ * To run a query within a React component, call `useFetchPostQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFetchPostQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFetchPostQuery({
+ *   variables: {
+ *      fetchPostInput: // value for 'fetchPostInput'
+ *   },
+ * });
+ */
+export function useFetchPostQuery(
+  baseOptions?: Apollo.QueryHookOptions<FetchPostQuery, FetchPostQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<FetchPostQuery, FetchPostQueryVariables>(
+    FetchPostDocument,
+    options
+  );
+}
+export function useFetchPostLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    FetchPostQuery,
+    FetchPostQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<FetchPostQuery, FetchPostQueryVariables>(
+    FetchPostDocument,
+    options
+  );
+}
+export type FetchPostQueryHookResult = ReturnType<typeof useFetchPostQuery>;
+export type FetchPostLazyQueryHookResult = ReturnType<
+  typeof useFetchPostLazyQuery
+>;
+export type FetchPostQueryResult = Apollo.QueryResult<
+  FetchPostQuery,
+  FetchPostQueryVariables
 >;
 export const GetProfileDocument = gql`
   query getProfile($getProfileInput: String!) {

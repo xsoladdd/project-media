@@ -36,7 +36,7 @@ export class DummyResolver {
   async TestFileUpload(
     @Arg("input", { nullable: false }) input: InputFileUpload
   ): Promise<ReturnStructure> {
-    console.log(input.file);
+    console.log(input);
     return {
       message: "hey",
       status: 1,

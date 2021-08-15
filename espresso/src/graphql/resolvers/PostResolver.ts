@@ -28,9 +28,13 @@ import { User } from "../../entity/User";
 @InputType()
 class InputNewPost {
   @Field()
-  title: string;
-  @Field()
   content: string;
+}
+
+@InputType()
+class InputFetchPost {
+  @Field()
+  offset: number;
 }
 
 @ObjectType()
@@ -48,15 +52,12 @@ export class PostResolver {
     @Arg("input", { nullable: false }) input: InputNewPost,
     @Ctx("user") userContext: User
   ): Promise<ReturnStructure> {
-    const { content, title } = input;
+    const { content } = input;
     const postRepo = getRepository(Post);
     const userRepo = getRepository(User);
 
-    // console.log(verify(token));
-
     const user = await userRepo.findOne({ id: userContext.id });
     const post = postRepo.create({
-      title,
       content,
       user: user,
     });
@@ -72,16 +73,19 @@ export class PostResolver {
       status: 1,
     };
   }
+
   @Query(() => ReturnPosts)
-  async allPost(
-    @Arg("limit", { nullable: true, defaultValue: 10 }) limit: number
+  async fetchPost(
+    @Arg("input", { nullable: true }) input: InputFetchPost
   ): Promise<ReturnPosts> {
-    console.log(limit);
     const postRepo = getRepository(Post);
+    // console.log(input.offset);
     const posts = await postRepo
       .createQueryBuilder("post")
       .leftJoinAndSelect(`post.user`, `user`)
-      .limit(limit)
+      .leftJoinAndSelect(`user.profile`, `profile`)
+      .skip(input.offset)
+      .take(5)
       .getMany();
     return {
       message: "Fetching Success",
