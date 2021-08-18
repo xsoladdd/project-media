@@ -1,4 +1,3 @@
-import AWS from "aws-sdk";
 import { createWriteStream, unlink } from "fs";
 import { FileUpload } from "graphql-upload";
 import { v4 } from "uuid";

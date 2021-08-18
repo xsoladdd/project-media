@@ -1,25 +1,19 @@
+import { FileUpload } from "graphql-upload";
 import {
-  Resolver,
-  Mutation,
-  Query,
-  InputType,
-  Field,
   Arg,
   Ctx,
+  Field,
+  InputType,
+  Mutation,
+  Query,
+  Resolver,
 } from "type-graphql";
-import { getRepository } from "typeorm";
-import { User } from "../../entity/User";
+import { getConnection, getRepository } from "typeorm";
 import { Profile } from "../../entity/Profile";
-import {
-  InputEncryptedID,
-  ReturnProfile,
-  ReturnStructure,
-  ReturnUserWithProfile,
-} from "../generics";
-import { EncryptedID, Upload } from "../scalars";
+import { User } from "../../entity/User";
 import { UploadToS3 } from "../../utils/s3Bucket";
-import { FileUpload } from "graphql-upload";
-import { getConnection } from "typeorm";
+import { ReturnStructure, ReturnUserWithProfile } from "../generics";
+import { Upload } from "../scalars";
 
 @InputType()
 class InputSetupProfile {

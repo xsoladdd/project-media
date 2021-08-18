@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { isProduction } from "./src/constants";
+import { isProduction } from "./constants";
 import { ConnectionOptions } from "typeorm";
 config();
 

@@ -1,10 +1,9 @@
-import jwt from "jsonwebtoken";
+import { ApolloError } from "apollo-server-core";
 import { config } from "dotenv";
+import jwt from "jsonwebtoken";
 import moment from "moment";
 import { User } from "../entity/User";
 import { tokenObject } from "../types";
-import { isProduction } from "../constants";
-import { ApolloError } from "apollo-server-core";
 
 config();
 

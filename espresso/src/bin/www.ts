@@ -1,14 +1,10 @@
-import "reflect-metadata";
-import app from "../app";
-import { config } from "dotenv";
+import { ApolloError, ApolloServer } from "apollo-server-express";
 import colors from "colors";
+import { config } from "dotenv";
+import "reflect-metadata";
 import { Connection } from "typeorm";
+import app from "../app";
 import connection from "../config/typeorm";
-import {
-  ApolloError,
-  ApolloServer,
-  AuthenticationError,
-} from "apollo-server-express";
 import buildSchema from "../graphql";
 import { contextObject } from "../types";
 import { verifyAccessToken } from "../utils";

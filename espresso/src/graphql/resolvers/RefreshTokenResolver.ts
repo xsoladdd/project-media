@@ -1,19 +1,13 @@
 import {
-  Resolver,
-  Mutation,
-  Query,
-  InputType,
-  Field,
-  Int,
   Arg,
+  Field,
+  InputType,
+  Mutation,
   ObjectType,
-  Authorized,
-  Args,
-  Ctx,
+  Resolver,
 } from "type-graphql";
 import { RefreshToken } from "../../entity/RefreshToken";
-import { User } from "../../entity/User";
-import { decrypt, signAccessToken, verifyRefreshToken } from "../../utils";
+import { signAccessToken, verifyRefreshToken } from "../../utils";
 import { ReturnStructure } from "../generics";
 
 @ObjectType()

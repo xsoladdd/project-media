@@ -1,14 +1,12 @@
 import { config } from "dotenv";
-import CryptoJS from "crypto-js";
 import crypto from "crypto";
-import { ApolloError } from "apollo-server-core";
 config();
 
 export const encrypt = (toEncrypt: string) => {
   const algorithm = "aes-256-cbc";
   const password = process.env.SECRET_KEY;
   if (!password) {
-    return false;
+    return "";
   }
   let key = crypto
     .createHash("md5")
@@ -24,12 +22,12 @@ export const encrypt = (toEncrypt: string) => {
   return encrypted;
 };
 
-export const decrypt = (toDecrypt: string) => {
+export const decrypt = (toDecrypt: string): string => {
   try {
     const algorithm = "aes-256-cbc";
     const password = process.env.SECRET_KEY;
     if (!password) {
-      return false;
+      return "";
     }
     let key = crypto
       .createHash("md5")
@@ -44,6 +42,6 @@ export const decrypt = (toDecrypt: string) => {
     decrypted += decrypt.final("utf8");
     return decrypted;
   } catch (err) {
-    return false;
+    return "";
   }
 };

@@ -1,8 +1,5 @@
-import { ApolloError } from "apollo-server-express";
 import { GraphQLScalarType } from "graphql";
-import { encrypt, decrypt } from "../../utils";
 import { ast } from "../../types";
-import { AWS_S3_BASE_URL } from "../../constants";
 
 const partialS3Link = `http://localhost:5001/public/`;
 export const S3File = new GraphQLScalarType({

@@ -1,25 +1,15 @@
 import {
-  hash,
-  checkHash,
-  signAccessToken,
-  verifyAccessToken,
-  isExpired,
-  encrypt,
-} from "../../utils";
-import {
   Resolver,
   Mutation,
   Query,
   InputType,
   Field,
-  Int,
   Arg,
   ObjectType,
   Authorized,
-  Args,
   Ctx,
 } from "type-graphql";
-import { getRepository, Raw } from "typeorm";
+import { getRepository } from "typeorm";
 import { ReturnStructure } from "../generics";
 import { Post } from "../../entity/Post";
 import { User } from "../../entity/User";
@@ -35,28 +25,50 @@ class InputNewPost {
 class InputFetchPost {
   @Field()
   offset: number;
+
+  @Field()
+  limit: number;
 }
 
 @ObjectType()
 class ReturnPosts extends ReturnStructure {
   @Field(() => [Post])
   posts: Post[];
+  @Field(() => Boolean)
+  has_more: boolean;
+}
+
+@ObjectType()
+class ReturnNewPost extends ReturnStructure {
+  @Field(() => Post, { nullable: true })
+  post?: Post;
 }
 
 @Resolver()
 export class PostResolver {
   // Registration
   @Authorized()
-  @Mutation(() => ReturnStructure)
+  @Mutation(() => ReturnNewPost)
   async newPost(
     @Arg("input", { nullable: false }) input: InputNewPost,
     @Ctx("user") userContext: User
-  ): Promise<ReturnStructure> {
+  ): Promise<ReturnNewPost> {
     const { content } = input;
     const postRepo = getRepository(Post);
     const userRepo = getRepository(User);
 
-    const user = await userRepo.findOne({ id: userContext.id });
+    const user = await userRepo
+      .createQueryBuilder("user")
+      .leftJoinAndSelect(`user.profile`, `profile`)
+      .where("user.id = :id", { id: userContext.id })
+      .getOne();
+
+    if (!user) {
+      return {
+        message: "No User Found",
+        status: 0,
+      };
+    }
     const post = postRepo.create({
       content,
       user: user,
@@ -71,6 +83,7 @@ export class PostResolver {
     return {
       message: "Post uploaded.",
       status: 1,
+      post,
     };
   }
 
@@ -79,16 +92,20 @@ export class PostResolver {
     @Arg("input", { nullable: true }) input: InputFetchPost
   ): Promise<ReturnPosts> {
     const postRepo = getRepository(Post);
-    // console.log(input.offset);
     const posts = await postRepo
       .createQueryBuilder("post")
       .leftJoinAndSelect(`post.user`, `user`)
       .leftJoinAndSelect(`user.profile`, `profile`)
-      .skip(input.offset)
-      .take(5)
+      .orderBy("post.updated_at", "DESC")
+      // .orderBy("post.content", "DESC")
+      .offset(input.offset)
+      .limit(input.limit)
       .getMany();
+
+    console.log(posts.length);
     return {
       message: "Fetching Success",
+      has_more: input.limit === posts.length,
       posts: posts,
       status: 1,
     };
