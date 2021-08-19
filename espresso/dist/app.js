@@ -7,15 +7,15 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const utils_1 = require("./utils");
 const typeorm_1 = require("typeorm");
-const User_1 = require("./entity/User");
-const RefreshToken_1 = require("./entity/RefreshToken");
+const User_1 = require("./entities/User");
+const RefreshToken_1 = require("./entities/RefreshToken");
 const graphql_upload_1 = require("graphql-upload");
 const path_1 = __importDefault(require("path"));
 const app = express_1.default();
 app.use(cors_1.default());
 app.use(express_1.default.json());
 app.use("/graphql", graphql_upload_1.graphqlUploadExpress({ maxFieldSize: 10000000, maxFiles: 10 }));
-app.use("/public", express_1.default.static(path_1.default.join(__dirname, "./assets/images")));
+app.use("/public", express_1.default.static(path_1.default.join(__dirname, "/../assets/images")));
 app.post("/refreshToken", async (req, res) => {
     const { refresh_token, user_id } = req.body;
     const decrypted = utils_1.verifyRefreshToken(refresh_token);

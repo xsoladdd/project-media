@@ -14,7 +14,6 @@ export const UploadToS3 = async (file: FileUpload) => {
   await new Promise((resolve, reject) => {
     const writeStream = createWriteStream(storedFileUrl);
     writeStream.on("finish", resolve);
-
     writeStream.on("error", (error) => {
       unlink(storedFileUrl, () => {
         reject(error);

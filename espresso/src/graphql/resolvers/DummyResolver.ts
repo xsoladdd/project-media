@@ -18,7 +18,6 @@ export class DummyResolver {
   ): Promise<ReturnStructure> {
     console.log(input);
     return {
-      message: "hey",
       status: 1,
     };
   }

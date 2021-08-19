@@ -1,8 +1,9 @@
 import {
   hash,
-  checkHash,
+  // checkHash,
   signAccessToken,
   signRefreshToken,
+  verify,
 } from "../../utils";
 import {
   Resolver,
@@ -16,35 +17,18 @@ import {
   Ctx,
 } from "type-graphql";
 import { getRepository } from "typeorm";
-import { User } from "../../entity/User";
-import { Profile } from "../../entity/Profile";
+import { User } from "../../entities/User";
 import { ReturnStructure, ReturnUserWithProfile } from "../generics";
-import { RefreshToken } from "../../entity/RefreshToken";
+import { RefreshToken } from "../../entities/RefreshToken";
 import { validateEmail } from "../../utils/validation";
-
-// import { isNullableType } from "graphql";
-
-@InputType()
-class InputRegistration implements Partial<User & Profile> {
-  // User Side
-  @Field()
-  email: string;
-  @Field({ nullable: true })
-  password: string;
-}
+import { createError } from "../../utils/createError";
 
 @InputType()
-class InputLoginNormal {
+class LoginRegistrationInput {
   @Field()
   email: string;
   @Field()
   password: string;
-}
-
-@InputType()
-class InputLoginSocialmedia {
-  @Field()
-  email: string;
 }
 
 @ObjectType()
@@ -59,37 +43,33 @@ class ReturnRegisterLogin extends ReturnStructure {
 
 @Resolver()
 export class UserResolver {
-  // Registration
   @Mutation(() => ReturnRegisterLogin)
   async registerUser(
-    @Arg("input", { nullable: false }) input: InputRegistration
+    @Arg("input") { email, password }: LoginRegistrationInput
   ): Promise<ReturnRegisterLogin> {
-    const { email, password } = input;
-    const userRepo = getRepository(User);
-
-    // Check if email existing
-    const userRes = await userRepo.findOne({ email });
-    if (userRes) {
+    if (!validateEmail(email)) {
       return {
-        message: "Email already used",
         status: 0,
+        errors: [createError("email", "invald email format")],
       };
     }
+    const userRepo = getRepository(User);
     const user: User = userRepo.create({
       email,
-      password:
-        typeof password !== "undefined" ? await hash(password) : undefined,
+      password: await hash(password),
     });
-    await userRepo.save(user).catch((err) => {
-      return {
-        message: err.message,
-        status: 0,
-      };
-    });
-    console.log(user);
-
+    try {
+      await userRepo.save(user);
+    } catch (err) {
+      // if()
+      if (err.code === "ER_DUP_ENTRY") {
+        return {
+          status: 0,
+          errors: [createError("email", "email already exist")],
+        };
+      }
+    }
     return {
-      message: "Succesfully",
       status: 1,
       token: signAccessToken(user),
       refresh_token: signRefreshToken(user),
@@ -97,11 +77,16 @@ export class UserResolver {
     };
   }
 
-  @Query(() => ReturnRegisterLogin)
+  @Mutation(() => ReturnRegisterLogin)
   async loginNormal(
-    @Arg("input", { nullable: false }) input: InputLoginNormal
+    @Arg("input") { email, password }: LoginRegistrationInput
   ): Promise<ReturnRegisterLogin> {
-    const { password, email } = input;
+    if (!validateEmail(email)) {
+      return {
+        status: 0,
+        errors: [createError("email", "invald email format")],
+      };
+    }
     const userRepo = getRepository(User);
     const user = await userRepo
       .createQueryBuilder("user")
@@ -110,22 +95,28 @@ export class UserResolver {
       .getOne();
     if (!user) {
       return {
-        message: "Account doesn't exist",
         status: 0,
-      };
-    }
-    if (!user.password) {
-      return {
-        message:
-          "Seems like account is associated with OAuth Login.Please kindly login via that and setup password under profile -> password ",
-        status: 0,
+        errors: [createError("email", `account doesn't exist`)],
       };
     }
 
-    if (!(await checkHash(password, user.password))) {
+    if (!user.password) {
       return {
-        message: "Invalid password",
         status: 0,
+        errors: [
+          createError(
+            "email",
+            `email is associated with another login method. please login using that and add password`
+          ),
+        ],
+      };
+    }
+    const isVerify = await verify(user.password, password);
+
+    if (!isVerify) {
+      return {
+        status: 0,
+        errors: [createError("password", `invalid password`)],
       };
     }
     const refreshTokenRepo = getRepository(RefreshToken);
@@ -142,14 +133,8 @@ export class UserResolver {
       user,
       refresh_token: rt,
     });
-    await refreshTokenRepo.save(refresh_token).catch((err) => {
-      return {
-        message: err.message,
-        status: 0,
-      };
-    });
+    await refreshTokenRepo.save(refresh_token);
     return {
-      message: "Succesfully",
       status: 1,
       token: signAccessToken(user),
       refresh_token: rt,
@@ -159,17 +144,15 @@ export class UserResolver {
 
   @Mutation(() => ReturnRegisterLogin)
   async oauthHandler(
-    @Arg("input", { nullable: false }) input: InputLoginSocialmedia
+    @Arg("email") email: string
   ): Promise<ReturnRegisterLogin> {
-    const { email } = input;
     if (!validateEmail(email)) {
       return {
-        message: "INVALID EMAIL FORMAT",
         status: 0,
+        errors: [createError("email", "invald email format")],
       };
     }
     const userRepo = getRepository(User);
-    const refreshTokenRepo = getRepository(RefreshToken);
     let user = await userRepo
       .createQueryBuilder("user")
       .where("user.email = :email", { email })
@@ -187,6 +170,8 @@ export class UserResolver {
         };
       });
     }
+
+    const refreshTokenRepo = getRepository(RefreshToken);
     // Delete old token first
     await refreshTokenRepo
       .createQueryBuilder()
@@ -200,14 +185,8 @@ export class UserResolver {
       user,
       refresh_token: rt,
     });
-    await refreshTokenRepo.save(refresh_token).catch((err) => {
-      return {
-        message: err.message,
-        status: 0,
-      };
-    });
+    await refreshTokenRepo.save(refresh_token);
     return {
-      message: "Account succesfully created",
       status: 1,
       token: signAccessToken(user),
       refresh_token: rt,
@@ -219,7 +198,6 @@ export class UserResolver {
   @Query(() => ReturnUserWithProfile)
   async me(@Ctx("user") { id }: User): Promise<ReturnUserWithProfile> {
     const userRepo = getRepository(User);
-    console.log(id);
     const user = await userRepo
       .createQueryBuilder("user")
       .leftJoinAndSelect(`user.profile`, `profile`)
@@ -227,12 +205,10 @@ export class UserResolver {
       .getOne();
     if (!user) {
       return {
-        message: "No User",
         status: 0,
       };
     }
     return {
-      message: "Succsefully fetched",
       status: 1,
       user,
     };

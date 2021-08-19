@@ -16,45 +16,24 @@ exports.UserResolver = void 0;
 const utils_1 = require("../../utils");
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
-const User_1 = require("../../entity/User");
+const User_1 = require("../../entities/User");
 const generics_1 = require("../generics");
-const RefreshToken_1 = require("../../entity/RefreshToken");
+const RefreshToken_1 = require("../../entities/RefreshToken");
 const validation_1 = require("../../utils/validation");
-let InputRegistration = class InputRegistration {
+const createError_1 = require("../../utils/createError");
+let LoginRegistrationInput = class LoginRegistrationInput {
 };
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], InputRegistration.prototype, "email", void 0);
-__decorate([
-    type_graphql_1.Field({ nullable: true }),
-    __metadata("design:type", String)
-], InputRegistration.prototype, "password", void 0);
-InputRegistration = __decorate([
-    type_graphql_1.InputType()
-], InputRegistration);
-let InputLoginNormal = class InputLoginNormal {
-};
+], LoginRegistrationInput.prototype, "email", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], InputLoginNormal.prototype, "email", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", String)
-], InputLoginNormal.prototype, "password", void 0);
-InputLoginNormal = __decorate([
+], LoginRegistrationInput.prototype, "password", void 0);
+LoginRegistrationInput = __decorate([
     type_graphql_1.InputType()
-], InputLoginNormal);
-let InputLoginSocialmedia = class InputLoginSocialmedia {
-};
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", String)
-], InputLoginSocialmedia.prototype, "email", void 0);
-InputLoginSocialmedia = __decorate([
-    type_graphql_1.InputType()
-], InputLoginSocialmedia);
+], LoginRegistrationInput);
 let ReturnRegisterLogin = class ReturnRegisterLogin extends generics_1.ReturnStructure {
 };
 __decorate([
@@ -73,37 +52,43 @@ ReturnRegisterLogin = __decorate([
     type_graphql_1.ObjectType()
 ], ReturnRegisterLogin);
 let UserResolver = class UserResolver {
-    async registerUser(input) {
-        const { email, password } = input;
-        const userRepo = typeorm_1.getRepository(User_1.User);
-        const userRes = await userRepo.findOne({ email });
-        if (userRes) {
+    async registerUser({ email, password }) {
+        if (!validation_1.validateEmail(email)) {
             return {
-                message: "Email already used",
                 status: 0,
+                errors: [createError_1.createError("email", "invald email format")],
             };
         }
+        const userRepo = typeorm_1.getRepository(User_1.User);
         const user = userRepo.create({
             email,
-            password: typeof password !== "undefined" ? await utils_1.hash(password) : undefined,
+            password: await utils_1.hash(password),
         });
-        await userRepo.save(user).catch((err) => {
-            return {
-                message: err.message,
-                status: 0,
-            };
-        });
-        console.log(user);
+        try {
+            await userRepo.save(user);
+        }
+        catch (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                return {
+                    status: 0,
+                    errors: [createError_1.createError("email", "email already exist")],
+                };
+            }
+        }
         return {
-            message: "Succesfully",
             status: 1,
             token: utils_1.signAccessToken(user),
             refresh_token: utils_1.signRefreshToken(user),
             user,
         };
     }
-    async loginNormal(input) {
-        const { password, email } = input;
+    async loginNormal({ email, password }) {
+        if (!validation_1.validateEmail(email)) {
+            return {
+                status: 0,
+                errors: [createError_1.createError("email", "invald email format")],
+            };
+        }
         const userRepo = typeorm_1.getRepository(User_1.User);
         const user = await userRepo
             .createQueryBuilder("user")
@@ -112,20 +97,23 @@ let UserResolver = class UserResolver {
             .getOne();
         if (!user) {
             return {
-                message: "Account doesn't exist",
                 status: 0,
+                errors: [createError_1.createError("email", `account doesn't exist`)],
             };
         }
         if (!user.password) {
             return {
-                message: "Seems like account is associated with OAuth Login.Please kindly login via that and setup password under profile -> password ",
                 status: 0,
+                errors: [
+                    createError_1.createError("email", `email is associated with another login method. please login using that and add password`),
+                ],
             };
         }
-        if (!(await utils_1.checkHash(password, user.password))) {
+        const isVerify = await utils_1.verify(user.password, password);
+        if (!isVerify) {
             return {
-                message: "Invalid password",
                 status: 0,
+                errors: [createError_1.createError("password", `invalid password`)],
             };
         }
         const refreshTokenRepo = typeorm_1.getRepository(RefreshToken_1.RefreshToken);
@@ -140,30 +128,22 @@ let UserResolver = class UserResolver {
             user,
             refresh_token: rt,
         });
-        await refreshTokenRepo.save(refresh_token).catch((err) => {
-            return {
-                message: err.message,
-                status: 0,
-            };
-        });
+        await refreshTokenRepo.save(refresh_token);
         return {
-            message: "Succesfully",
             status: 1,
             token: utils_1.signAccessToken(user),
             refresh_token: rt,
             user,
         };
     }
-    async oauthHandler(input) {
-        const { email } = input;
+    async oauthHandler(email) {
         if (!validation_1.validateEmail(email)) {
             return {
-                message: "INVALID EMAIL FORMAT",
                 status: 0,
+                errors: [createError_1.createError("email", "invald email format")],
             };
         }
         const userRepo = typeorm_1.getRepository(User_1.User);
-        const refreshTokenRepo = typeorm_1.getRepository(RefreshToken_1.RefreshToken);
         let user = await userRepo
             .createQueryBuilder("user")
             .where("user.email = :email", { email })
@@ -179,6 +159,7 @@ let UserResolver = class UserResolver {
                 };
             });
         }
+        const refreshTokenRepo = typeorm_1.getRepository(RefreshToken_1.RefreshToken);
         await refreshTokenRepo
             .createQueryBuilder()
             .delete()
@@ -190,14 +171,8 @@ let UserResolver = class UserResolver {
             user,
             refresh_token: rt,
         });
-        await refreshTokenRepo.save(refresh_token).catch((err) => {
-            return {
-                message: err.message,
-                status: 0,
-            };
-        });
+        await refreshTokenRepo.save(refresh_token);
         return {
-            message: "Account succesfully created",
             status: 1,
             token: utils_1.signAccessToken(user),
             refresh_token: rt,
@@ -206,7 +181,6 @@ let UserResolver = class UserResolver {
     }
     async me({ id }) {
         const userRepo = typeorm_1.getRepository(User_1.User);
-        console.log(id);
         const user = await userRepo
             .createQueryBuilder("user")
             .leftJoinAndSelect(`user.profile`, `profile`)
@@ -214,12 +188,10 @@ let UserResolver = class UserResolver {
             .getOne();
         if (!user) {
             return {
-                message: "No User",
                 status: 0,
             };
         }
         return {
-            message: "Succsefully fetched",
             status: 1,
             user,
         };
@@ -227,23 +199,23 @@ let UserResolver = class UserResolver {
 };
 __decorate([
     type_graphql_1.Mutation(() => ReturnRegisterLogin),
-    __param(0, type_graphql_1.Arg("input", { nullable: false })),
+    __param(0, type_graphql_1.Arg("input")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [InputRegistration]),
+    __metadata("design:paramtypes", [LoginRegistrationInput]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "registerUser", null);
 __decorate([
-    type_graphql_1.Query(() => ReturnRegisterLogin),
-    __param(0, type_graphql_1.Arg("input", { nullable: false })),
+    type_graphql_1.Mutation(() => ReturnRegisterLogin),
+    __param(0, type_graphql_1.Arg("input")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [InputLoginNormal]),
+    __metadata("design:paramtypes", [LoginRegistrationInput]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "loginNormal", null);
 __decorate([
     type_graphql_1.Mutation(() => ReturnRegisterLogin),
-    __param(0, type_graphql_1.Arg("input", { nullable: false })),
+    __param(0, type_graphql_1.Arg("email")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [InputLoginSocialmedia]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "oauthHandler", null);
 __decorate([

@@ -9,39 +9,38 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InputEncryptedID = exports.ReturnProfile = exports.ReturnUserWithProfile = exports.ErrorReturnStructure = exports.ReturnStructure = void 0;
+exports.InputEncryptedID = exports.ReturnProfile = exports.ReturnUserWithProfile = exports.ReturnStructure = void 0;
 const type_graphql_1 = require("type-graphql");
-const Profile_1 = require("../entity/Profile");
-const User_1 = require("../entity/User");
+const Profile_1 = require("../entities/Profile");
+const User_1 = require("../entities/User");
 const scalars_1 = require("./scalars");
 let ReturnStructure = class ReturnStructure {
 };
 __decorate([
-    type_graphql_1.Field(() => String),
-    __metadata("design:type", String)
-], ReturnStructure.prototype, "message", void 0);
-__decorate([
     type_graphql_1.Field(() => type_graphql_1.Int),
     __metadata("design:type", Number)
 ], ReturnStructure.prototype, "status", void 0);
+__decorate([
+    type_graphql_1.Field(() => [FieldError], { nullable: true }),
+    __metadata("design:type", Array)
+], ReturnStructure.prototype, "errors", void 0);
 ReturnStructure = __decorate([
     type_graphql_1.ObjectType()
 ], ReturnStructure);
 exports.ReturnStructure = ReturnStructure;
-let ErrorReturnStructure = class ErrorReturnStructure {
+let FieldError = class FieldError {
 };
 __decorate([
-    type_graphql_1.Field(() => String),
+    type_graphql_1.Field(),
     __metadata("design:type", String)
-], ErrorReturnStructure.prototype, "message", void 0);
+], FieldError.prototype, "field", void 0);
 __decorate([
-    type_graphql_1.Field(() => type_graphql_1.Int),
-    __metadata("design:type", Number)
-], ErrorReturnStructure.prototype, "status", void 0);
-ErrorReturnStructure = __decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], FieldError.prototype, "message", void 0);
+FieldError = __decorate([
     type_graphql_1.ObjectType()
-], ErrorReturnStructure);
-exports.ErrorReturnStructure = ErrorReturnStructure;
+], FieldError);
 let ReturnUserWithProfile = class ReturnUserWithProfile extends ReturnStructure {
 };
 __decorate([

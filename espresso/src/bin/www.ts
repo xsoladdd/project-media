@@ -1,13 +1,14 @@
+import "reflect-metadata";
 import { ApolloError, ApolloServer } from "apollo-server-express";
 import colors from "colors";
 import { config } from "dotenv";
-import "reflect-metadata";
 import { Connection } from "typeorm";
 import app from "../app";
 import connection from "../config/typeorm";
 import buildSchema from "../graphql";
 import { contextObject } from "../types";
 import { verifyAccessToken } from "../utils";
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core/dist/plugin/landingPage/graphqlPlayground";
 
 config();
 const PORT = process.env.PORT || 5050;
@@ -16,6 +17,8 @@ const main = async () => {
   const schema = await buildSchema;
   const apolloServer: ApolloServer = new ApolloServer({
     schema: schema,
+
+    plugins: [ApolloServerPluginLandingPageGraphQLPlayground],
     formatError: (err) => {
       if (err.message.includes("jwt expired")) {
         return new ApolloError("TOKEN_EXPIRE_ERROR", "TOKEN_EXPIRE_ERROR");

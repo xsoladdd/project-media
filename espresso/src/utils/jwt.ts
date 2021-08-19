@@ -2,7 +2,7 @@ import { ApolloError } from "apollo-server-core";
 import { config } from "dotenv";
 import jwt from "jsonwebtoken";
 import moment from "moment";
-import { User } from "../entity/User";
+import { User } from "../entities/User";
 import { tokenObject } from "../types";
 
 config();

@@ -1,4 +1,3 @@
-import { Field, ObjectType } from "type-graphql";
 import {
   Column,
   CreateDateColumn,
@@ -7,6 +6,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { EncryptedID } from "../graphql/scalars";
+import { Field, ObjectType } from "type-graphql";
 
 @Entity()
 @ObjectType()

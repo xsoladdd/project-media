@@ -1,19 +1,19 @@
 import {
-  Resolver,
-  Mutation,
-  Query,
-  InputType,
-  Field,
   Arg,
-  ObjectType,
   Authorized,
   Ctx,
+  Field,
+  InputType,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
 } from "type-graphql";
 import { getRepository } from "typeorm";
+import { Post } from "../../entities/Post";
+import { User } from "../../entities/User";
+import { createError } from "../../utils/createError";
 import { ReturnStructure } from "../generics";
-import { Post } from "../../entity/Post";
-import { User } from "../../entity/User";
-// import { isNullableType } from "graphql";
 
 @InputType()
 class InputNewPost {
@@ -28,6 +28,9 @@ class InputFetchPost {
 
   @Field()
   limit: number;
+
+  @Field({ nullable: true })
+  username?: string;
 }
 
 @ObjectType()
@@ -50,10 +53,16 @@ export class PostResolver {
   @Authorized()
   @Mutation(() => ReturnNewPost)
   async newPost(
-    @Arg("input", { nullable: false }) input: InputNewPost,
+    @Arg("input", { nullable: false }) { content }: InputNewPost,
     @Ctx("user") userContext: User
   ): Promise<ReturnNewPost> {
-    const { content } = input;
+    if (content.length <= 0) {
+      return {
+        status: 0,
+        errors: [createError("content", "content must not be empty")],
+      };
+    }
+
     const postRepo = getRepository(Post);
     const userRepo = getRepository(User);
 
@@ -65,7 +74,7 @@ export class PostResolver {
 
     if (!user) {
       return {
-        message: "No User Found",
+        errors: [createError("user", "user not found")],
         status: 0,
       };
     }
@@ -73,15 +82,9 @@ export class PostResolver {
       content,
       user: user,
     });
-    await postRepo.save(post).catch((err) => {
-      return {
-        message: err.message,
-        status: 0,
-      };
-    });
+    await postRepo.save(post);
 
     return {
-      message: "Post uploaded.",
       status: 1,
       post,
     };
@@ -89,23 +92,22 @@ export class PostResolver {
 
   @Query(() => ReturnPosts)
   async fetchPost(
-    @Arg("input", { nullable: true }) input: InputFetchPost
+    @Arg("input", { nullable: true })
+    { limit, offset, username }: InputFetchPost
   ): Promise<ReturnPosts> {
     const postRepo = getRepository(Post);
-    const posts = await postRepo
+    const query = postRepo
       .createQueryBuilder("post")
       .leftJoinAndSelect(`post.user`, `user`)
       .leftJoinAndSelect(`user.profile`, `profile`)
-      .orderBy("post.updated_at", "DESC")
-      // .orderBy("post.content", "DESC")
-      .offset(input.offset)
-      .limit(input.limit)
-      .getMany();
+      .orderBy("post.updated_at", "DESC");
+    query.offset(offset).limit(limit);
+    if (username) query.where("user.username = :username", { username });
 
-    console.log(posts.length);
+    const posts = await query.getMany();
+
     return {
-      message: "Fetching Success",
-      has_more: input.limit === posts.length,
+      has_more: limit === posts.length,
       posts: posts,
       status: 1,
     };

@@ -11,7 +11,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./crypto"), exports);
-__exportStar(require("./bcrypt"), exports);
+__exportStar(require("./argon2"), exports);
 __exportStar(require("./jwt"), exports);
 __exportStar(require("./datetime"), exports);
 //# sourceMappingURL=index.js.map

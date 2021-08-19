@@ -9,10 +9,11 @@ import {
   Resolver,
 } from "type-graphql";
 import { getConnection, getRepository } from "typeorm";
-import { Profile } from "../../entity/Profile";
-import { User } from "../../entity/User";
+import { Profile } from "../../entities/Profile";
+import { User } from "../../entities/User";
+import { createError } from "../../utils/createError";
 import { UploadToS3 } from "../../utils/s3Bucket";
-import { ReturnStructure, ReturnUserWithProfile } from "../generics";
+import { ReturnUserWithProfile } from "../generics";
 import { Upload } from "../scalars";
 
 @InputType()
@@ -45,17 +46,25 @@ class InputCheckUnique {
 
 @Resolver()
 export class ProfileResolver {
-  // Registration
-
   @Mutation(() => ReturnUserWithProfile)
   async setupProfile(
-    @Arg("input", { nullable: true }) input: InputSetupProfile,
+    @Arg("input")
+    {
+      birthday,
+      display_image,
+      firstName,
+      lastName,
+      middleName,
+      nickname,
+      username,
+      mobileNumber,
+    }: InputSetupProfile,
     @Ctx("user") { id }: User
   ): Promise<ReturnUserWithProfile> {
     if (!id) {
       return {
-        message: "Invalid User ID",
         status: 0,
+        errors: [createError("user", "user doesnt exist")],
       };
     }
     const userRepo = getRepository(User);
@@ -65,24 +74,13 @@ export class ProfileResolver {
       .leftJoinAndSelect(`user.profile`, `profile`)
       .where("user.id = :id", { id })
       .getOne();
-    console.log(user);
+
     if (user?.profile !== null) {
       return {
-        message: "Profile already setup",
         status: 0,
+        errors: [createError("profile", "profile already exist")],
       };
     }
-
-    const {
-      birthday,
-      display_image,
-      firstName,
-      lastName,
-      middleName,
-      nickname,
-      username,
-      mobileNumber,
-    } = input;
 
     await getConnection()
       .createQueryBuilder()
@@ -110,12 +108,8 @@ export class ProfileResolver {
       user,
     });
 
-    await profileRepo.save(profile).catch((err) => {
-      return {
-        message: err.message,
-        status: 0,
-      };
-    });
+    await profileRepo.save(profile);
+
     const userWithProfile = await userRepo
       .createQueryBuilder("user")
       .leftJoinAndSelect(`user.profile`, `profile`)
@@ -123,16 +117,15 @@ export class ProfileResolver {
       .getOne();
 
     return {
-      message: "Profile succesfully save",
       status: 1,
       user: userWithProfile,
     };
   }
 
-  @Query(() => ReturnStructure)
+  @Query(() => Boolean)
   async checkUnique(
     @Arg("input", { nullable: true }) input: InputCheckUnique
-  ): Promise<ReturnStructure> {
+  ): Promise<Boolean> {
     const { mobile_number, username } = input;
     const userRepo = getRepository(User);
 
@@ -143,10 +136,7 @@ export class ProfileResolver {
         .getOne();
 
       if (user) {
-        return {
-          message: "Username already used",
-          status: 0,
-        };
+        return false;
       }
     }
 
@@ -157,43 +147,31 @@ export class ProfileResolver {
         .getOne();
 
       if (user) {
-        return {
-          message: "Mobile number already used",
-          status: 0,
-        };
+        return false;
       }
     }
 
     // Check for username uniqueness
-    return {
-      message: "Data unique",
-      status: 1,
-    };
+    return true;
   }
 
   @Query(() => ReturnUserWithProfile)
   async getProfile(
-    @Arg("input", { nullable: false }) username: string
+    @Arg("username") username: string
   ): Promise<ReturnUserWithProfile> {
-    console.log(username);
-
-    const userRepo = getRepository(User);
-
-    const user = await userRepo
+    const user = await getRepository(User)
       .createQueryBuilder("user")
       .leftJoinAndSelect(`user.profile`, `profile`)
       .where("user.username = :username", { username })
       .getOne();
     if (!user) {
       return {
-        message: "Error. No profile found",
         status: 0,
-        // profile: selectedProfile,
+        errors: [createError("profile", `User doesn't exist`)],
       };
     }
 
     return {
-      message: "Success",
       status: 1,
       user,
     };

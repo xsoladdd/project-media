@@ -8,8 +8,8 @@ import {
   verifyRefreshToken,
 } from "./utils";
 import { getRepository } from "typeorm";
-import { User } from "./entity/User";
-import { RefreshToken } from "./entity/RefreshToken";
+import { User } from "./entities/User";
+import { RefreshToken } from "./entities/RefreshToken";
 import { graphqlUploadExpress } from "graphql-upload";
 import path from "path";
 
@@ -20,7 +20,7 @@ app.use(
   "/graphql",
   graphqlUploadExpress({ maxFieldSize: 10000000, maxFiles: 10 })
 );
-app.use("/public", express.static(path.join(__dirname, "./assets/images")));
+app.use("/public", express.static(path.join(__dirname, "/../assets/images")));
 
 app.post("/refreshToken", async (req, res) => {
   const { refresh_token, user_id } = req.body;

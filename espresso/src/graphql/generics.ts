@@ -1,22 +1,23 @@
 import { ObjectType, Field, Int, InputType } from "type-graphql";
-import { Profile } from "../entity/Profile";
-import { User } from "../entity/User";
+import { Profile } from "../entities/Profile";
+import { User } from "../entities/User";
 import { EncryptedID } from "./scalars";
 
 @ObjectType()
 export class ReturnStructure {
-  @Field(() => String)
-  message: string;
   @Field(() => Int)
   status: number;
-}
 
+  @Field(() => [FieldError], { nullable: true })
+  errors?: FieldError[];
+}
 @ObjectType()
-export class ErrorReturnStructure {
-  @Field(() => String)
+class FieldError {
+  @Field()
+  field: string;
+
+  @Field()
   message: string;
-  @Field(() => Int)
-  status: number;
 }
 
 @ObjectType()

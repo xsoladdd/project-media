@@ -15,9 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostResolver = void 0;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
+const Post_1 = require("../../entities/Post");
+const User_1 = require("../../entities/User");
+const createError_1 = require("../../utils/createError");
 const generics_1 = require("../generics");
-const Post_1 = require("../../entity/Post");
-const User_1 = require("../../entity/User");
 let InputNewPost = class InputNewPost {
 };
 __decorate([
@@ -37,6 +38,10 @@ __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", Number)
 ], InputFetchPost.prototype, "limit", void 0);
+__decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", String)
+], InputFetchPost.prototype, "username", void 0);
 InputFetchPost = __decorate([
     type_graphql_1.InputType()
 ], InputFetchPost);
@@ -63,8 +68,13 @@ ReturnNewPost = __decorate([
     type_graphql_1.ObjectType()
 ], ReturnNewPost);
 let PostResolver = class PostResolver {
-    async newPost(input, userContext) {
-        const { content } = input;
+    async newPost({ content }, userContext) {
+        if (content.length <= 0) {
+            return {
+                status: 0,
+                errors: [createError_1.createError("content", "content must not be empty")],
+            };
+        }
         const postRepo = typeorm_1.getRepository(Post_1.Post);
         const userRepo = typeorm_1.getRepository(User_1.User);
         const user = await userRepo
@@ -74,7 +84,7 @@ let PostResolver = class PostResolver {
             .getOne();
         if (!user) {
             return {
-                message: "No User Found",
+                errors: [createError_1.createError("user", "user not found")],
                 status: 0,
             };
         }
@@ -82,32 +92,25 @@ let PostResolver = class PostResolver {
             content,
             user: user,
         });
-        await postRepo.save(post).catch((err) => {
-            return {
-                message: err.message,
-                status: 0,
-            };
-        });
+        await postRepo.save(post);
         return {
-            message: "Post uploaded.",
             status: 1,
             post,
         };
     }
-    async fetchPost(input) {
+    async fetchPost({ limit, offset, username }) {
         const postRepo = typeorm_1.getRepository(Post_1.Post);
-        const posts = await postRepo
+        const query = postRepo
             .createQueryBuilder("post")
             .leftJoinAndSelect(`post.user`, `user`)
             .leftJoinAndSelect(`user.profile`, `profile`)
-            .orderBy("post.updated_at", "DESC")
-            .offset(input.offset)
-            .limit(input.limit)
-            .getMany();
-        console.log(posts.length);
+            .orderBy("post.updated_at", "DESC");
+        query.offset(offset).limit(limit);
+        if (username)
+            query.where("user.username = :username", { username });
+        const posts = await query.getMany();
         return {
-            message: "Fetching Success",
-            has_more: input.limit === posts.length,
+            has_more: limit === posts.length,
             posts: posts,
             status: 1,
         };

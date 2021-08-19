@@ -15,8 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfileResolver = void 0;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
-const Profile_1 = require("../../entity/Profile");
-const User_1 = require("../../entity/User");
+const Profile_1 = require("../../entities/Profile");
+const User_1 = require("../../entities/User");
+const createError_1 = require("../../utils/createError");
 const s3Bucket_1 = require("../../utils/s3Bucket");
 const generics_1 = require("../generics");
 const scalars_1 = require("../scalars");
@@ -71,11 +72,11 @@ InputCheckUnique = __decorate([
     type_graphql_1.InputType()
 ], InputCheckUnique);
 let ProfileResolver = class ProfileResolver {
-    async setupProfile(input, { id }) {
+    async setupProfile({ birthday, display_image, firstName, lastName, middleName, nickname, username, mobileNumber, }, { id }) {
         if (!id) {
             return {
-                message: "Invalid User ID",
                 status: 0,
+                errors: [createError_1.createError("user", "user doesnt exist")],
             };
         }
         const userRepo = typeorm_1.getRepository(User_1.User);
@@ -84,14 +85,12 @@ let ProfileResolver = class ProfileResolver {
             .leftJoinAndSelect(`user.profile`, `profile`)
             .where("user.id = :id", { id })
             .getOne();
-        console.log(user);
         if ((user === null || user === void 0 ? void 0 : user.profile) !== null) {
             return {
-                message: "Profile already setup",
                 status: 0,
+                errors: [createError_1.createError("profile", "profile already exist")],
             };
         }
-        const { birthday, display_image, firstName, lastName, middleName, nickname, username, mobileNumber, } = input;
         await typeorm_1.getConnection()
             .createQueryBuilder()
             .update(User_1.User)
@@ -115,19 +114,13 @@ let ProfileResolver = class ProfileResolver {
             birthday,
             user,
         });
-        await profileRepo.save(profile).catch((err) => {
-            return {
-                message: err.message,
-                status: 0,
-            };
-        });
+        await profileRepo.save(profile);
         const userWithProfile = await userRepo
             .createQueryBuilder("user")
             .leftJoinAndSelect(`user.profile`, `profile`)
             .where("user.id = :id", { id })
             .getOne();
         return {
-            message: "Profile succesfully save",
             status: 1,
             user: userWithProfile,
         };
@@ -141,10 +134,7 @@ let ProfileResolver = class ProfileResolver {
                 .where({ username })
                 .getOne();
             if (user) {
-                return {
-                    message: "Username already used",
-                    status: 0,
-                };
+                return false;
             }
         }
         if (mobile_number) {
@@ -153,33 +143,24 @@ let ProfileResolver = class ProfileResolver {
                 .where({ mobile_number })
                 .getOne();
             if (user) {
-                return {
-                    message: "Mobile number already used",
-                    status: 0,
-                };
+                return false;
             }
         }
-        return {
-            message: "Data unique",
-            status: 1,
-        };
+        return true;
     }
     async getProfile(username) {
-        console.log(username);
-        const userRepo = typeorm_1.getRepository(User_1.User);
-        const user = await userRepo
+        const user = await typeorm_1.getRepository(User_1.User)
             .createQueryBuilder("user")
             .leftJoinAndSelect(`user.profile`, `profile`)
             .where("user.username = :username", { username })
             .getOne();
         if (!user) {
             return {
-                message: "Error. No profile found",
                 status: 0,
+                errors: [createError_1.createError("profile", `User doesn't exist`)],
             };
         }
         return {
-            message: "Success",
             status: 1,
             user,
         };
@@ -187,7 +168,7 @@ let ProfileResolver = class ProfileResolver {
 };
 __decorate([
     type_graphql_1.Mutation(() => generics_1.ReturnUserWithProfile),
-    __param(0, type_graphql_1.Arg("input", { nullable: true })),
+    __param(0, type_graphql_1.Arg("input")),
     __param(1, type_graphql_1.Ctx("user")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [InputSetupProfile,
@@ -195,7 +176,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProfileResolver.prototype, "setupProfile", null);
 __decorate([
-    type_graphql_1.Query(() => generics_1.ReturnStructure),
+    type_graphql_1.Query(() => Boolean),
     __param(0, type_graphql_1.Arg("input", { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [InputCheckUnique]),
@@ -203,7 +184,7 @@ __decorate([
 ], ProfileResolver.prototype, "checkUnique", null);
 __decorate([
     type_graphql_1.Query(() => generics_1.ReturnUserWithProfile),
-    __param(0, type_graphql_1.Arg("input", { nullable: false })),
+    __param(0, type_graphql_1.Arg("username")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)

@@ -30,7 +30,6 @@ let DummyResolver = class DummyResolver {
     async TestFileUpload(input) {
         console.log(input);
         return {
-            message: "hey",
             status: 1,
         };
     }

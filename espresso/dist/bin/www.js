@@ -3,14 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("reflect-metadata");
 const apollo_server_express_1 = require("apollo-server-express");
 const colors_1 = __importDefault(require("colors"));
 const dotenv_1 = require("dotenv");
-require("reflect-metadata");
 const app_1 = __importDefault(require("../app"));
 const typeorm_1 = __importDefault(require("../config/typeorm"));
 const graphql_1 = __importDefault(require("../graphql"));
 const utils_1 = require("../utils");
+const graphqlPlayground_1 = require("apollo-server-core/dist/plugin/landingPage/graphqlPlayground");
 dotenv_1.config();
 const PORT = process.env.PORT || 5050;
 const main = async () => {
@@ -18,6 +19,7 @@ const main = async () => {
     const schema = await graphql_1.default;
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: schema,
+        plugins: [graphqlPlayground_1.ApolloServerPluginLandingPageGraphQLPlayground],
         formatError: (err) => {
             if (err.message.includes("jwt expired")) {
                 return new apollo_server_express_1.ApolloError("TOKEN_EXPIRE_ERROR", "TOKEN_EXPIRE_ERROR");
