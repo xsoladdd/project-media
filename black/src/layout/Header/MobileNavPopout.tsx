@@ -112,7 +112,7 @@ const MobileNavPopout: React.FC<MobileNavPopoutProps> = ({
                           <MobileNavMenuItem
                             href={
                               label === "Profile"
-                                ? `/u/${data?.me.user?.username}`
+                                ? `/u/${data?.me.user?.username?.toLowerCase()}`
                                 : href
                             }
                             key={idx}

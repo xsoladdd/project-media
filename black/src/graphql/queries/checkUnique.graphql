@@ -1,6 +1,3 @@
-query checkUnique($checkUniqueInput: InputCheckUnique) {
-  checkUnique(input: $checkUniqueInput) {
-    message
-    status
-  }
+query CheckUnique($input: InputCheckUnique!) {
+  checkUnique(input: $input)
 }

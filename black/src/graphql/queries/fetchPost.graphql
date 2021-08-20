@@ -1,26 +1,12 @@
-query fetchPost($fetchPostInput: InputFetchPost) {
-  fetchPost(input: $fetchPostInput) {
-    message
+query FetchPost($input: InputFetchPost!) {
+  fetchPost(input: $input) {
     status
+    has_more
+    errors {
+      ...fieldErrors
+    }
     posts {
-      id
-      content
-      UpdatedAt
-      user {
-        id
-        email
-        username
-        profile {
-          id
-          first_name
-          middle_name
-          last_name
-          birthday
-          nickname
-          display_image
-        }
-        mobile_number
-      }
+      ...post
     }
   }
 }

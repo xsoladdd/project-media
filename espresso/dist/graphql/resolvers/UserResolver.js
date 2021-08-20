@@ -21,6 +21,7 @@ const generics_1 = require("../generics");
 const RefreshToken_1 = require("../../entities/RefreshToken");
 const validation_1 = require("../../utils/validation");
 const createError_1 = require("../../utils/createError");
+const Profile_1 = require("../../entities/Profile");
 let LoginRegistrationInput = class LoginRegistrationInput {
 };
 __decorate([
@@ -52,6 +53,9 @@ ReturnRegisterLogin = __decorate([
     type_graphql_1.ObjectType()
 ], ReturnRegisterLogin);
 let UserResolver = class UserResolver {
+    async profile(user, { profileDataloader }) {
+        return profileDataloader.load(user.id);
+    }
     async registerUser({ email, password }) {
         if (!validation_1.validateEmail(email)) {
             return {
@@ -198,6 +202,14 @@ let UserResolver = class UserResolver {
     }
 };
 __decorate([
+    type_graphql_1.FieldResolver(() => Profile_1.Profile, { nullable: true }),
+    __param(0, type_graphql_1.Root()),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [User_1.User, Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "profile", null);
+__decorate([
     type_graphql_1.Mutation(() => ReturnRegisterLogin),
     __param(0, type_graphql_1.Arg("input")),
     __metadata("design:type", Function),
@@ -227,7 +239,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "me", null);
 UserResolver = __decorate([
-    type_graphql_1.Resolver()
+    type_graphql_1.Resolver(User_1.User)
 ], UserResolver);
 exports.UserResolver = UserResolver;
 //# sourceMappingURL=UserResolver.js.map

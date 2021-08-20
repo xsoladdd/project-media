@@ -9,6 +9,7 @@ import buildSchema from "../graphql";
 import { contextObject } from "../types";
 import { verifyAccessToken } from "../utils";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core/dist/plugin/landingPage/graphqlPlayground";
+import { createProfileDataloader } from "../graphql/dataloader/createProfileDataloader";
 
 config();
 const PORT = process.env.PORT || 5050;
@@ -39,6 +40,7 @@ const main = async () => {
         req,
         token: token || "",
         user,
+        profileDataloader: createProfileDataloader(),
       };
       return context;
     },

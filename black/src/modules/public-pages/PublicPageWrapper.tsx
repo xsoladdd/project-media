@@ -1,9 +1,5 @@
-import React from "react";
 import Image from "next/image";
-import { useMeQuery, usePingQuery } from "../../generated/graphql";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
-import Loading from "../../pages/test";
+import React from "react";
 import { usePublicRoute } from "../../hooks/usePublicRoute";
 
 interface PublicPageWrapperProps {
@@ -14,7 +10,7 @@ export const PublicPageWrapper: React.FC<PublicPageWrapperProps> = ({
   children,
   image,
 }) => {
-  usePublicRoute();
+  // usePublicRoute();
   return (
     <div className="h-screen flex flex-col">
       <div className="py-6 my-auto">

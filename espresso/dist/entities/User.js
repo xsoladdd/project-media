@@ -16,7 +16,7 @@ const scalars_1 = require("../graphql/scalars");
 const Profile_1 = require("./Profile");
 const Post_1 = require("./Post");
 const RefreshToken_1 = require("./RefreshToken");
-let User = class User {
+let User = class User extends typeorm_1.BaseEntity {
 };
 __decorate([
     type_graphql_1.Field(() => scalars_1.EncryptedID),
@@ -47,14 +47,14 @@ __decorate([
     __metadata("design:type", Number)
 ], User.prototype, "is_active", void 0);
 __decorate([
+    typeorm_1.OneToMany(() => Post_1.Post, (post) => post.user),
+    __metadata("design:type", Array)
+], User.prototype, "post", void 0);
+__decorate([
     type_graphql_1.Field(() => Profile_1.Profile, { nullable: true }),
     typeorm_1.OneToOne(() => Profile_1.Profile, (profile) => profile.user),
     __metadata("design:type", Profile_1.Profile)
 ], User.prototype, "profile", void 0);
-__decorate([
-    typeorm_1.OneToMany(() => Post_1.Post, (post) => post.user),
-    __metadata("design:type", Array)
-], User.prototype, "post", void 0);
 __decorate([
     typeorm_1.OneToOne(() => RefreshToken_1.RefreshToken, (refresh_token) => refresh_token.user),
     __metadata("design:type", RefreshToken_1.RefreshToken)

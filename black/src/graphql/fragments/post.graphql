@@ -1,0 +1,8 @@
+fragment post on Post {
+  id
+  content
+  user {
+    ...user
+  }
+  UpdatedAt
+}

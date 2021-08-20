@@ -25,13 +25,14 @@ const UniqueIdentifier: React.FC<UniqueIdentifierProps> = ({
 
   const [checkUsernameUnique, { loading: loadingUsername }] =
     useCheckUniqueLazyQuery({
-      onCompleted: (data) => {
-        const { message, status } = data.checkUnique;
-        if (status === 0) {
-          return setFormError({ ...formError, username: message });
+      onCompleted: ({ checkUnique }) => {
+        if (!checkUnique) {
+          return setFormError({
+            ...formError,
+            username: "username already taken",
+          });
         }
         setFormError({ ...formError, username: "" });
-        console.log(message);
       },
       onError: (error) => {
         console.log(error);
@@ -41,13 +42,14 @@ const UniqueIdentifier: React.FC<UniqueIdentifierProps> = ({
 
   const [checkMobileNumberUnique, { loading: loadingMobileNumber }] =
     useCheckUniqueLazyQuery({
-      onCompleted: (data) => {
-        const { message, status } = data.checkUnique;
-        if (status === 0) {
-          return setFormError({ ...formError, mobileNumber: message });
+      onCompleted: ({ checkUnique }) => {
+        if (!checkUnique) {
+          return setFormError({
+            ...formError,
+            mobileNumber: "mobile number already used",
+          });
         }
         setFormError({ ...formError, mobileNumber: "" });
-        console.log(message);
       },
       onError: (error) => {
         console.log(error);
@@ -71,7 +73,7 @@ const UniqueIdentifier: React.FC<UniqueIdentifierProps> = ({
       }
       checkUsernameUnique({
         variables: {
-          checkUniqueInput: {
+          input: {
             username: uniqueData.username,
           },
         },
@@ -89,7 +91,7 @@ const UniqueIdentifier: React.FC<UniqueIdentifierProps> = ({
         console.log(uniqueData.mobileNumber.length);
         checkMobileNumberUnique({
           variables: {
-            checkUniqueInput: {
+            input: {
               mobile_number: uniqueData.mobileNumber,
             },
           },

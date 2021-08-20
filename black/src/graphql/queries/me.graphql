@@ -1,21 +1,11 @@
-query me {
+query Me {
   me {
-    user {
-      id
-      email
-      username
-      mobile_number
-      profile {
-        id
-        first_name
-        middle_name
-        last_name
-        birthday
-        nickname
-        display_image
-      }
-    }
     status
-    message
+    errors {
+      ...fieldErrors
+    }
+    user {
+      ...user
+    }
   }
 }

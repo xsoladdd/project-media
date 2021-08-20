@@ -2,13 +2,13 @@ import {
   ApolloClient,
   ApolloLink,
   fromPromise,
-  InMemoryCache,
+  NormalizedCacheObject,
 } from "@apollo/client";
-import axios from "axios";
-import { createUploadLink } from "apollo-upload-client";
-import { from, NormalizedCacheObject } from "@apollo/client";
-import { GRAPHQL_SERVER } from "../../lib/constants";
 import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
+import { createUploadLink } from "apollo-upload-client";
+import axios from "axios";
+import { GRAPHQL_SERVER } from "../../lib/constants";
 import {
   getAccessToken,
   getRefreshToken,
@@ -16,7 +16,7 @@ import {
   setAccessToken,
   setRefreshToken,
 } from "../../lib/jscookies";
-import { onError } from "@apollo/client/link/error";
+import { cache } from "./cache";
 
 let apolloClient: ApolloClient<NormalizedCacheObject>;
 
@@ -113,7 +113,7 @@ const graphqlApolloLink = ApolloLink.from([
 ]);
 
 apolloClient = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache,
   link: graphqlApolloLink,
   // uri: `http://localhost:5001/graphql/`,
 });

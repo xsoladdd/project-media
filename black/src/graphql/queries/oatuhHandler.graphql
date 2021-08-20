@@ -1,11 +1,13 @@
-mutation oauthHandler($oauthHandlerInput: InputLoginSocialmedia!) {
-  oauthHandler(input: $oauthHandlerInput) {
-    message
+mutation OAuthHandler($email: String!) {
+  oauthHandler(email: $email) {
     status
     token
     refresh_token
+    errors {
+      ...fieldErrors
+    }
     user {
-      id
+      ...user
     }
   }
 }

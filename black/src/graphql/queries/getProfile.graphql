@@ -1,21 +1,11 @@
-query getProfile($getProfileInput: String!) {
-  getProfile(input: $getProfileInput) {
-    message
+query GetProfile($username: String!) {
+  getProfile(username: $username) {
     status
+    errors {
+      ...fieldErrors
+    }
     user {
-      id
-      email
-      username
-      mobile_number
-      profile {
-        id
-        first_name
-        middle_name
-        last_name
-        birthday
-        nickname
-        display_image
-      }
+      ...user
     }
   }
 }

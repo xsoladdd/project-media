@@ -1,0 +1,14 @@
+fragment profile on Profile {
+  id
+  first_name
+  middle_name
+  last_name
+  birthday
+  nickname
+  nickname
+  display_image
+  banner_image
+  bio
+
+  __typename
+}

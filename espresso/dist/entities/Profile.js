@@ -15,7 +15,7 @@ const type_graphql_1 = require("type-graphql");
 const scalars_1 = require("../graphql/scalars");
 const User_1 = require("./User");
 const S3File_1 = require("../graphql/scalars/S3File");
-let Profile = class Profile {
+let Profile = class Profile extends typeorm_1.BaseEntity {
 };
 __decorate([
     type_graphql_1.Field(() => scalars_1.EncryptedID),
@@ -48,13 +48,28 @@ __decorate([
     __metadata("design:type", String)
 ], Profile.prototype, "nickname", void 0);
 __decorate([
+    type_graphql_1.Field(() => String, { nullable: true }),
+    typeorm_1.Column("text", { nullable: true }),
+    __metadata("design:type", String)
+], Profile.prototype, "bio", void 0);
+__decorate([
+    type_graphql_1.Field(() => S3File_1.S3File, { nullable: true }),
+    typeorm_1.Column("text", { nullable: true }),
+    __metadata("design:type", String)
+], Profile.prototype, "banner_image", void 0);
+__decorate([
     type_graphql_1.Field(() => S3File_1.S3File, { nullable: true }),
     typeorm_1.Column("text", { nullable: true }),
     __metadata("design:type", String)
 ], Profile.prototype, "display_image", void 0);
 __decorate([
+    type_graphql_1.Field(() => type_graphql_1.Int),
+    typeorm_1.Column(),
+    __metadata("design:type", Number)
+], Profile.prototype, "userId", void 0);
+__decorate([
     typeorm_1.OneToOne(() => User_1.User, (user) => user.profile),
-    typeorm_1.JoinColumn(),
+    typeorm_1.JoinColumn({}),
     __metadata("design:type", User_1.User)
 ], Profile.prototype, "user", void 0);
 __decorate([

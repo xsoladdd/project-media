@@ -15,6 +15,8 @@ import {
   ObjectType,
   Authorized,
   Ctx,
+  FieldResolver,
+  Root,
 } from "type-graphql";
 import { getRepository } from "typeorm";
 import { User } from "../../entities/User";
@@ -22,6 +24,8 @@ import { ReturnStructure, ReturnUserWithProfile } from "../generics";
 import { RefreshToken } from "../../entities/RefreshToken";
 import { validateEmail } from "../../utils/validation";
 import { createError } from "../../utils/createError";
+import { Profile } from "../../entities/Profile";
+import { contextObject } from "../../types";
 
 @InputType()
 class LoginRegistrationInput {
@@ -41,8 +45,16 @@ class ReturnRegisterLogin extends ReturnStructure {
   user?: User | null;
 }
 
-@Resolver()
+@Resolver(User)
 export class UserResolver {
+  @FieldResolver(() => Profile, { nullable: true })
+  async profile(
+    @Root() user: User,
+    @Ctx() { profileDataloader }: contextObject
+  ) {
+    return profileDataloader.load(user.id);
+  }
+
   @Mutation(() => ReturnRegisterLogin)
   async registerUser(
     @Arg("input") { email, password }: LoginRegistrationInput

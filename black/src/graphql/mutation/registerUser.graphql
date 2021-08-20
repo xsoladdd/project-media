@@ -1,11 +1,13 @@
-mutation registerUser($registerUserInput: InputRegistration!) {
-  registerUser(input: $registerUserInput) {
-    message
+mutation RegisterUser($input: LoginRegistrationInput!) {
+  registerUser(input: $input) {
     status
+    errors {
+      ...fieldErrors
+    }
     token
     refresh_token
     user {
-      id
+      ...user
     }
   }
 }

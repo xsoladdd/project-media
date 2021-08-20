@@ -1,6 +1,7 @@
 import React from "react";
 import { joinClass } from "../../lib/joinClass";
 import { colorsTypes, sizeTypes } from "../../types/tailwind";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 interface ButtonProps
   extends React.DetailedHTMLProps<
@@ -11,6 +12,7 @@ interface ButtonProps
   variant?: colorsTypes;
   size?: sizeTypes;
   className?: string;
+  loading?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -20,6 +22,7 @@ const Button: React.FC<ButtonProps> = ({
   size = "sm",
   disabled,
   onClick = (e) => null,
+  loading = false,
   ...rest
 }) => {
   let variantClasses = "";
@@ -81,11 +84,15 @@ const Button: React.FC<ButtonProps> = ({
         sizeClasses,
         className
       )}
-      disabled={disabled}
+      disabled={disabled || loading}
       onClick={(e) => onClick(e)}
       {...rest}
     >
-      {children}
+      {loading ? (
+        <AiOutlineLoading3Quarters className="animate-spin" />
+      ) : (
+        children
+      )}
     </button>
   );
 };

@@ -1,24 +1,23 @@
-import React, { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import NextImage from "next/image";
-import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
-import { navigationMenuItems } from "../NavigationMenuItems";
 import { useRouter } from "next/router";
-import { joinClass } from "../../lib/joinClass";
+import React, { Fragment } from "react";
 import { FiLogOut } from "react-icons/fi";
+import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
+import apolloClient from "../../config/apollo-server/client";
 import { useMeQuery } from "../../generated/graphql";
-import { logout } from "../handleLogout";
+import { joinClass } from "../../lib/joinClass";
 import {
   removeAccessToken,
   removeRefreshToken,
   removeUserIdentifier,
 } from "../../lib/jscookies";
-import apolloClient from "../../config/apollo-server/client";
+import { navigationMenuItems } from "../NavigationMenuItems";
 
 interface NavbarDropdownButtonProps {}
 
 const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
-  const { push, pathname, asPath, replace } = useRouter();
+  const { push, asPath, replace } = useRouter();
 
   const { data } = useMeQuery({ fetchPolicy: "cache-only" });
   return (
@@ -27,9 +26,7 @@ const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
         <div>
           <Menu.Button className="ml-auto inline-flex items-center   border-0 py-1 px-3 focus:outline-none   rounded text-base mt-4 md:mt-0">
             <div className="w-10 h-10 rounded-full  overflow-hidden border-gray-900 border-2">
-              {/* <NextImage src={defaultProfilePicture} className="" /> */}
               {data?.me.user?.profile?.display_image ? (
-                // <div className="w-16 h-16 rounded-full  overflow-hidden border-gray-800 border-2 flex">
                 <div className="w-full h-full relative">
                   <NextImage
                     src={data?.me.user?.profile?.display_image}
@@ -72,7 +69,7 @@ const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
                         onClick={() =>
                           push(
                             label === "Profile"
-                              ? `/u/${data?.me.user?.username}`
+                              ? `/u/${data?.me.user?.username?.toLowerCase()}`
                               : href
                           )
                         }

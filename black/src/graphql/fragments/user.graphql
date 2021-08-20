@@ -1,0 +1,10 @@
+fragment user on User {
+  id
+  email
+  username
+  mobile_number
+  profile {
+    ...profile
+  }
+  __typename
+}

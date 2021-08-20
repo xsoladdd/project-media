@@ -9,11 +9,12 @@ import {
   setRefreshToken,
   setUserIdentifier,
 } from "../../lib/jscookies";
-import { useOauthHandlerMutation } from "../../generated/graphql";
+// import { useOauthHandlerMutation } from "../../generated/graphql";
 import { FcGoogle } from "react-icons/fc";
 import { GoMarkGithub } from "react-icons/go";
 import firebase from "firebase";
 import { useRouter } from "next/router";
+import { useOAuthHandlerMutation } from "../../generated/graphql";
 
 interface OAuthButtonsProps {
   type?: "register" | "login";
@@ -26,7 +27,20 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
 }) => {
   const { replace } = useRouter();
 
-  const [handleOAuth, { loading: OAuthLoading }] = useOauthHandlerMutation({
+  // const [handleOAuth, { loading: OAuthLoading }] = useOauthHandlerMutation({
+  //   onCompleted: ({ oauthHandler: data }) => {
+  //     const { token, refresh_token, user } = data;
+  //     if (token && refresh_token && user) {
+  //       setAccessToken(token);
+  //       setRefreshToken(refresh_token);
+  //       setUserIdentifier(user.id);
+
+  //       replace("/dashboard");
+  //     }
+  //   },
+  // });
+
+  const [handleOAuth, { loading: OAuthLoading }] = useOAuthHandlerMutation({
     onCompleted: ({ oauthHandler: data }) => {
       const { token, refresh_token, user } = data;
       if (token && refresh_token && user) {
@@ -38,6 +52,7 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
       }
     },
   });
+
   const handleSocialMedia = async (provider: firebase.auth.AuthProvider) => {
     const res = await signinWithProvider(provider);
     let email;
@@ -49,13 +64,13 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
       email = res.email;
     }
     console.log(res);
-    handleOAuth({
-      variables: {
-        oauthHandlerInput: {
+    if (res.code !== "auth/popup-closed-by-user") {
+      handleOAuth({
+        variables: {
           email,
         },
-      },
-    });
+      });
+    }
   };
   return (
     <>

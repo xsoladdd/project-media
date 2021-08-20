@@ -1,0 +1,13 @@
+mutation LoginNormal($input: LoginRegistrationInput!) {
+  loginNormal(input: $input) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    user {
+      ...user
+    }
+    token
+    refresh_token
+  }
+}

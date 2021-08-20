@@ -12,6 +12,7 @@ const typeorm_1 = __importDefault(require("../config/typeorm"));
 const graphql_1 = __importDefault(require("../graphql"));
 const utils_1 = require("../utils");
 const graphqlPlayground_1 = require("apollo-server-core/dist/plugin/landingPage/graphqlPlayground");
+const createProfileDataloader_1 = require("../graphql/dataloader/createProfileDataloader");
 dotenv_1.config();
 const PORT = process.env.PORT || 5050;
 const main = async () => {
@@ -37,6 +38,7 @@ const main = async () => {
                 req,
                 token: token || "",
                 user,
+                profileDataloader: createProfileDataloader_1.createProfileDataloader(),
             };
             return context;
         },

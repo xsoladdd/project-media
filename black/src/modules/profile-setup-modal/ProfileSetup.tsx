@@ -19,7 +19,6 @@ import { NameDataFormProps, UniqueDataFormProps } from "../../global";
 import {
   MeDocument,
   MeQuery,
-  MeQueryVariables,
   useSetupProfileMutation,
 } from "../../generated/graphql";
 import apolloClient from "../../config/apollo-server/client";
@@ -56,7 +55,9 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
     username: "",
   });
 
-  const [birthday, setBirthday] = useState(moment("01-01-2000").toDate());
+  const [birthday, setBirthday] = useState(
+    moment("01-01-2000", "MM-DD-YYYY").toDate()
+  );
   const [imageData, setImageData] = useState<Blob | null>(null);
 
   const [imagePreview, setImagePreview] = useState("");
@@ -79,15 +80,15 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
   const [setupProfile, { loading }] = useSetupProfileMutation({
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
-      console.log(data.setupProfile.message);
       const { user, status } = data.setupProfile;
       if (user && status === 1) {
+        console.log(user);
         apolloClient.writeQuery({
           query: MeDocument,
           data: {
             me: {
               user,
-              message: "",
+              errors: [{}],
               status: 1,
             },
           } as MeQuery,
@@ -180,7 +181,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
     if (tabIndex === 5) {
       return setupProfile({
         variables: {
-          setupProfileInput: {
+          input: {
             birthday,
             firstName: nameData.firstName,
             middleName: nameData.middleName,

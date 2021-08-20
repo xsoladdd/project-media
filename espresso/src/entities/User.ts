@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  BaseEntity,
 } from "typeorm";
 import { ObjectType, Field } from "type-graphql";
 import { EncryptedID } from "../graphql/scalars";
@@ -15,7 +16,7 @@ import { RefreshToken } from "./RefreshToken";
 
 @Entity()
 @ObjectType()
-export class User {
+export class User extends BaseEntity {
   @Field(() => EncryptedID)
   @PrimaryGeneratedColumn("increment")
   id: number;
@@ -38,12 +39,12 @@ export class User {
   @Column({ type: "tinyint", default: 1 })
   is_active: number;
 
+  @OneToMany(() => Post, (post) => post.user)
+  post: Post[];
+
   @Field(() => Profile, { nullable: true })
   @OneToOne(() => Profile, (profile) => profile.user)
   profile: Profile;
-
-  @OneToMany(() => Post, (post) => post.user)
-  post: Post[];
 
   @OneToOne(() => RefreshToken, (refresh_token) => refresh_token.user)
   refresh_token: RefreshToken;

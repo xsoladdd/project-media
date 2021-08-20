@@ -14,7 +14,7 @@ import NextImage from "next/image";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 
 interface ProfilePictureProps {
-  imageData: Blob | null; //image_base_64
+  imageData: Blob | null;
   setImageData: React.Dispatch<SetStateAction<Blob | null>>;
   imagePreview: string;
   setImagePreview: React.Dispatch<SetStateAction<string>>;

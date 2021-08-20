@@ -1,12 +1,16 @@
-import React, { Fragment, useRef, useState } from "react";
 // import { useForm, SubmitHandler } from "react-hook-form";
-import { Dialog, Transition, Tab } from "@headlessui/react";
+import { Dialog, Tab, Transition } from "@headlessui/react";
+import NextImage from "next/image";
+import React, { Fragment, useState } from "react";
+import { AiOutlineCloseCircle } from "react-icons/ai";
+import {
+  FetchPostDocument,
+  useNewPostMutation,
+} from "../../../generated/graphql";
+import { getBase64 } from "../../../lib/files";
+import { joinClass } from "../../../lib/joinClass";
 import Button from "../../../ui/Button";
 import TextArea from "../../../ui/TexteArea";
-import { joinClass } from "../../../lib/joinClass";
-import { getBase64 } from "../../../lib/files";
-import { AiOutlineCloseCircle } from "react-icons/ai";
-import NextImage from "next/image";
 
 interface NewPostProps {}
 
@@ -16,8 +20,13 @@ const NewPost: React.FC<NewPostProps> = ({}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [imageData, setImageData] = useState<null | Blob>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
-  // let completeButtonRef = useRef(null);
 
+  const [createNewPost, { loading }] = useNewPostMutation({
+    refetchQueries: [FetchPostDocument],
+    onCompleted: () => {
+      closeModal();
+    },
+  });
   function closeModal() {
     setIsOpen(false);
     setImageData(null);
@@ -31,7 +40,9 @@ const NewPost: React.FC<NewPostProps> = ({}) => {
   return (
     <>
       <div className="">
-        <Button onClick={openModal}>ADD NEW POST</Button>
+        <Button onClick={openModal} variant="green">
+          ADD NEW POST
+        </Button>
       </div>
 
       <Transition appear show={isOpen} as={Fragment}>
@@ -80,7 +91,15 @@ const NewPost: React.FC<NewPostProps> = ({}) => {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    console.log(`hey`);
+                    {
+                      createNewPost({
+                        variables: {
+                          input: {
+                            content: postText,
+                          },
+                        },
+                      });
+                    }
                   }}
                 >
                   <div className="mt-2">
@@ -214,21 +233,11 @@ const NewPost: React.FC<NewPostProps> = ({}) => {
                   </div>
                   <div className="mt-4 flex flex-col md:place-items-start ">
                     <div className=" flex gap-2 ml-auto ">
-                      <Button
-                        // ref={completeButtonRef}
-                        onClick={closeModal}
-                        variant="red"
-                        type="button"
-                      >
+                      <Button onClick={closeModal} variant="red" type="button">
                         Cancel
                       </Button>
-                      <Button
-                        // ref={completeButtonRef}
-                        // onClick={closeModal}
-                        disabled={!postText}
-                        type="submit"
-                      >
-                        Post
+                      <Button disabled={!postText || loading} type="submit">
+                        {loading ? `Loading` : `Post`}
                       </Button>
                     </div>
                   </div>

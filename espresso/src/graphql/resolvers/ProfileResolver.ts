@@ -22,16 +22,25 @@ class InputSetupProfile {
   mobileNumber: string;
   @Field()
   username: string;
+
   @Field()
   firstName: string;
   @Field({ nullable: true })
   middleName: string;
   @Field()
   lastName: string;
+
   @Field({ nullable: true })
   nickname: string;
+  @Field({ nullable: true })
+  bio: string;
+
   @Field(() => Upload, { nullable: true })
   display_image?: FileUpload;
+
+  @Field(() => Upload, { nullable: true })
+  banner_image?: FileUpload;
+
   @Field({})
   birthday: Date;
 }
@@ -52,6 +61,8 @@ export class ProfileResolver {
     {
       birthday,
       display_image,
+      bio,
+      banner_image,
       firstName,
       lastName,
       middleName,
@@ -67,13 +78,18 @@ export class ProfileResolver {
         errors: [createError("user", "user doesnt exist")],
       };
     }
-    const userRepo = getRepository(User);
+    // const userRepo = getRepository(User);
 
-    const user = await userRepo
-      .createQueryBuilder("user")
-      .leftJoinAndSelect(`user.profile`, `profile`)
-      .where("user.id = :id", { id })
-      .getOne();
+    // const user = await userRepo
+    //   .createQueryBuilder("user")
+    //   .leftJoinAndSelect(`user.profile`, `profile`)
+    //   .where("user.id = :id", { id })
+    //   .getOne();
+    const user = await User.findOne({
+      where: {
+        id,
+      },
+    });
 
     if (user?.profile !== null) {
       return {
@@ -97,12 +113,18 @@ export class ProfileResolver {
     if (display_image) {
       display_image_name = await UploadToS3(display_image);
     }
+    let banner_image_name;
+    if (banner_image) {
+      banner_image_name = await UploadToS3(banner_image);
+    }
 
     const profile = profileRepo.create({
       first_name: firstName,
-      display_image: display_image_name,
       last_name: lastName,
       middle_name: middleName,
+      display_image: display_image_name,
+      banner_image: banner_image_name,
+      bio,
       nickname,
       birthday,
       user,
@@ -110,11 +132,13 @@ export class ProfileResolver {
 
     await profileRepo.save(profile);
 
-    const userWithProfile = await userRepo
-      .createQueryBuilder("user")
-      .leftJoinAndSelect(`user.profile`, `profile`)
-      .where("user.id = :id", { id })
-      .getOne();
+    // const userWithProfile = await userRepo
+    //   .createQueryBuilder("user")
+    //   .leftJoinAndSelect(`user.profile`, `profile`)
+    //   .where("user.id = :id", { id })
+    //   .getOne();
+
+    const userWithProfile = await User.findOne({ where: { id } });
 
     return {
       status: 1,
@@ -159,11 +183,17 @@ export class ProfileResolver {
   async getProfile(
     @Arg("username") username: string
   ): Promise<ReturnUserWithProfile> {
-    const user = await getRepository(User)
-      .createQueryBuilder("user")
-      .leftJoinAndSelect(`user.profile`, `profile`)
-      .where("user.username = :username", { username })
-      .getOne();
+    const user = await User.findOne({
+      where: {
+        username,
+      },
+    });
+    // const user = await getRepository(User)
+    //   .createQueryBuilder("user")
+    //   .leftJoinAndSelect(`user.profile`, `profile`)
+    //   .where("user.username = :username", { username })
+    //   .getOne();
+
     if (!user) {
       return {
         status: 0,
@@ -173,7 +203,13 @@ export class ProfileResolver {
 
     return {
       status: 1,
-      user,
+      user: user,
     };
+  }
+
+  @Query(() => [User])
+  async getAllUsers(): Promise<User[]> {
+    const users = User.find();
+    return users;
   }
 }

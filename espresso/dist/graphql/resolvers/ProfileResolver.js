@@ -48,9 +48,17 @@ __decorate([
     __metadata("design:type", String)
 ], InputSetupProfile.prototype, "nickname", void 0);
 __decorate([
+    type_graphql_1.Field({ nullable: true }),
+    __metadata("design:type", String)
+], InputSetupProfile.prototype, "bio", void 0);
+__decorate([
     type_graphql_1.Field(() => scalars_1.Upload, { nullable: true }),
     __metadata("design:type", Object)
 ], InputSetupProfile.prototype, "display_image", void 0);
+__decorate([
+    type_graphql_1.Field(() => scalars_1.Upload, { nullable: true }),
+    __metadata("design:type", Object)
+], InputSetupProfile.prototype, "banner_image", void 0);
 __decorate([
     type_graphql_1.Field({}),
     __metadata("design:type", Date)
@@ -72,19 +80,18 @@ InputCheckUnique = __decorate([
     type_graphql_1.InputType()
 ], InputCheckUnique);
 let ProfileResolver = class ProfileResolver {
-    async setupProfile({ birthday, display_image, firstName, lastName, middleName, nickname, username, mobileNumber, }, { id }) {
+    async setupProfile({ birthday, display_image, bio, banner_image, firstName, lastName, middleName, nickname, username, mobileNumber, }, { id }) {
         if (!id) {
             return {
                 status: 0,
                 errors: [createError_1.createError("user", "user doesnt exist")],
             };
         }
-        const userRepo = typeorm_1.getRepository(User_1.User);
-        const user = await userRepo
-            .createQueryBuilder("user")
-            .leftJoinAndSelect(`user.profile`, `profile`)
-            .where("user.id = :id", { id })
-            .getOne();
+        const user = await User_1.User.findOne({
+            where: {
+                id,
+            },
+        });
         if ((user === null || user === void 0 ? void 0 : user.profile) !== null) {
             return {
                 status: 0,
@@ -105,21 +112,23 @@ let ProfileResolver = class ProfileResolver {
         if (display_image) {
             display_image_name = await s3Bucket_1.UploadToS3(display_image);
         }
+        let banner_image_name;
+        if (banner_image) {
+            banner_image_name = await s3Bucket_1.UploadToS3(banner_image);
+        }
         const profile = profileRepo.create({
             first_name: firstName,
-            display_image: display_image_name,
             last_name: lastName,
             middle_name: middleName,
+            display_image: display_image_name,
+            banner_image: banner_image_name,
+            bio,
             nickname,
             birthday,
             user,
         });
         await profileRepo.save(profile);
-        const userWithProfile = await userRepo
-            .createQueryBuilder("user")
-            .leftJoinAndSelect(`user.profile`, `profile`)
-            .where("user.id = :id", { id })
-            .getOne();
+        const userWithProfile = await User_1.User.findOne({ where: { id } });
         return {
             status: 1,
             user: userWithProfile,
@@ -149,11 +158,11 @@ let ProfileResolver = class ProfileResolver {
         return true;
     }
     async getProfile(username) {
-        const user = await typeorm_1.getRepository(User_1.User)
-            .createQueryBuilder("user")
-            .leftJoinAndSelect(`user.profile`, `profile`)
-            .where("user.username = :username", { username })
-            .getOne();
+        const user = await User_1.User.findOne({
+            where: {
+                username,
+            },
+        });
         if (!user) {
             return {
                 status: 0,
@@ -162,8 +171,12 @@ let ProfileResolver = class ProfileResolver {
         }
         return {
             status: 1,
-            user,
+            user: user,
         };
+    }
+    async getAllUsers() {
+        const users = User_1.User.find();
+        return users;
     }
 };
 __decorate([
@@ -189,6 +202,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProfileResolver.prototype, "getProfile", null);
+__decorate([
+    type_graphql_1.Query(() => [User_1.User]),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ProfileResolver.prototype, "getAllUsers", null);
 ProfileResolver = __decorate([
     type_graphql_1.Resolver()
 ], ProfileResolver);

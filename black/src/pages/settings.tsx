@@ -1,13 +1,25 @@
+import { gql } from "@apollo/client";
 import React from "react";
 import apolloClient from "../config/apollo-server/client";
-import { GetProfileDocument } from "../generated/graphql";
 
 interface settingsProps {}
 
 const Settings: React.FC<settingsProps> = ({}) => {
-  const data = apolloClient.readQuery({
-    query: GetProfileDocument,
-    id: "U2FsdGVkX18/X9p9tu9o/7F3fpZC+D36zGU6+gli09c=",
+  const data = apolloClient.readFragment({
+    fragment: gql`
+      fragment post on fetchPost {
+        id
+        content
+      }
+    `,
+    id: "12a6427a463f5907884d751784106a3c",
+    // id: "U2FsdGVkX18/X9p9tu9o/7F3fpZC+D36zGU6+gli09c=",
+    // variables: {
+    //   fetchPostInput: {
+    //     limit: 100,
+    //     offset: 0,
+    //   },
+    // } as GetAllPostQueryVariables,
   });
 
   return (

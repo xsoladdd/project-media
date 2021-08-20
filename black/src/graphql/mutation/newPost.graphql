@@ -1,0 +1,11 @@
+mutation NewPost($input: InputNewPost!) {
+  newPost(input: $input) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    post {
+      ...post
+    }
+  }
+}
