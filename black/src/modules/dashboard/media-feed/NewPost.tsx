@@ -96,6 +96,7 @@ const NewPost: React.FC<NewPostProps> = ({}) => {
                         variables: {
                           input: {
                             content: postText,
+                            media: imageData,
                           },
                         },
                       });

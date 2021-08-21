@@ -8,7 +8,6 @@ const dataloader_1 = __importDefault(require("dataloader"));
 const typeorm_1 = require("typeorm");
 const Profile_1 = require("../../entities/Profile");
 const createProfileDataloader = () => new dataloader_1.default(async (userIds) => {
-    console.log(userIds);
     const profiles = await Profile_1.Profile.find({
         where: {
             userId: typeorm_1.In(userIds),

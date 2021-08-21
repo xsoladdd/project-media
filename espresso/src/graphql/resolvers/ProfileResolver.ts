@@ -78,14 +78,9 @@ export class ProfileResolver {
         errors: [createError("user", "user doesnt exist")],
       };
     }
-    // const userRepo = getRepository(User);
 
-    // const user = await userRepo
-    //   .createQueryBuilder("user")
-    //   .leftJoinAndSelect(`user.profile`, `profile`)
-    //   .where("user.id = :id", { id })
-    //   .getOne();
     const user = await User.findOne({
+      relations: ["profile"],
       where: {
         id,
       },
@@ -211,5 +206,51 @@ export class ProfileResolver {
   async getAllUsers(): Promise<User[]> {
     const users = User.find();
     return users;
+  }
+
+  @Mutation(() => ReturnUserWithProfile)
+  async uploadProfilePicture(
+    @Arg("profilePicture", () => Upload) profilePicture: FileUpload,
+    @Ctx("user") { id }: User
+  ): Promise<ReturnUserWithProfile> {
+    let profilePictureName = "";
+    if (profilePicture) {
+      profilePictureName = await UploadToS3(profilePicture);
+    }
+    // user.profile.display_image = profilePictureName;
+
+    // await user.save();
+
+    // const test = await User.save(user);
+    const update = await Profile.update(
+      {
+        userId: id,
+      },
+      {
+        display_image: profilePictureName,
+      }
+    );
+    if (update.affected === 0) {
+      return {
+        status: 0,
+        errors: [createError("profile", "something went wrong")],
+      };
+    }
+    const user = await User.findOne({
+      relations: ["profile"],
+      where: {
+        id,
+      },
+    });
+    if (!user) {
+      return {
+        status: 0,
+        errors: [createError("user", "no user found")],
+      };
+    }
+    return {
+      status: 1,
+      user,
+    };
   }
 }

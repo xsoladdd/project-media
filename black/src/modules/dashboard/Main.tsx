@@ -58,16 +58,19 @@ export const Main: React.FC<MainProps> = ({}) => {
           {/* Post item */}
           <div className="grid grid-cols-1 gap-6 my-6 px-4 ">
             {data?.fetchPost.posts.length === 0 && <NoPost />}
-            {data?.fetchPost.posts.map(({ content, user, UpdatedAt }, idx) => {
-              return (
-                <Post
-                  key={idx}
-                  description={content}
-                  user={user as User}
-                  lastUpdateTime={UpdatedAt}
-                />
-              );
-            })}
+            {data?.fetchPost.posts.map(
+              ({ content, user, UpdatedAt, media }, idx) => {
+                return (
+                  <Post
+                    key={idx}
+                    description={content}
+                    user={user as User}
+                    lastUpdateTime={UpdatedAt}
+                    image={media}
+                  />
+                );
+              }
+            )}
             {data?.fetchPost.has_more && (
               <Button
                 onClick={handleShowMore}

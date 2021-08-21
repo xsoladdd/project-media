@@ -47,6 +47,7 @@ export type InputFileUpload = {
 
 export type InputNewPost = {
   content: Scalars['String'];
+  media?: Maybe<Scalars['Upload']>;
 };
 
 export type InputSetupProfile = {
@@ -75,6 +76,7 @@ export type Mutation = {
   newPost: ReturnNewPost;
   TestFileUpload: ReturnStructure;
   setupProfile: ReturnUserWithProfile;
+  uploadProfilePicture: ReturnUserWithProfile;
 };
 
 
@@ -107,11 +109,18 @@ export type MutationSetupProfileArgs = {
   input: InputSetupProfile;
 };
 
+
+export type MutationUploadProfilePictureArgs = {
+  profilePicture: Scalars['Upload'];
+};
+
 export type Post = {
   __typename?: 'Post';
   id: Scalars['EncryptedID'];
   content: Scalars['String'];
+  media?: Maybe<Scalars['S3File']>;
   user?: Maybe<User>;
+  userId: Scalars['Int'];
   UpdatedAt: Scalars['String'];
 };
 
@@ -126,6 +135,7 @@ export type Profile = {
   bio?: Maybe<Scalars['String']>;
   banner_image?: Maybe<Scalars['S3File']>;
   display_image?: Maybe<Scalars['S3File']>;
+  userId: Scalars['Int'];
 };
 
 export type Query = {
@@ -137,6 +147,7 @@ export type Query = {
   ping: Scalars['String'];
   checkUnique: Scalars['Boolean'];
   getProfile: ReturnUserWithProfile;
+  getAllUsers: Array<User>;
 };
 
 
@@ -214,39 +225,46 @@ export type User = {
 
 export type FieldErrorsFragment = { __typename: 'FieldError', field: string, message: string };
 
-export type PostFragment = { __typename?: 'Post', id: any, content: string, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string> }> }> };
+export type PostFragment = { __typename?: 'Post', id: any, content: string, media?: Maybe<any>, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> };
 
-export type ProfileFragment = { __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string> };
+export type ProfileFragment = { __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number };
 
-export type UserFragment = { __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string> }> };
+export type UserFragment = { __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> };
 
 export type LoginNormalMutationVariables = Exact<{
   input: LoginRegistrationInput;
 }>;
 
 
-export type LoginNormalMutation = { __typename?: 'Mutation', loginNormal: { __typename?: 'ReturnRegisterLogin', status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string> }> }> } };
+export type LoginNormalMutation = { __typename?: 'Mutation', loginNormal: { __typename?: 'ReturnRegisterLogin', status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
 
 export type NewPostMutationVariables = Exact<{
   input: InputNewPost;
 }>;
 
 
-export type NewPostMutation = { __typename?: 'Mutation', newPost: { __typename?: 'ReturnNewPost', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, post?: Maybe<{ __typename?: 'Post', id: any, content: string, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string> }> }> }> } };
+export type NewPostMutation = { __typename?: 'Mutation', newPost: { __typename?: 'ReturnNewPost', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, post?: Maybe<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> }> } };
 
 export type RegisterUserMutationVariables = Exact<{
   input: LoginRegistrationInput;
 }>;
 
 
-export type RegisterUserMutation = { __typename?: 'Mutation', registerUser: { __typename?: 'ReturnRegisterLogin', status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string> }> }> } };
+export type RegisterUserMutation = { __typename?: 'Mutation', registerUser: { __typename?: 'ReturnRegisterLogin', status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
 
 export type SetupProfileMutationVariables = Exact<{
   input: InputSetupProfile;
 }>;
 
 
-export type SetupProfileMutation = { __typename?: 'Mutation', setupProfile: { __typename?: 'ReturnUserWithProfile', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string> }> }> } };
+export type SetupProfileMutation = { __typename?: 'Mutation', setupProfile: { __typename?: 'ReturnUserWithProfile', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
+
+export type UploadProfilePictureMutationVariables = Exact<{
+  ProfilePicture: Scalars['Upload'];
+}>;
+
+
+export type UploadProfilePictureMutation = { __typename?: 'Mutation', uploadProfilePicture: { __typename?: 'ReturnUserWithProfile', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
 
 export type CheckUniqueQueryVariables = Exact<{
   input: InputCheckUnique;
@@ -260,26 +278,26 @@ export type FetchPostQueryVariables = Exact<{
 }>;
 
 
-export type FetchPostQuery = { __typename?: 'Query', fetchPost: { __typename?: 'ReturnPosts', status: number, has_more: boolean, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, posts: Array<{ __typename?: 'Post', id: any, content: string, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string> }> }> }> } };
+export type FetchPostQuery = { __typename?: 'Query', fetchPost: { __typename?: 'ReturnPosts', status: number, has_more: boolean, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, posts: Array<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> }> } };
 
 export type GetProfileQueryVariables = Exact<{
   username: Scalars['String'];
 }>;
 
 
-export type GetProfileQuery = { __typename?: 'Query', getProfile: { __typename?: 'ReturnUserWithProfile', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string> }> }> } };
+export type GetProfileQuery = { __typename?: 'Query', getProfile: { __typename?: 'ReturnUserWithProfile', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me: { __typename?: 'ReturnUserWithProfile', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string> }> }> } };
+export type MeQuery = { __typename?: 'Query', me: { __typename?: 'ReturnUserWithProfile', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
 
 export type OAuthHandlerMutationVariables = Exact<{
   email: Scalars['String'];
 }>;
 
 
-export type OAuthHandlerMutation = { __typename?: 'Mutation', oauthHandler: { __typename?: 'ReturnRegisterLogin', status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string> }> }> } };
+export type OAuthHandlerMutation = { __typename?: 'Mutation', oauthHandler: { __typename?: 'ReturnRegisterLogin', status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
 
 export const FieldErrorsFragmentDoc = gql`
     fragment fieldErrors on FieldError {
@@ -300,6 +318,7 @@ export const ProfileFragmentDoc = gql`
   display_image
   banner_image
   bio
+  userId
   __typename
 }
     `;
@@ -319,6 +338,7 @@ export const PostFragmentDoc = gql`
     fragment post on Post {
   id
   content
+  media
   user {
     ...user
   }
@@ -489,6 +509,46 @@ export function useSetupProfileMutation(baseOptions?: Apollo.MutationHookOptions
 export type SetupProfileMutationHookResult = ReturnType<typeof useSetupProfileMutation>;
 export type SetupProfileMutationResult = Apollo.MutationResult<SetupProfileMutation>;
 export type SetupProfileMutationOptions = Apollo.BaseMutationOptions<SetupProfileMutation, SetupProfileMutationVariables>;
+export const UploadProfilePictureDocument = gql`
+    mutation UploadProfilePicture($ProfilePicture: Upload!) {
+  uploadProfilePicture(profilePicture: $ProfilePicture) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    user {
+      ...user
+    }
+  }
+}
+    ${FieldErrorsFragmentDoc}
+${UserFragmentDoc}`;
+export type UploadProfilePictureMutationFn = Apollo.MutationFunction<UploadProfilePictureMutation, UploadProfilePictureMutationVariables>;
+
+/**
+ * __useUploadProfilePictureMutation__
+ *
+ * To run a mutation, you first call `useUploadProfilePictureMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadProfilePictureMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadProfilePictureMutation, { data, loading, error }] = useUploadProfilePictureMutation({
+ *   variables: {
+ *      ProfilePicture: // value for 'ProfilePicture'
+ *   },
+ * });
+ */
+export function useUploadProfilePictureMutation(baseOptions?: Apollo.MutationHookOptions<UploadProfilePictureMutation, UploadProfilePictureMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UploadProfilePictureMutation, UploadProfilePictureMutationVariables>(UploadProfilePictureDocument, options);
+      }
+export type UploadProfilePictureMutationHookResult = ReturnType<typeof useUploadProfilePictureMutation>;
+export type UploadProfilePictureMutationResult = Apollo.MutationResult<UploadProfilePictureMutation>;
+export type UploadProfilePictureMutationOptions = Apollo.BaseMutationOptions<UploadProfilePictureMutation, UploadProfilePictureMutationVariables>;
 export const CheckUniqueDocument = gql`
     query CheckUnique($input: InputCheckUnique!) {
   checkUnique(input: $input)

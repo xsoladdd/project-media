@@ -1,0 +1,11 @@
+mutation UploadProfilePicture($ProfilePicture: Upload!) {
+  uploadProfilePicture(profilePicture: $ProfilePicture) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    user {
+      ...user
+    }
+  }
+}

@@ -4,8 +4,6 @@ import { Profile } from "../../entities/Profile";
 
 export const createProfileDataloader = () =>
   new DataLoader<number, Profile | null>(async (userIds) => {
-    console.log(userIds);
-
     // Get all data
     const profiles = await Profile.find({
       where: {

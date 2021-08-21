@@ -19,12 +19,18 @@ const Post_1 = require("../../entities/Post");
 const User_1 = require("../../entities/User");
 const createError_1 = require("../../utils/createError");
 const generics_1 = require("../generics");
+const scalars_1 = require("../scalars");
+const s3Bucket_1 = require("../../utils/s3Bucket");
 let InputNewPost = class InputNewPost {
 };
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
 ], InputNewPost.prototype, "content", void 0);
+__decorate([
+    type_graphql_1.Field(() => scalars_1.Upload, { nullable: true }),
+    __metadata("design:type", Object)
+], InputNewPost.prototype, "media", void 0);
 InputNewPost = __decorate([
     type_graphql_1.InputType()
 ], InputNewPost);
@@ -68,7 +74,7 @@ ReturnNewPost = __decorate([
     type_graphql_1.ObjectType()
 ], ReturnNewPost);
 let PostResolver = class PostResolver {
-    async newPost({ content }, userContext) {
+    async newPost({ content, media }, userContext) {
         if (content.length <= 0) {
             return {
                 status: 0,
@@ -76,20 +82,24 @@ let PostResolver = class PostResolver {
             };
         }
         const postRepo = typeorm_1.getRepository(Post_1.Post);
-        const userRepo = typeorm_1.getRepository(User_1.User);
-        const user = await userRepo
-            .createQueryBuilder("user")
-            .leftJoinAndSelect(`user.profile`, `profile`)
-            .where("user.id = :id", { id: userContext.id })
-            .getOne();
+        const user = await User_1.User.findOne({
+            relations: ["profile"],
+            where: { id: userContext.id },
+        });
+        console.log(user);
         if (!user) {
             return {
                 errors: [createError_1.createError("user", "user not found")],
                 status: 0,
             };
         }
+        let media_file_name;
+        if (media) {
+            media_file_name = await s3Bucket_1.UploadToS3(media);
+        }
         const post = postRepo.create({
             content,
+            media: media_file_name,
             user: user,
         });
         await postRepo.save(post);
@@ -99,16 +109,20 @@ let PostResolver = class PostResolver {
         };
     }
     async fetchPost({ limit, offset, username }) {
-        const postRepo = typeorm_1.getRepository(Post_1.Post);
-        const query = postRepo
-            .createQueryBuilder("post")
-            .leftJoinAndSelect(`post.user`, `user`)
-            .leftJoinAndSelect(`user.profile`, `profile`)
-            .orderBy("post.updated_at", "DESC");
-        query.offset(offset).limit(limit);
-        if (username)
-            query.where("user.username = :username", { username });
-        const posts = await query.getMany();
+        const posts = await Post_1.Post.find({
+            relations: ["user", "user.profile"],
+            where: username && {
+                user: {
+                    username: username,
+                },
+            },
+            order: {
+                UpdatedAt: "DESC",
+            },
+            skip: offset,
+            take: limit,
+            cache: true,
+        });
         return {
             has_more: limit === posts.length,
             posts: posts,
@@ -134,7 +148,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "fetchPost", null);
 PostResolver = __decorate([
-    type_graphql_1.Resolver()
+    type_graphql_1.Resolver(User_1.User)
 ], PostResolver);
 exports.PostResolver = PostResolver;
 //# sourceMappingURL=PostResolver.js.map

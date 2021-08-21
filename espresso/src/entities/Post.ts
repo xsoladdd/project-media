@@ -1,5 +1,6 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, Int, ObjectType } from "type-graphql";
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -9,11 +10,12 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { EncryptedID } from "../graphql/scalars";
+import { S3File } from "../graphql/scalars/S3File";
 import { User } from "./User";
 
 @Entity()
 @ObjectType()
-export class Post {
+export class Post extends BaseEntity {
   @Field(() => EncryptedID)
   @PrimaryGeneratedColumn("increment")
   id: number;
@@ -25,10 +27,18 @@ export class Post {
   @Column({ type: "tinyint", default: 1 })
   is_active: number;
 
+  @Field(() => S3File, { nullable: true })
+  @Column("text", { nullable: true })
+  media!: string;
+
   @Field(() => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.post, { nullable: true })
   @JoinColumn()
   user: User;
+
+  @Field(() => Int)
+  @Column()
+  userId: number;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;

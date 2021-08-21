@@ -88,6 +88,7 @@ let ProfileResolver = class ProfileResolver {
             };
         }
         const user = await User_1.User.findOne({
+            relations: ["profile"],
             where: {
                 id,
             },
@@ -178,6 +179,39 @@ let ProfileResolver = class ProfileResolver {
         const users = User_1.User.find();
         return users;
     }
+    async uploadProfilePicture(profilePicture, { id }) {
+        let profilePictureName = "";
+        if (profilePicture) {
+            profilePictureName = await s3Bucket_1.UploadToS3(profilePicture);
+        }
+        const update = await Profile_1.Profile.update({
+            userId: id,
+        }, {
+            display_image: profilePictureName,
+        });
+        if (update.affected === 0) {
+            return {
+                status: 0,
+                errors: [createError_1.createError("profile", "something went wrong")],
+            };
+        }
+        const user = await User_1.User.findOne({
+            relations: ["profile"],
+            where: {
+                id,
+            },
+        });
+        if (!user) {
+            return {
+                status: 0,
+                errors: [createError_1.createError("user", "no user found")],
+            };
+        }
+        return {
+            status: 1,
+            user,
+        };
+    }
 };
 __decorate([
     type_graphql_1.Mutation(() => generics_1.ReturnUserWithProfile),
@@ -208,6 +242,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ProfileResolver.prototype, "getAllUsers", null);
+__decorate([
+    type_graphql_1.Mutation(() => generics_1.ReturnUserWithProfile),
+    __param(0, type_graphql_1.Arg("profilePicture", () => scalars_1.Upload)),
+    __param(1, type_graphql_1.Ctx("user")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, User_1.User]),
+    __metadata("design:returntype", Promise)
+], ProfileResolver.prototype, "uploadProfilePicture", null);
 ProfileResolver = __decorate([
     type_graphql_1.Resolver()
 ], ProfileResolver);

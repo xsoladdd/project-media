@@ -119,11 +119,11 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
           ...oldProps,
           lastName: "Last name is required",
         }));
-      } else if (nameData.lastName.length < 4) {
+      } else if (nameData.lastName.length <= 2) {
         error++;
         setFormError((oldProps) => ({
           ...oldProps,
-          lastName: "Last name must be 4 or more character",
+          lastName: "Last name must be 2 or more character",
         }));
       }
 

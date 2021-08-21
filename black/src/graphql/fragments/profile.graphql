@@ -9,6 +9,7 @@ fragment profile on Profile {
   display_image
   banner_image
   bio
+  userId
 
   __typename
 }

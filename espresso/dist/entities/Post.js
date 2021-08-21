@@ -13,8 +13,9 @@ exports.Post = void 0;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const scalars_1 = require("../graphql/scalars");
+const S3File_1 = require("../graphql/scalars/S3File");
 const User_1 = require("./User");
-let Post = class Post {
+let Post = class Post extends typeorm_1.BaseEntity {
 };
 __decorate([
     type_graphql_1.Field(() => scalars_1.EncryptedID),
@@ -31,11 +32,21 @@ __decorate([
     __metadata("design:type", Number)
 ], Post.prototype, "is_active", void 0);
 __decorate([
+    type_graphql_1.Field(() => S3File_1.S3File, { nullable: true }),
+    typeorm_1.Column("text", { nullable: true }),
+    __metadata("design:type", String)
+], Post.prototype, "media", void 0);
+__decorate([
     type_graphql_1.Field(() => User_1.User, { nullable: true }),
     typeorm_1.ManyToOne(() => User_1.User, (user) => user.post, { nullable: true }),
     typeorm_1.JoinColumn(),
     __metadata("design:type", User_1.User)
 ], Post.prototype, "user", void 0);
+__decorate([
+    type_graphql_1.Field(() => type_graphql_1.Int),
+    typeorm_1.Column(),
+    __metadata("design:type", Number)
+], Post.prototype, "userId", void 0);
 __decorate([
     typeorm_1.CreateDateColumn({ name: "created_at" }),
     __metadata("design:type", Date)

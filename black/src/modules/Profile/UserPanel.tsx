@@ -12,6 +12,7 @@ import Post from "../../components/Post/Post";
 import Button from "../../ui/Button";
 import NoPost from "./NoPost";
 import apolloClient from "../../config/apollo-server/client";
+import UploadProfile from "./UploadProfile";
 
 interface UserPanelProps {
   user: User;
@@ -97,7 +98,9 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
                       />
                     )}
                     {meData?.me.user?.username === user.username && (
-                      <div className="w-32 h-32 transition relative bg-gray-700 bg-opacity-0 hover:bg-opacity-50 cursor-pointer "></div>
+                      <UploadProfile>
+                        <div className="w-32 h-32 transition relative bg-gray-700 bg-opacity-0 hover:bg-opacity-50 cursor-pointer"></div>
+                      </UploadProfile>
                     )}
                   </div>
                 </div>
@@ -119,14 +122,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
               </div>
 
               <div className="px-3 mt-3">
-                <p>
-                  {meData?.me.user?.profile?.bio
-                    ? meData?.me.user?.profile?.bio
-                    : ""}
-                  {/* DHIS2. Debian. React. Vue. Gatsby. PWAs. ES6. Node. Electron.
-                  Tailwind. Working with a UK charity to bring EMRs to the
-                  Developing World. */}
-                </p>
+                <p>{user.profile?.bio}</p>
               </div>
             </div>
           </div>

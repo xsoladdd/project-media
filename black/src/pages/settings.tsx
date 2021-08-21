@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import React from "react";
 import apolloClient from "../config/apollo-server/client";
+import NextLink from "next/link";
 
 interface settingsProps {}
 
@@ -25,6 +26,9 @@ const Settings: React.FC<settingsProps> = ({}) => {
   return (
     <>
       <h1>Settings</h1>
+      <NextLink href="/test">
+        <a href="#">Shit</a>
+      </NextLink>
       {JSON.stringify(data)}
     </>
   );

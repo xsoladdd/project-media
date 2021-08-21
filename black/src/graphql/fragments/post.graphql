@@ -1,6 +1,7 @@
 fragment post on Post {
   id
   content
+  media
   user {
     ...user
   }
