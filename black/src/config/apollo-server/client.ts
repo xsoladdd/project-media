@@ -4,8 +4,8 @@ import {
   fromPromise,
   NormalizedCacheObject,
 } from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-import { onError } from "@apollo/client/link/error";
+import { ContextSetter, setContext } from "@apollo/client/link/context";
+import { ErrorHandler, onError } from "@apollo/client/link/error";
 import { createUploadLink } from "apollo-upload-client";
 import axios from "axios";
 import { GRAPHQL_SERVER } from "../../lib/constants";
@@ -42,7 +42,8 @@ const getNewTokens = async (): Promise<tokenReturnInterface> => {
 
 // errorLink for global error handler
 const errorLink = onError(
-  ({ response, graphQLErrors, networkError, forward, operation }) => {
+  // ({ response, graphQLErrors, networkError, forward, operation }) => {
+  ({ graphQLErrors, forward, operation }): ReturnType<ErrorHandler> => {
     if (graphQLErrors) {
       for (let err of graphQLErrors) {
         console.log(err);
@@ -51,7 +52,7 @@ const errorLink = onError(
             // error code is set to UNAUTHENTICATED
             // when AuthenticationError thrown in resolver
             return fromPromise(
-              getNewTokens().catch((error) => {
+              getNewTokens().catch(() => {
                 // Handle token refresh errors e.g clear stored tokens, redirect to login, ...
                 return;
               })
@@ -80,27 +81,29 @@ const errorLink = onError(
   }
 );
 
-const setTokenLink = setContext(async (_, { headers }) => {
-  try {
-    const accessToken = getAccessToken();
+const setTokenLink = setContext(
+  async (_, { headers }): Promise<ReturnType<ContextSetter>> => {
+    try {
+      const accessToken = getAccessToken();
 
-    if (accessToken) {
+      if (accessToken) {
+        return {
+          headers: {
+            ...headers,
+            authorization: `Bearer ${accessToken}`,
+          },
+        };
+      }
       return {
         headers: {
           ...headers,
-          authorization: `Bearer ${accessToken}`,
         },
       };
+    } catch (error) {
+      console.log(error);
     }
-    return {
-      headers: {
-        ...headers,
-      },
-    };
-  } catch (error) {
-    console.log(error);
   }
-});
+);
 
 const graphqlHttpLink = createUploadLink({
   uri: `${GRAPHQL_SERVER.PROTOCOL}://${GRAPHQL_SERVER.HOST_PORT}/graphql/`,

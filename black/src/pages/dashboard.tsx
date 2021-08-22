@@ -1,3 +1,3 @@
-import { Main } from "../modules/dashboard/Main";
+import Dashboard from "../modules/dashboard/Dashboard";
 
-export default Main;
+export default Dashboard;

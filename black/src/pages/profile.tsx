@@ -1,3 +1,3 @@
-import Main from "../modules/profile/Main";
+import Profile from "../modules/profile/Profile";
 
-export default Main;
+export default Profile;

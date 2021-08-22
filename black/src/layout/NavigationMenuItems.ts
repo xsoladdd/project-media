@@ -1,6 +1,4 @@
-import { FiCommand, FiUser, FiSettings, FiSearch } from "react-icons/fi";
-import apolloClient from "../config/apollo-server/client";
-import { MeDocument, MeQuery } from "../generated/graphql";
+import { FiCommand, FiSearch, FiSettings, FiUser } from "react-icons/fi";
 import { NavMenuLink } from "../global";
 
 export const navigationMenuItems: Array<NavMenuLink> = [

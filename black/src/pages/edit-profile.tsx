@@ -1,6 +1,3 @@
-import React from "react";
+import EditProfile from "../modules/profile/editProfile/EditProfile";
 
-const EditProfile: React.FC<{}> = ({}) => {
-  return <></>;
-};
 export default EditProfile;

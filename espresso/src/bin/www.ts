@@ -1,15 +1,15 @@
-import "reflect-metadata";
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core/dist/plugin/landingPage/graphqlPlayground";
 import { ApolloError, ApolloServer } from "apollo-server-express";
 import colors from "colors";
 import { config } from "dotenv";
+import "reflect-metadata";
 import { Connection } from "typeorm";
 import app from "../app";
 import connection from "../config/typeorm";
 import buildSchema from "../graphql";
+import { createProfileDataloader } from "../graphql/dataloader/createProfileDataloader";
 import { contextObject } from "../types";
 import { verifyAccessToken } from "../utils";
-import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core/dist/plugin/landingPage/graphqlPlayground";
-import { createProfileDataloader } from "../graphql/dataloader/createProfileDataloader";
 
 config();
 const PORT = process.env.PORT || 5050;

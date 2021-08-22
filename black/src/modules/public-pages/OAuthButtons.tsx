@@ -54,7 +54,7 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
   });
 
   const handleSocialMedia = async (provider: firebase.auth.AuthProvider) => {
-    const res = await signinWithProvider(provider);
+    const res: any = await signinWithProvider(provider);
     let email;
     console.log(res);
     // Check if using google

@@ -1,7 +1,6 @@
-import React from "react";
-import { IconType } from "react-icons/lib";
-import { FiAnchor } from "react-icons/fi";
 import NextLink from "next/link";
+import React from "react";
+import { FiAnchor } from "react-icons/fi";
 import { NavMenuLink } from "../../global";
 import { joinClass } from "../../lib/joinClass";
 

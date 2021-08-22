@@ -14,6 +14,7 @@ const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const scalars_1 = require("../graphql/scalars");
 const S3File_1 = require("../graphql/scalars/S3File");
+const Profile_1 = require("./Profile");
 const User_1 = require("./User");
 let Post = class Post extends typeorm_1.BaseEntity {
 };
@@ -47,6 +48,11 @@ __decorate([
     typeorm_1.Column(),
     __metadata("design:type", Number)
 ], Post.prototype, "userId", void 0);
+__decorate([
+    typeorm_1.ManyToMany(() => Profile_1.Profile),
+    typeorm_1.JoinTable(),
+    __metadata("design:type", Array)
+], Post.prototype, "likes", void 0);
 __decorate([
     typeorm_1.CreateDateColumn({ name: "created_at" }),
     __metadata("design:type", Date)

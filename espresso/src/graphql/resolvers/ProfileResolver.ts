@@ -17,23 +17,29 @@ import { ReturnUserWithProfile } from "../generics";
 import { Upload } from "../scalars";
 
 @InputType()
-class InputSetupProfile {
-  @Field()
-  mobileNumber: string;
-  @Field()
-  username: string;
-
+class InputProfile {
   @Field()
   firstName: string;
+
   @Field({ nullable: true })
   middleName: string;
+
   @Field()
   lastName: string;
 
   @Field({ nullable: true })
   nickname: string;
+
   @Field({ nullable: true })
   bio: string;
+}
+@InputType()
+class InputUniqueData extends InputProfile {
+  @Field()
+  mobileNumber: string;
+
+  @Field()
+  username: string;
 
   @Field(() => Upload, { nullable: true })
   display_image?: FileUpload;
@@ -69,7 +75,7 @@ export class ProfileResolver {
       nickname,
       username,
       mobileNumber,
-    }: InputSetupProfile,
+    }: InputUniqueData,
     @Ctx("user") { id }: User
   ): Promise<ReturnUserWithProfile> {
     if (!id) {
@@ -127,17 +133,51 @@ export class ProfileResolver {
 
     await profileRepo.save(profile);
 
-    // const userWithProfile = await userRepo
-    //   .createQueryBuilder("user")
-    //   .leftJoinAndSelect(`user.profile`, `profile`)
-    //   .where("user.id = :id", { id })
-    //   .getOne();
-
     const userWithProfile = await User.findOne({ where: { id } });
 
     return {
       status: 1,
       user: userWithProfile,
+    };
+  }
+
+  @Mutation(() => ReturnUserWithProfile)
+  async updateProfile(
+    @Arg("input")
+    { bio, firstName, lastName, middleName, nickname }: InputProfile,
+    @Ctx("user") { id }: User
+  ): Promise<ReturnUserWithProfile> {
+    if (!id) {
+      return {
+        status: 0,
+        errors: [createError("user", "user doesnt exist")],
+      };
+    }
+
+    const update = await Profile.update(
+      {
+        userId: id,
+      },
+      {
+        bio,
+        first_name: firstName,
+        last_name: lastName,
+        middle_name: middleName,
+        nickname,
+      }
+    );
+
+    if (update.affected === 0) {
+      return {
+        status: 0,
+        errors: [createError("profile", "updating profile failed")],
+      };
+    }
+    const user = await User.findOne({ where: { id } });
+
+    return {
+      status: 1,
+      user,
     };
   }
 
@@ -183,12 +223,6 @@ export class ProfileResolver {
         username,
       },
     });
-    // const user = await getRepository(User)
-    //   .createQueryBuilder("user")
-    //   .leftJoinAndSelect(`user.profile`, `profile`)
-    //   .where("user.username = :username", { username })
-    //   .getOne();
-
     if (!user) {
       return {
         status: 0,
@@ -217,17 +251,53 @@ export class ProfileResolver {
     if (profilePicture) {
       profilePictureName = await UploadToS3(profilePicture);
     }
-    // user.profile.display_image = profilePictureName;
-
-    // await user.save();
-
-    // const test = await User.save(user);
     const update = await Profile.update(
       {
         userId: id,
       },
       {
         display_image: profilePictureName,
+      }
+    );
+    if (update.affected === 0) {
+      return {
+        status: 0,
+        errors: [createError("profile", "something went wrong")],
+      };
+    }
+    const user = await User.findOne({
+      relations: ["profile"],
+      where: {
+        id,
+      },
+    });
+    if (!user) {
+      return {
+        status: 0,
+        errors: [createError("user", "no user found")],
+      };
+    }
+    return {
+      status: 1,
+      user,
+    };
+  }
+
+  @Mutation(() => ReturnUserWithProfile)
+  async uploadProfileBanner(
+    @Arg("profileBanner", () => Upload) profileBanner: FileUpload,
+    @Ctx("user") { id }: User
+  ): Promise<ReturnUserWithProfile> {
+    let profileBannerName = "";
+    if (profileBanner) {
+      profileBannerName = await UploadToS3(profileBanner);
+    }
+    const update = await Profile.update(
+      {
+        userId: id,
+      },
+      {
+        banner_image: profileBannerName,
       }
     );
     if (update.affected === 0) {

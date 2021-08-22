@@ -1,20 +1,19 @@
-import React, { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
-import { GrClose } from "react-icons/gr";
 import NextImage from "next/image";
-import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
-import { MobileNavMenuItem } from "./MobileNavMenuItem";
 import { useRouter } from "next/router";
-import { navigationMenuItems } from "../NavigationMenuItems";
-import { useMeQuery } from "../../generated/graphql";
+import React, { Fragment } from "react";
 import { FiUser } from "react-icons/fi";
-import { replace } from "lodash";
+import { GrClose } from "react-icons/gr";
+import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
 import apolloClient from "../../config/apollo-server/client";
+import { useMeQuery } from "../../generated/graphql";
 import {
   removeAccessToken,
   removeRefreshToken,
   removeUserIdentifier,
 } from "../../lib/jscookies";
+import { navigationMenuItems } from "../NavigationMenuItems";
+import { MobileNavMenuItem } from "./MobileNavMenuItem";
 
 interface MobileNavPopoutProps {
   status?: boolean;

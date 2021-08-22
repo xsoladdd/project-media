@@ -50,14 +50,22 @@ export type InputNewPost = {
   media?: Maybe<Scalars['Upload']>;
 };
 
-export type InputSetupProfile = {
-  mobileNumber: Scalars['String'];
-  username: Scalars['String'];
+export type InputProfile = {
   firstName: Scalars['String'];
   middleName?: Maybe<Scalars['String']>;
   lastName: Scalars['String'];
   nickname?: Maybe<Scalars['String']>;
   bio?: Maybe<Scalars['String']>;
+};
+
+export type InputUniqueData = {
+  firstName: Scalars['String'];
+  middleName?: Maybe<Scalars['String']>;
+  lastName: Scalars['String'];
+  nickname?: Maybe<Scalars['String']>;
+  bio?: Maybe<Scalars['String']>;
+  mobileNumber: Scalars['String'];
+  username: Scalars['String'];
   display_image?: Maybe<Scalars['Upload']>;
   banner_image?: Maybe<Scalars['Upload']>;
   birthday: Scalars['DateTime'];
@@ -73,10 +81,13 @@ export type Mutation = {
   registerUser: ReturnRegisterLogin;
   loginNormal: ReturnRegisterLogin;
   oauthHandler: ReturnRegisterLogin;
-  newPost: ReturnNewPost;
+  newPost: ReturnPost;
+  likePost: ReturnPost;
   TestFileUpload: ReturnStructure;
   setupProfile: ReturnUserWithProfile;
+  updateProfile: ReturnUserWithProfile;
   uploadProfilePicture: ReturnUserWithProfile;
+  uploadProfileBanner: ReturnUserWithProfile;
 };
 
 
@@ -100,18 +111,33 @@ export type MutationNewPostArgs = {
 };
 
 
+export type MutationLikePostArgs = {
+  postId: Scalars['EncryptedID'];
+};
+
+
 export type MutationTestFileUploadArgs = {
   input: InputFileUpload;
 };
 
 
 export type MutationSetupProfileArgs = {
-  input: InputSetupProfile;
+  input: InputUniqueData;
+};
+
+
+export type MutationUpdateProfileArgs = {
+  input: InputProfile;
 };
 
 
 export type MutationUploadProfilePictureArgs = {
   profilePicture: Scalars['Upload'];
+};
+
+
+export type MutationUploadProfileBannerArgs = {
+  profileBanner: Scalars['Upload'];
 };
 
 export type Post = {
@@ -175,8 +201,8 @@ export type QueryGetProfileArgs = {
   username: Scalars['String'];
 };
 
-export type ReturnNewPost = {
-  __typename?: 'ReturnNewPost';
+export type ReturnPost = {
+  __typename?: 'ReturnPost';
   status: Scalars['Int'];
   errors?: Maybe<Array<FieldError>>;
   post?: Maybe<Post>;
@@ -243,7 +269,7 @@ export type NewPostMutationVariables = Exact<{
 }>;
 
 
-export type NewPostMutation = { __typename?: 'Mutation', newPost: { __typename?: 'ReturnNewPost', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, post?: Maybe<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> }> } };
+export type NewPostMutation = { __typename?: 'Mutation', newPost: { __typename?: 'ReturnPost', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, post?: Maybe<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> }> } };
 
 export type RegisterUserMutationVariables = Exact<{
   input: LoginRegistrationInput;
@@ -253,11 +279,25 @@ export type RegisterUserMutationVariables = Exact<{
 export type RegisterUserMutation = { __typename?: 'Mutation', registerUser: { __typename?: 'ReturnRegisterLogin', status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
 
 export type SetupProfileMutationVariables = Exact<{
-  input: InputSetupProfile;
+  input: InputUniqueData;
 }>;
 
 
 export type SetupProfileMutation = { __typename?: 'Mutation', setupProfile: { __typename?: 'ReturnUserWithProfile', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
+
+export type UpdateProfileMutationVariables = Exact<{
+  input: InputProfile;
+}>;
+
+
+export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'ReturnUserWithProfile', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
+
+export type UploadProfileBannerMutationVariables = Exact<{
+  profileBanner: Scalars['Upload'];
+}>;
+
+
+export type UploadProfileBannerMutation = { __typename?: 'Mutation', uploadProfileBanner: { __typename?: 'ReturnUserWithProfile', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
 
 export type UploadProfilePictureMutationVariables = Exact<{
   ProfilePicture: Scalars['Upload'];
@@ -470,7 +510,7 @@ export type RegisterUserMutationHookResult = ReturnType<typeof useRegisterUserMu
 export type RegisterUserMutationResult = Apollo.MutationResult<RegisterUserMutation>;
 export type RegisterUserMutationOptions = Apollo.BaseMutationOptions<RegisterUserMutation, RegisterUserMutationVariables>;
 export const SetupProfileDocument = gql`
-    mutation SetupProfile($input: InputSetupProfile!) {
+    mutation SetupProfile($input: InputUniqueData!) {
   setupProfile(input: $input) {
     status
     errors {
@@ -509,6 +549,86 @@ export function useSetupProfileMutation(baseOptions?: Apollo.MutationHookOptions
 export type SetupProfileMutationHookResult = ReturnType<typeof useSetupProfileMutation>;
 export type SetupProfileMutationResult = Apollo.MutationResult<SetupProfileMutation>;
 export type SetupProfileMutationOptions = Apollo.BaseMutationOptions<SetupProfileMutation, SetupProfileMutationVariables>;
+export const UpdateProfileDocument = gql`
+    mutation UpdateProfile($input: InputProfile!) {
+  updateProfile(input: $input) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    user {
+      ...user
+    }
+  }
+}
+    ${FieldErrorsFragmentDoc}
+${UserFragmentDoc}`;
+export type UpdateProfileMutationFn = Apollo.MutationFunction<UpdateProfileMutation, UpdateProfileMutationVariables>;
+
+/**
+ * __useUpdateProfileMutation__
+ *
+ * To run a mutation, you first call `useUpdateProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProfileMutation, { data, loading, error }] = useUpdateProfileMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateProfileMutation(baseOptions?: Apollo.MutationHookOptions<UpdateProfileMutation, UpdateProfileMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateProfileMutation, UpdateProfileMutationVariables>(UpdateProfileDocument, options);
+      }
+export type UpdateProfileMutationHookResult = ReturnType<typeof useUpdateProfileMutation>;
+export type UpdateProfileMutationResult = Apollo.MutationResult<UpdateProfileMutation>;
+export type UpdateProfileMutationOptions = Apollo.BaseMutationOptions<UpdateProfileMutation, UpdateProfileMutationVariables>;
+export const UploadProfileBannerDocument = gql`
+    mutation UploadProfileBanner($profileBanner: Upload!) {
+  uploadProfileBanner(profileBanner: $profileBanner) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    user {
+      ...user
+    }
+  }
+}
+    ${FieldErrorsFragmentDoc}
+${UserFragmentDoc}`;
+export type UploadProfileBannerMutationFn = Apollo.MutationFunction<UploadProfileBannerMutation, UploadProfileBannerMutationVariables>;
+
+/**
+ * __useUploadProfileBannerMutation__
+ *
+ * To run a mutation, you first call `useUploadProfileBannerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadProfileBannerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [uploadProfileBannerMutation, { data, loading, error }] = useUploadProfileBannerMutation({
+ *   variables: {
+ *      profileBanner: // value for 'profileBanner'
+ *   },
+ * });
+ */
+export function useUploadProfileBannerMutation(baseOptions?: Apollo.MutationHookOptions<UploadProfileBannerMutation, UploadProfileBannerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UploadProfileBannerMutation, UploadProfileBannerMutationVariables>(UploadProfileBannerDocument, options);
+      }
+export type UploadProfileBannerMutationHookResult = ReturnType<typeof useUploadProfileBannerMutation>;
+export type UploadProfileBannerMutationResult = Apollo.MutationResult<UploadProfileBannerMutation>;
+export type UploadProfileBannerMutationOptions = Apollo.BaseMutationOptions<UploadProfileBannerMutation, UploadProfileBannerMutationVariables>;
 export const UploadProfilePictureDocument = gql`
     mutation UploadProfilePicture($ProfilePicture: Upload!) {
   uploadProfilePicture(profilePicture: $ProfilePicture) {

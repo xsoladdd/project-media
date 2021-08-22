@@ -3,16 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("reflect-metadata");
+const graphqlPlayground_1 = require("apollo-server-core/dist/plugin/landingPage/graphqlPlayground");
 const apollo_server_express_1 = require("apollo-server-express");
 const colors_1 = __importDefault(require("colors"));
 const dotenv_1 = require("dotenv");
+require("reflect-metadata");
 const app_1 = __importDefault(require("../app"));
 const typeorm_1 = __importDefault(require("../config/typeorm"));
 const graphql_1 = __importDefault(require("../graphql"));
-const utils_1 = require("../utils");
-const graphqlPlayground_1 = require("apollo-server-core/dist/plugin/landingPage/graphqlPlayground");
 const createProfileDataloader_1 = require("../graphql/dataloader/createProfileDataloader");
+const utils_1 = require("../utils");
 dotenv_1.config();
 const PORT = process.env.PORT || 5050;
 const main = async () => {

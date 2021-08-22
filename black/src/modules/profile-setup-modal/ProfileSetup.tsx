@@ -298,7 +298,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
             <FinalizeProfile
               imagePreview={imagePreview}
               birthday={birthday}
-              displayPhoto={imageData}
+              // displayPhoto={imageData}
               nameData={nameData}
               unique={uniqueData}
             />

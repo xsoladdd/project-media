@@ -7,13 +7,12 @@ interface FinalizeProfileProps {
   nameData: NameDataFormProps;
   unique: UniqueDataFormProps;
   birthday: Date;
-  displayPhoto: Blob | null;
+  // displayPhoto: Blob | null;
   imagePreview: string;
 }
 
 const FinalizeProfile: React.FC<FinalizeProfileProps> = ({
   birthday,
-  displayPhoto,
   nameData,
   unique,
   imagePreview,

@@ -1,11 +1,12 @@
 import React from "react";
-import { joinClass } from "../../lib/joinClass";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import TextArea from "../TexteArea";
+import { joinClass } from "../../lib/joinClass";
 
-interface TextInputProps
+interface TextAreaInputProps
   extends React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
+    React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+    HTMLTextAreaElement
   > {
   className?: string;
   label?: string;
@@ -13,7 +14,7 @@ interface TextInputProps
   error?: string;
 }
 
-const TextInput: React.FC<TextInputProps> = ({
+const TextAreaInput: React.FC<TextAreaInputProps> = ({
   className = "",
   label,
   required,
@@ -24,7 +25,7 @@ const TextInput: React.FC<TextInputProps> = ({
   ...rest
 }) => {
   return (
-    <div>
+    <>
       <div className="flex flex-col mx-1">
         {label && (
           <label
@@ -36,8 +37,7 @@ const TextInput: React.FC<TextInputProps> = ({
         )}
         <div className="flex-1 ">
           <div className="bg-white my-1 p-1 flex border border-gray-200 rounded mx-1 ">
-            <input
-              type="text"
+            <TextArea
               id={id}
               className={joinClass(
                 "p-1 px-2 appearance-none outline-none w-full text-gray-800",
@@ -54,7 +54,7 @@ const TextInput: React.FC<TextInputProps> = ({
         </div>
         {error && <p className="text-xs text-red-400">{error}</p>}
       </div>
-    </div>
+    </>
   );
 };
-export default TextInput;
+export default TextAreaInput;

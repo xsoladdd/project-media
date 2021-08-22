@@ -21,6 +21,7 @@ const createError_1 = require("../../utils/createError");
 const generics_1 = require("../generics");
 const scalars_1 = require("../scalars");
 const s3Bucket_1 = require("../../utils/s3Bucket");
+const sleep_1 = require("../../utils/sleep");
 let InputNewPost = class InputNewPost {
 };
 __decorate([
@@ -64,35 +65,36 @@ __decorate([
 ReturnPosts = __decorate([
     type_graphql_1.ObjectType()
 ], ReturnPosts);
-let ReturnNewPost = class ReturnNewPost extends generics_1.ReturnStructure {
+let ReturnPost = class ReturnPost extends generics_1.ReturnStructure {
 };
 __decorate([
     type_graphql_1.Field(() => Post_1.Post, { nullable: true }),
     __metadata("design:type", Post_1.Post)
-], ReturnNewPost.prototype, "post", void 0);
-ReturnNewPost = __decorate([
+], ReturnPost.prototype, "post", void 0);
+ReturnPost = __decorate([
     type_graphql_1.ObjectType()
-], ReturnNewPost);
+], ReturnPost);
 let PostResolver = class PostResolver {
-    async newPost({ content, media }, userContext) {
+    async newPost({ content, media }, userTest) {
         if (content.length <= 0) {
             return {
                 status: 0,
                 errors: [createError_1.createError("content", "content must not be empty")],
             };
         }
-        const postRepo = typeorm_1.getRepository(Post_1.Post);
+        console.log("userFromContext", userTest);
         const user = await User_1.User.findOne({
             relations: ["profile"],
-            where: { id: userContext.id },
+            where: { id: 4 },
         });
-        console.log(user);
+        console.log("user", user);
         if (!user) {
             return {
                 errors: [createError_1.createError("user", "user not found")],
                 status: 0,
             };
         }
+        const postRepo = typeorm_1.getRepository(Post_1.Post);
         let media_file_name;
         if (media) {
             media_file_name = await s3Bucket_1.UploadToS3(media);
@@ -103,6 +105,19 @@ let PostResolver = class PostResolver {
             user: user,
         });
         await postRepo.save(post);
+        return {
+            status: 1,
+            post,
+        };
+    }
+    async likePost(postId) {
+        const post = await Post_1.Post.findOne({ id: postId });
+        if (!post) {
+            return {
+                status: 0,
+                errors: [createError_1.createError("post", "no post found")],
+            };
+        }
         return {
             status: 1,
             post,
@@ -123,6 +138,7 @@ let PostResolver = class PostResolver {
             take: limit,
             cache: true,
         });
+        await sleep_1.sleep(500);
         return {
             has_more: limit === posts.length,
             posts: posts,
@@ -132,7 +148,7 @@ let PostResolver = class PostResolver {
 };
 __decorate([
     type_graphql_1.Authorized(),
-    type_graphql_1.Mutation(() => ReturnNewPost),
+    type_graphql_1.Mutation(() => ReturnPost),
     __param(0, type_graphql_1.Arg("input", { nullable: false })),
     __param(1, type_graphql_1.Ctx("user")),
     __metadata("design:type", Function),
@@ -140,6 +156,13 @@ __decorate([
         User_1.User]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "newPost", null);
+__decorate([
+    type_graphql_1.Mutation(() => ReturnPost),
+    __param(0, type_graphql_1.Arg("postId", () => scalars_1.EncryptedID)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "likePost", null);
 __decorate([
     type_graphql_1.Query(() => ReturnPosts),
     __param(0, type_graphql_1.Arg("input", { nullable: true })),

@@ -1,4 +1,4 @@
-mutation SetupProfile($input: InputSetupProfile!) {
+mutation SetupProfile($input: InputUniqueData!) {
   setupProfile(input: $input) {
     status
     errors {

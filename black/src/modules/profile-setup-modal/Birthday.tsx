@@ -1,6 +1,6 @@
-import React, { SetStateAction, useState } from "react";
-import Calendar from "react-calendar";
 import moment from "moment";
+import React, { SetStateAction } from "react";
+import Calendar from "react-calendar";
 interface BirthdayProps {
   birthday: Date;
   setBirthday: React.Dispatch<SetStateAction<Date>>;

@@ -1,17 +1,12 @@
-import React, {
-  MutableRefObject,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { Tab } from "@headlessui/react";
+import NextImage from "next/image";
+import React, { SetStateAction } from "react";
+import { AiOutlineCloseCircle } from "react-icons/ai";
 import { FiCamera } from "react-icons/fi";
 import Webcam from "react-webcam";
-import { Tab } from "@headlessui/react";
+import { getBase64, getBlobFromBase64 } from "../../lib/files";
 import { joinClass } from "../../lib/joinClass";
 import Button from "../../ui/Button";
-import { getBase64, getBlobFromBase64 } from "../../lib/files";
-import NextImage from "next/image";
-import { AiOutlineCloseCircle } from "react-icons/ai";
 
 interface ProfilePictureProps {
   imageData: Blob | null;

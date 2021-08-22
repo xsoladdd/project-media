@@ -1,8 +1,5 @@
+import { ApolloProvider as LibApolloProvider } from "@apollo/client";
 import React from "react";
-import {
-  ApolloProvider as LibApolloProvider,
-  createHttpLink,
-} from "@apollo/client";
 // import apolloClient from "../config/apollo-server/auth";
 import apolloClient from "../config/apollo-server/client";
 

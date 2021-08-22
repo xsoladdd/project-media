@@ -1,14 +1,11 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { Menu, Transition } from "@headlessui/react";
-import MobileNavPopout from "./Header/MobileNavPopout";
 import NextImage from "next/image";
+import React, { useState } from "react";
+import { GiHamburgerMenu } from "react-icons/gi";
 import logoIllu from "../assets/svg/logo.svg";
-import { navigationMenuItems } from "./NavigationMenuItems";
-import { useRouter } from "next/router";
-import defaultProfilePicture from "../assets/images/defaultProfilePicture.png";
-import NavbarDropdownButton from "./Header/NavbarDropdownButton";
 import Search from "../components/Search";
+import MobileNavPopout from "./Header/MobileNavPopout";
+import NavbarDropdownButton from "./Header/NavbarDropdownButton";
+import NextLink from "next/link";
 interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = ({}) => {
@@ -17,7 +14,7 @@ const Header: React.FC<HeaderProps> = ({}) => {
   return (
     <>
       {/* Mobile Header */}
-      <div className=" lg:hidden">
+      <div className=" lg:hidden ">
         <MobileNavPopout status={show} dismiss={() => setShow(false)} />
         <header className="text-gray-600 body-font  shadow-md ">
           <div className="  mx-auto flex flex-wrap py-4 px-5 flex-row items-center justify-between">
@@ -42,14 +39,16 @@ const Header: React.FC<HeaderProps> = ({}) => {
       <div className="hidden lg:block">
         <header className="text-gray-600 body-font shadow-md ">
           <div className=" container mx-auto  max-w-6xl  flex flex-wrap py-3 flex-row items-center ">
-            <a className="flex title-font font-medium items-center text-gray-900 mb-0">
-              <div className="w-12 z-0">
-                <NextImage src={logoIllu} />
-              </div>
-              <span className="ml-3 text-xl">Project Media</span>
-            </a>
+            <NextLink href="/dashboard">
+              <a className="flex title-font font-medium items-center text-gray-900 mb-0">
+                <div className="w-12 z-0 cursor-pointer">
+                  <NextImage src={logoIllu} />
+                </div>
+                <span className="ml-3 text-xl">Project Media</span>
+              </a>
+            </NextLink>
             <div className="ml-auto flex">
-              <div className="">
+              <div className="z-0">
                 <Search />
               </div>
               <NavbarDropdownButton />

@@ -12,7 +12,11 @@ import Post from "../../components/Post/Post";
 import Button from "../../ui/Button";
 import NoPost from "./NoPost";
 import apolloClient from "../../config/apollo-server/client";
-import UploadProfile from "./UploadProfile";
+import UploadProfile from "./UploadProfilePicture";
+import { BsBoxArrowInUpLeft } from "react-icons/bs";
+import UploadProfileBanner from "./UploadProfileBanner";
+import PostLoading from "../../components/PostLoading";
+import NextLink from "next/link";
 
 interface UserPanelProps {
   user: User;
@@ -34,7 +38,9 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
   }, []);
 
   const { data, loading, fetchMore } = useFetchPostQuery({
-    // fetchPolicy: "network-only",
+    fetchPolicy: "network-only",
+    nextFetchPolicy: "cache-first",
+    notifyOnNetworkStatusChange: true,
     variables: {
       input: {
         limit: 5,
@@ -68,7 +74,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
           {/* Profile area */}
 
           <div className="flex justify-center bg-white">
-            <div className="w-full  ">
+            <div className="w-full relative   ">
               <div className="w-full h-44 relative overflow-hidden border-b ">
                 {profile.banner_image ? (
                   <NextImage
@@ -80,68 +86,79 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
                   <NextImage src={defaultProfileBanner} />
                 )}
               </div>
-
-              <div className="flex justify-between">
-                <div className="rounded-full overflow-hidden border-4 border-white inline-block -mt-16 w-32 h-32 ml-3  ">
-                  <div className="w-32 h-32 relative">
-                    {profile.display_image ? (
-                      <NextImage
-                        src={display_image}
-                        layout="fill"
-                        objectFit="cover"
-                      />
-                    ) : (
-                      <NextImage
-                        src={defaultProfilePicture}
-                        layout="fill"
-                        objectFit="cover"
-                      />
-                    )}
-                    {meData?.me.user?.username === user.username && (
-                      <UploadProfile>
-                        <div className="w-32 h-32 transition relative bg-gray-700 bg-opacity-0 hover:bg-opacity-50 cursor-pointer"></div>
-                      </UploadProfile>
-                    )}
+              {/* Name Area */}
+              <div className="">
+                <div className="flex justify-between z-20">
+                  <div className="rounded-full overflow-hidden border-4 border-white inline-block -mt-16 w-32 h-32 ml-3  ">
+                    <div className="w-32 h-32 relative">
+                      {profile.display_image ? (
+                        <NextImage
+                          src={display_image}
+                          layout="fill"
+                          objectFit="cover"
+                        />
+                      ) : (
+                        <NextImage
+                          src={defaultProfilePicture}
+                          layout="fill"
+                          objectFit="cover"
+                        />
+                      )}
+                      {meData?.me.user?.username === user.username && (
+                        <UploadProfile>
+                          <div className="w-32 h-32 transition relative bg-gray-700 bg-opacity-0 hover:bg-opacity-80 hover:opacity-80 cursor-pointer flex place-items-center place-content-center opacity-0">
+                            <BsBoxArrowInUpLeft size="50" color="white" />
+                          </div>
+                        </UploadProfile>
+                      )}
+                    </div>
                   </div>
+                  {meData?.me.user?.username === user.username && (
+                    <div className="hidden md:block">
+                      <UploadProfileBanner className="rounded-full  text-xs  px-3 py-2 mt-3 mr-3 transition hover:bg-blue-50 inline-block border-2 border-gray-600 text-gray-600 font-bold">
+                        Update Banner
+                      </UploadProfileBanner>
+                      <NextLink href="/edit-profile">
+                        <button className="rounded-full text-xs   px-3 py-2 mt-3 mr-3 transition hover:bg-blue-50 inline-block border-2 border-green-600 text-green-600 font-bold">
+                          Edit Profile
+                        </button>
+                      </NextLink>
+                    </div>
+                  )}
                 </div>
-                {meData?.me.user?.username === user.username && (
-                  <div>
-                    <button className="rounded-full px-3 py-2 mt-3 mr-3 transition hover:bg-blue-50 inline-block border-2 border-green-600 text-green-600 font-bold">
-                      Edit Profile
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div className="ml-3">
-                <p className="font-bold text-lg">
-                  {first_name} {middle_name} {last_name}{" "}
-                  {nickname && `(${nickname})`}
-                </p>
-                <p className="text-gray-500">@{username?.toLowerCase()}</p>
-              </div>
-
-              <div className="px-3 mt-3">
-                <p>{user.profile?.bio}</p>
+                <div className="ml-3">
+                  <p className="font-bold text-lg">
+                    {first_name} {middle_name} {last_name}{" "}
+                    {nickname && `(${nickname})`}
+                  </p>
+                  <p className="text-gray-500">@{username?.toLowerCase()}</p>
+                </div>
+                <div className="px-3 mt-3">
+                  <p>{user.profile?.bio}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        {data?.fetchPost.posts.length === 0 && <NoPost />}
+
         {loading ? (
-          <h1>Loading</h1>
+          <PostLoading />
         ) : (
           <div className="grid grid-cols-1 gap-6 my-6 px-4 ">
-            {data?.fetchPost.posts.map(({ content, user, UpdatedAt }, idx) => {
-              return (
-                <Post
-                  key={idx}
-                  description={content}
-                  user={user as User}
-                  lastUpdateTime={UpdatedAt}
-                />
-              );
-            })}
+            {data?.fetchPost.posts.length === 0 && <NoPost />}
+            {data?.fetchPost.posts.map(
+              ({ content, user, UpdatedAt, media }, idx) => {
+                return (
+                  <Post
+                    key={idx}
+                    description={content}
+                    user={user as User}
+                    lastUpdateTime={UpdatedAt}
+                    image={media}
+                  />
+                );
+              }
+            )}
             {data?.fetchPost.has_more && (
               <Button
                 onClick={handleShowMore}

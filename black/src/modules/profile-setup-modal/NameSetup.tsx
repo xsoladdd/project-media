@@ -1,6 +1,6 @@
 import React, { SetStateAction } from "react";
 import { NameDataFormProps } from "../../global";
-import TextInput from "../../ui/TextInput/TextInput";
+import TextInput from "../../ui/Form/TextInput";
 import { ProfileSetupFormError } from "./ProfileSetup";
 
 interface NameSetupProps {

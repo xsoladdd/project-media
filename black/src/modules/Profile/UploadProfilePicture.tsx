@@ -33,6 +33,8 @@ const UploadProfile: React.FC<UploadProfileProps> = ({ children }) => {
   }
 
   function openModal() {
+    setImageData(null);
+    setImagePreview("");
     setIsOpen(true);
   }
 

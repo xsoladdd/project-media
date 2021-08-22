@@ -5,12 +5,15 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { EncryptedID } from "../graphql/scalars";
 import { S3File } from "../graphql/scalars/S3File";
+import { Profile } from "./Profile";
 import { User } from "./User";
 
 @Entity()
@@ -39,6 +42,10 @@ export class Post extends BaseEntity {
   @Field(() => Int)
   @Column()
   userId: number;
+
+  @ManyToMany(() => Profile)
+  @JoinTable()
+  likes: Profile[];
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;

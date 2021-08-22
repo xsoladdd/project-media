@@ -1,0 +1,11 @@
+mutation UploadProfileBanner($profileBanner: Upload!) {
+  uploadProfileBanner(profileBanner: $profileBanner) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    user {
+      ...user
+    }
+  }
+}

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Post from "../../components/Post/Post";
+import PostLoading from "../../components/PostLoading";
 import apolloClient from "../../config/apollo-server/client";
 import {
   FetchPostQueryVariables,
@@ -13,14 +14,17 @@ import NewPost from "./media-feed/NewPost";
 
 interface MainProps {}
 
-export const Main: React.FC<MainProps> = ({}) => {
+const Dashboard: React.FC<MainProps> = ({}) => {
   const limit = 5;
   React.useEffect(() => {
     apolloClient.cache.evict({ fieldName: "fetchPost" });
+    console.log("clean up fetch post");
     return () => {};
   }, []);
+
   const { data, loading, fetchMore } = useFetchPostQuery({
-    // fetchPolicy: "network-only",
+    fetchPolicy: "network-only",
+    // nextFetchPolicy: "cache-first",
     variables: {
       input: {
         offset: 0,
@@ -42,6 +46,9 @@ export const Main: React.FC<MainProps> = ({}) => {
       });
     }
   };
+  // if (loading) {
+  //   return <h1>Loading</h1>;
+  // }
 
   return (
     <>
@@ -53,7 +60,7 @@ export const Main: React.FC<MainProps> = ({}) => {
             <NewPost />
           </div>
         </div>
-        {/* Post */}
+
         <div className="">
           {/* Post item */}
           <div className="grid grid-cols-1 gap-6 my-6 px-4 ">
@@ -71,6 +78,7 @@ export const Main: React.FC<MainProps> = ({}) => {
                 );
               }
             )}
+            {loading && <PostLoading />}
             {data?.fetchPost.has_more && (
               <Button
                 onClick={handleShowMore}
@@ -88,3 +96,5 @@ export const Main: React.FC<MainProps> = ({}) => {
     </>
   );
 };
+
+export default Dashboard;

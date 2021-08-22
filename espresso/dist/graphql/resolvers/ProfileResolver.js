@@ -21,51 +21,56 @@ const createError_1 = require("../../utils/createError");
 const s3Bucket_1 = require("../../utils/s3Bucket");
 const generics_1 = require("../generics");
 const scalars_1 = require("../scalars");
-let InputSetupProfile = class InputSetupProfile {
+let InputProfile = class InputProfile {
 };
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], InputSetupProfile.prototype, "mobileNumber", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", String)
-], InputSetupProfile.prototype, "username", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", String)
-], InputSetupProfile.prototype, "firstName", void 0);
+], InputProfile.prototype, "firstName", void 0);
 __decorate([
     type_graphql_1.Field({ nullable: true }),
     __metadata("design:type", String)
-], InputSetupProfile.prototype, "middleName", void 0);
+], InputProfile.prototype, "middleName", void 0);
 __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", String)
-], InputSetupProfile.prototype, "lastName", void 0);
+], InputProfile.prototype, "lastName", void 0);
 __decorate([
     type_graphql_1.Field({ nullable: true }),
     __metadata("design:type", String)
-], InputSetupProfile.prototype, "nickname", void 0);
+], InputProfile.prototype, "nickname", void 0);
 __decorate([
     type_graphql_1.Field({ nullable: true }),
     __metadata("design:type", String)
-], InputSetupProfile.prototype, "bio", void 0);
+], InputProfile.prototype, "bio", void 0);
+InputProfile = __decorate([
+    type_graphql_1.InputType()
+], InputProfile);
+let InputUniqueData = class InputUniqueData extends InputProfile {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], InputUniqueData.prototype, "mobileNumber", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], InputUniqueData.prototype, "username", void 0);
 __decorate([
     type_graphql_1.Field(() => scalars_1.Upload, { nullable: true }),
     __metadata("design:type", Object)
-], InputSetupProfile.prototype, "display_image", void 0);
+], InputUniqueData.prototype, "display_image", void 0);
 __decorate([
     type_graphql_1.Field(() => scalars_1.Upload, { nullable: true }),
     __metadata("design:type", Object)
-], InputSetupProfile.prototype, "banner_image", void 0);
+], InputUniqueData.prototype, "banner_image", void 0);
 __decorate([
     type_graphql_1.Field({}),
     __metadata("design:type", Date)
-], InputSetupProfile.prototype, "birthday", void 0);
-InputSetupProfile = __decorate([
+], InputUniqueData.prototype, "birthday", void 0);
+InputUniqueData = __decorate([
     type_graphql_1.InputType()
-], InputSetupProfile);
+], InputUniqueData);
 let InputCheckUnique = class InputCheckUnique {
 };
 __decorate([
@@ -133,6 +138,34 @@ let ProfileResolver = class ProfileResolver {
         return {
             status: 1,
             user: userWithProfile,
+        };
+    }
+    async updateProfile({ bio, firstName, lastName, middleName, nickname }, { id }) {
+        if (!id) {
+            return {
+                status: 0,
+                errors: [createError_1.createError("user", "user doesnt exist")],
+            };
+        }
+        const update = await Profile_1.Profile.update({
+            userId: id,
+        }, {
+            bio,
+            first_name: firstName,
+            last_name: lastName,
+            middle_name: middleName,
+            nickname,
+        });
+        if (update.affected === 0) {
+            return {
+                status: 0,
+                errors: [createError_1.createError("profile", "updating profile failed")],
+            };
+        }
+        const user = await User_1.User.findOne({ where: { id } });
+        return {
+            status: 1,
+            user,
         };
     }
     async checkUnique(input) {
@@ -212,16 +245,58 @@ let ProfileResolver = class ProfileResolver {
             user,
         };
     }
+    async uploadProfileBanner(profileBanner, { id }) {
+        let profileBannerName = "";
+        if (profileBanner) {
+            profileBannerName = await s3Bucket_1.UploadToS3(profileBanner);
+        }
+        const update = await Profile_1.Profile.update({
+            userId: id,
+        }, {
+            banner_image: profileBannerName,
+        });
+        if (update.affected === 0) {
+            return {
+                status: 0,
+                errors: [createError_1.createError("profile", "something went wrong")],
+            };
+        }
+        const user = await User_1.User.findOne({
+            relations: ["profile"],
+            where: {
+                id,
+            },
+        });
+        if (!user) {
+            return {
+                status: 0,
+                errors: [createError_1.createError("user", "no user found")],
+            };
+        }
+        return {
+            status: 1,
+            user,
+        };
+    }
 };
 __decorate([
     type_graphql_1.Mutation(() => generics_1.ReturnUserWithProfile),
     __param(0, type_graphql_1.Arg("input")),
     __param(1, type_graphql_1.Ctx("user")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [InputSetupProfile,
+    __metadata("design:paramtypes", [InputUniqueData,
         User_1.User]),
     __metadata("design:returntype", Promise)
 ], ProfileResolver.prototype, "setupProfile", null);
+__decorate([
+    type_graphql_1.Mutation(() => generics_1.ReturnUserWithProfile),
+    __param(0, type_graphql_1.Arg("input")),
+    __param(1, type_graphql_1.Ctx("user")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [InputProfile,
+        User_1.User]),
+    __metadata("design:returntype", Promise)
+], ProfileResolver.prototype, "updateProfile", null);
 __decorate([
     type_graphql_1.Query(() => Boolean),
     __param(0, type_graphql_1.Arg("input", { nullable: true })),
@@ -250,6 +325,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, User_1.User]),
     __metadata("design:returntype", Promise)
 ], ProfileResolver.prototype, "uploadProfilePicture", null);
+__decorate([
+    type_graphql_1.Mutation(() => generics_1.ReturnUserWithProfile),
+    __param(0, type_graphql_1.Arg("profileBanner", () => scalars_1.Upload)),
+    __param(1, type_graphql_1.Ctx("user")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, User_1.User]),
+    __metadata("design:returntype", Promise)
+], ProfileResolver.prototype, "uploadProfileBanner", null);
 ProfileResolver = __decorate([
     type_graphql_1.Resolver()
 ], ProfileResolver);

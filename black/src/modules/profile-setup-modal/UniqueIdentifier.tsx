@@ -1,10 +1,8 @@
-import React, { SetStateAction, useState } from "react";
+import React, { SetStateAction, useEffect } from "react";
 import { useCheckUniqueLazyQuery } from "../../generated/graphql";
-import TextInput from "../../ui/TextInput/TextInput";
 import { UniqueDataFormProps } from "../../global";
-import { useEffect } from "react";
 import useDebounce from "../../hooks/useDebounce";
-import { emailRegex } from "../../lib/constants";
+import TextInput from "../../ui/Form/TextInput";
 import { ProfileSetupFormError } from "./ProfileSetup";
 
 interface UniqueIdentifierProps {

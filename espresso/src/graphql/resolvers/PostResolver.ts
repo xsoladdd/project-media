@@ -15,8 +15,9 @@ import { User } from "../../entities/User";
 import { createError } from "../../utils/createError";
 import { ReturnStructure } from "../generics";
 import { FileUpload } from "graphql-upload";
-import { Upload } from "../scalars";
+import { EncryptedID, Upload } from "../scalars";
 import { UploadToS3 } from "../../utils/s3Bucket";
+import { sleep } from "../../utils/sleep";
 @InputType()
 class InputNewPost {
   @Field()
@@ -46,7 +47,7 @@ class ReturnPosts extends ReturnStructure {
 }
 
 @ObjectType()
-class ReturnNewPost extends ReturnStructure {
+class ReturnPost extends ReturnStructure {
   @Field(() => Post, { nullable: true })
   post?: Post;
 }
@@ -55,33 +56,26 @@ class ReturnNewPost extends ReturnStructure {
 export class PostResolver {
   // Registration
   @Authorized()
-  @Mutation(() => ReturnNewPost)
+  @Mutation(() => ReturnPost)
   async newPost(
     @Arg("input", { nullable: false }) { content, media }: InputNewPost,
-    @Ctx("user") userContext: User
-  ): Promise<ReturnNewPost> {
+    @Ctx("user") userTest: User
+  ): Promise<ReturnPost> {
     if (content.length <= 0) {
       return {
         status: 0,
         errors: [createError("content", "content must not be empty")],
       };
     }
-
-    const postRepo = getRepository(Post);
-    // const userRepo = getRepository(User);
-
-    // const user = await userRepo
-    //   .createQueryBuilder("user")
-    //   .leftJoinAndSelect(`user.profile`, `profile`)
-    //   .where("user.id = :id", { id: userContext.id })
-    //   .getOne();
+    // console.log("id", id);
+    console.log("userFromContext", userTest);
 
     const user = await User.findOne({
       relations: ["profile"],
-      where: { id: userContext.id },
+      where: { id: 4 },
     });
 
-    console.log(user);
+    console.log("user", user);
 
     if (!user) {
       return {
@@ -89,6 +83,7 @@ export class PostResolver {
         status: 0,
       };
     }
+    const postRepo = getRepository(Post);
     let media_file_name;
     if (media) {
       media_file_name = await UploadToS3(media);
@@ -99,6 +94,24 @@ export class PostResolver {
       user: user,
     });
     await postRepo.save(post);
+    return {
+      status: 1,
+      post,
+    };
+  }
+
+  @Mutation(() => ReturnPost)
+  async likePost(
+    @Arg("postId", () => EncryptedID) postId: number
+  ): Promise<ReturnPost> {
+    const post = await Post.findOne({ id: postId });
+
+    if (!post) {
+      return {
+        status: 0,
+        errors: [createError("post", "no post found")],
+      };
+    }
     return {
       status: 1,
       post,
@@ -124,7 +137,7 @@ export class PostResolver {
       take: limit,
       cache: true,
     });
-
+    await sleep(500);
     return {
       has_more: limit === posts.length,
       posts: posts,

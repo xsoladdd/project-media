@@ -1,0 +1,11 @@
+mutation UpdateProfile($input: InputProfile!) {
+  updateProfile(input: $input) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    user {
+      ...user
+    }
+  }
+}

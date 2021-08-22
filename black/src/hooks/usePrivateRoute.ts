@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import {
   getAccessToken,
   getRefreshToken,
   getUserIdentifier,
 } from "../lib/jscookies";
-import { useRouter, Router } from "next/router";
 
 export const usePrivateRoute = () => {
   const { replace } = useRouter();

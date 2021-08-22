@@ -26,3 +26,27 @@ mutation getFreshToken($getFreshTokenInput: InputGetFreshToken!) {
          "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjkxMjYzMjIsInVzZXIiOnsiaWQiOjI3LCJlbWFpbCI6ImVmdW50YW5hckBjbG91ZHBhbmRhLmNvbSIsInVzZXJuYW1lIjpudWxsLCJtb2JpbGVfbnVtYmVyIjpudWxsLCJwYXNzd29yZCI6bnVsbCwiaXNfYWN0aXZlIjoxLCJoYXNfcHJvZmlsZSI6MCwiY3JlYXRlZEF0IjoiMjAyMS0wOC0wOVQxNDo0ODoyMi45NzlaIiwiVXBkYXRlZEF0IjoiMjAyMS0wOC0wOVQxNDo0ODoyMi45NzlaIn0sImlhdCI6MTYyODUyMTUyMn0.BbufQ5oJDYyQvOsqBoXHpl5IkENYAxPNDejiLvIYYHw"
     }
 }
+
+
+###
+
+GET https://stdominiccollege.edu.ph/SDCALMSv2/index.php/API/BalanceAPI HTTP/1.1
+content-type: application/json
+
+{
+    "input":"db529fd87084ec6e5e9c6ccb9a9032be"
+
+}
+
+
+###
+
+GET http://stdominiccollege.edu.ph/SDCALMSv2/index.php/API/BalanceAPI HTTP/1.1
+content-type: application/json
+
+{
+    "Reference_Number":"db529fd87084ec6e5e9c6ccb9a9032be",
+    "School_Year":"2014-2015",
+    "Semester":"SECOND"
+
+}
