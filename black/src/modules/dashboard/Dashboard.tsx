@@ -3,8 +3,9 @@ import Post from "../../components/Post/Post";
 import PostLoading from "../../components/PostLoading";
 import apolloClient from "../../config/apollo-server/client";
 import {
-  FetchPostQueryVariables,
-  useFetchPostQuery,
+  FetchPostsQueryVariables,
+  useFetchPostsQuery,
+  useMeQuery,
   User,
 } from "../../generated/graphql";
 import Layout from "../../layout/Layout";
@@ -16,15 +17,16 @@ interface MainProps {}
 
 const Dashboard: React.FC<MainProps> = ({}) => {
   const limit = 5;
-  React.useEffect(() => {
-    apolloClient.cache.evict({ fieldName: "fetchPost" });
-    console.log("clean up fetch post");
-    return () => {};
+  useEffect(() => {
+    return () => {
+      apolloClient.cache.evict({ fieldName: "fetchPosts" });
+    };
   }, []);
 
-  const { data, loading, fetchMore } = useFetchPostQuery({
-    fetchPolicy: "network-only",
-    // nextFetchPolicy: "cache-first",
+  const { data: meData } = useMeQuery();
+  const { data, loading, fetchMore } = useFetchPostsQuery({
+    fetchPolicy: "cache-first",
+    // fetchPolicy: "network-only",
     variables: {
       input: {
         offset: 0,
@@ -40,16 +42,12 @@ const Dashboard: React.FC<MainProps> = ({}) => {
         variables: {
           input: {
             limit,
-            offset: data ? data.fetchPost.posts.length : 0,
+            offset: data ? data.fetchPosts.posts.length : 0,
           },
-        } as FetchPostQueryVariables,
+        } as FetchPostsQueryVariables,
       });
     }
   };
-  // if (loading) {
-  //   return <h1>Loading</h1>;
-  // }
-
   return (
     <>
       <Layout>
@@ -64,25 +62,30 @@ const Dashboard: React.FC<MainProps> = ({}) => {
         <div className="">
           {/* Post item */}
           <div className="grid grid-cols-1 gap-6 my-6 px-4 ">
-            {data?.fetchPost.posts.length === 0 && <NoPost />}
-            {data?.fetchPost.posts.map(
-              ({ content, user, UpdatedAt, media }, idx) => {
+            {data?.fetchPosts.posts.length === 0 && <NoPost />}
+            {data?.fetchPosts.posts.map(
+              ({ content, user, UpdatedAt, media, likes, id }) => {
                 return (
                   <Post
-                    key={idx}
+                    id={id}
+                    key={id}
                     description={content}
                     user={user as User}
                     lastUpdateTime={UpdatedAt}
                     image={media}
+                    likes={likes?.length}
+                    isLiked={
+                      !!likes?.find(({ id }) => id === meData?.me.user?.id)
+                    }
                   />
                 );
               }
             )}
             {loading && <PostLoading />}
-            {data?.fetchPost.has_more && (
+            {data?.fetchPosts.has_more && (
               <Button
                 onClick={handleShowMore}
-                disabled={!data?.fetchPost.has_more}
+                disabled={!data?.fetchPosts.has_more}
                 className="uppercase"
                 variant="green"
                 loading={loading}

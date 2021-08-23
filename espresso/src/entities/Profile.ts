@@ -1,17 +1,17 @@
+import { Field, Int, ObjectType } from "type-graphql";
 import {
-  Entity,
-  PrimaryGeneratedColumn,
+  BaseEntity,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  OneToOne,
+  Entity,
   JoinColumn,
-  BaseEntity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
-import { ObjectType, Field, Int } from "type-graphql";
 import { EncryptedID } from "../graphql/scalars";
-import { User } from "./User";
 import { S3File } from "../graphql/scalars/S3File";
+import { User } from "./User";
 
 @Entity()
 @ObjectType()

@@ -1,19 +1,28 @@
 import React, { useState } from "react";
 import NextImage from "next/image";
 import { useEffect } from "react";
-import { User } from "../../generated/graphql";
-import { FaRegCommentDots, FaRegHeart } from "react-icons/fa";
-import Link from "next/link";
+import {
+  Post as PostType,
+  PostFragmentDoc,
+  useLikeUnlikePostMutation,
+  User,
+} from "../../generated/graphql";
+import { FaRegCommentDots, FaRegHeart, FaHeart } from "react-icons/fa";
+import NextLink from "next/link";
 import moment from "moment";
 import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
+import apolloClient from "../../config/apollo-server/client";
+import { debounce } from "lodash";
 
 interface PostProps {
   image?: string;
   description: string;
   user: User;
   likes?: number;
+  isLiked?: boolean;
   commentsCount?: number;
   lastUpdateTime: string;
+  id: string;
 }
 
 const Post: React.FC<PostProps> = ({
@@ -23,6 +32,8 @@ const Post: React.FC<PostProps> = ({
   commentsCount = 0,
   likes = 0,
   lastUpdateTime,
+  isLiked = false,
+  id,
 }) => {
   const maxPostCharacters = 255;
   const [showAll, setShowAll] = useState(false);
@@ -30,7 +41,29 @@ const Post: React.FC<PostProps> = ({
     description.substring(0, maxPostCharacters)
   );
 
-  // console.log(user);
+  const [likeUnlike, { loading }] = useLikeUnlikePostMutation({
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "no-cache",
+    onCompleted: ({ likeUnlikePost }) => {
+      if (!likeUnlikePost.post) {
+        return;
+      }
+      const data = apolloClient.readFragment({
+        fragmentName: `post`,
+        id: `Post:${likeUnlikePost.post.id}`,
+        fragment: PostFragmentDoc,
+      });
+      apolloClient.writeFragment({
+        fragmentName: `post`,
+        id: `Post:${likeUnlikePost.post.id}`,
+        fragment: PostFragmentDoc,
+        data: {
+          ...data,
+          likes: likeUnlikePost.post.likes,
+        } as PostType,
+      });
+    },
+  });
 
   useEffect(() => {
     if (showAll) {
@@ -62,7 +95,7 @@ const Post: React.FC<PostProps> = ({
                 </div>
               </div>
               <div className="ml-2 mt-0.5">
-                <Link href={`/u/${user.username}`}>
+                <NextLink href={`/u/${user.username}`}>
                   <div>
                     <p className="block font-medium text-base leading-snug text-black dark:text-gray-100">
                       {user.profile?.first_name} {user.profile?.middle_name}{" "}
@@ -73,7 +106,7 @@ const Post: React.FC<PostProps> = ({
                       @{user.username}
                     </span>
                   </div>
-                </Link>
+                </NextLink>
               </div>
             </a>
           </div>
@@ -100,14 +133,26 @@ const Post: React.FC<PostProps> = ({
           )}
         </div>
         <div className="pb-2 flex flex-row items-center">
-          <button className="flex flex-row items-center focus:outline-none focus:shadow-outline rounded-lg">
-            <FaRegHeart />
+          <button
+            className="flex flex-row items-center focus:outline-none focus:shadow-outline rounded-lg"
+            disabled={loading}
+            onClick={debounce(() => {
+              likeUnlike({
+                variables: {
+                  postId: id,
+                },
+              });
+            }, 500)}
+          >
+            {isLiked ? <FaHeart /> : <FaRegHeart />}
             <span className="ml-1">{likes}</span>
           </button>
-          <button className="flex flex-row items-center focus:outline-none focus:shadow-outline rounded-lg ml-3">
-            <FaRegCommentDots />
-            <span className="ml-1">{commentsCount}</span>
-          </button>
+          <NextLink href={`/p/${id}`}>
+            <button className="flex flex-row items-center focus:outline-none focus:shadow-outline rounded-lg ml-3">
+              <FaRegCommentDots />
+              <span className="ml-1">{commentsCount}</span>
+            </button>
+          </NextLink>
         </div>
       </div>
     </>

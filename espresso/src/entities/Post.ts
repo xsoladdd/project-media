@@ -1,20 +1,20 @@
-import { Field, Int, ObjectType } from "type-graphql";
+import { Ctx, Field, Int, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { EncryptedID } from "../graphql/scalars";
 import { S3File } from "../graphql/scalars/S3File";
-import { Profile } from "./Profile";
+import { contextObject } from "../types";
 import { User } from "./User";
+import { UserPostLike } from "./UserPostLike";
 
 @Entity()
 @ObjectType()
@@ -43,9 +43,10 @@ export class Post extends BaseEntity {
   @Column()
   userId: number;
 
-  @ManyToMany(() => Profile)
-  @JoinTable()
-  likes: Profile[];
+  @Field(() => [UserPostLike])
+  @OneToMany(() => UserPostLike, (upl) => upl.post)
+  userConnection: UserPostLike[];
+  // userConnection: Promise<UserPostLike[]>;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;
@@ -53,4 +54,11 @@ export class Post extends BaseEntity {
   @Field(() => String)
   @UpdateDateColumn({ name: "updated_at" })
   UpdatedAt!: Date;
+
+  @Field(() => [User], { nullable: true })
+  async likes(
+    @Ctx() { userPostLikeDataloader }: contextObject
+  ): Promise<User[] | null> {
+    return await userPostLikeDataloader.load(this.id);
+  }
 }

@@ -5,5 +5,8 @@ fragment post on Post {
   user {
     ...user
   }
+  likes {
+    ...user
+  }
   UpdatedAt
 }

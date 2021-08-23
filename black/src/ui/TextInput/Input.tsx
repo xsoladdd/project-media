@@ -1,6 +1,5 @@
 import React from "react";
 import { joinClass } from "../../lib/joinClass";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 interface InputProps
   extends React.DetailedHTMLProps<

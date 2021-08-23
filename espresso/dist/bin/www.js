@@ -12,6 +12,7 @@ const app_1 = __importDefault(require("../app"));
 const typeorm_1 = __importDefault(require("../config/typeorm"));
 const graphql_1 = __importDefault(require("../graphql"));
 const createProfileDataloader_1 = require("../graphql/dataloader/createProfileDataloader");
+const createUserPostLikeDataloader_1 = require("../graphql/dataloader/createUserPostLikeDataloader");
 const utils_1 = require("../utils");
 dotenv_1.config();
 const PORT = process.env.PORT || 5050;
@@ -39,6 +40,7 @@ const main = async () => {
                 token: token || "",
                 user,
                 profileDataloader: createProfileDataloader_1.createProfileDataloader(),
+                userPostLikeDataloader: createUserPostLikeDataloader_1.createUserPostLikeDataloader(),
             };
             return context;
         },

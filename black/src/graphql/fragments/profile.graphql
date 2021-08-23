@@ -10,6 +10,5 @@ fragment profile on Profile {
   banner_image
   bio
   userId
-
   __typename
 }

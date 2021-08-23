@@ -1,7 +1,7 @@
 import React from "react";
 import {
-  FetchPostQueryVariables,
-  useFetchPostQuery,
+  FetchPostsQueryVariables,
+  useFetchPostsQuery,
   useMeQuery,
   User,
 } from "../../generated/graphql";
@@ -33,13 +33,13 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
     profile;
 
   React.useEffect(() => {
-    apolloClient.cache.evict({ fieldName: "fetchPost" });
-    return () => {};
+    return () => {
+      apolloClient.cache.evict({ fieldName: "fetchPosts" });
+    };
   }, []);
 
-  const { data, loading, fetchMore } = useFetchPostQuery({
-    fetchPolicy: "network-only",
-    nextFetchPolicy: "cache-first",
+  const { data, loading, fetchMore } = useFetchPostsQuery({
+    fetchPolicy: "cache-first",
     notifyOnNetworkStatusChange: true,
     variables: {
       input: {
@@ -55,10 +55,10 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
         variables: {
           input: {
             limit,
-            offset: data ? data.fetchPost.posts.length : 0,
+            offset: data ? data.fetchPosts.posts.length : 0,
             username: user.username,
           },
-        } as FetchPostQueryVariables,
+        } as FetchPostsQueryVariables,
       });
     }
   };
@@ -145,24 +145,29 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
           <PostLoading />
         ) : (
           <div className="grid grid-cols-1 gap-6 my-6 px-4 ">
-            {data?.fetchPost.posts.length === 0 && <NoPost />}
-            {data?.fetchPost.posts.map(
-              ({ content, user, UpdatedAt, media }, idx) => {
+            {data?.fetchPosts.posts.length === 0 && <NoPost />}
+            {data?.fetchPosts.posts.map(
+              ({ content, user, UpdatedAt, media, likes, id }) => {
                 return (
                   <Post
-                    key={idx}
+                    id={id}
+                    key={id}
                     description={content}
                     user={user as User}
                     lastUpdateTime={UpdatedAt}
                     image={media}
+                    likes={likes?.length}
+                    isLiked={
+                      !!likes?.find(({ id }) => id === meData?.me.user?.id)
+                    }
                   />
                 );
               }
             )}
-            {data?.fetchPost.has_more && (
+            {data?.fetchPosts.has_more && (
               <Button
                 onClick={handleShowMore}
-                disabled={!data?.fetchPost.has_more}
+                disabled={!data?.fetchPosts.has_more}
                 className="uppercase"
                 variant="green"
                 loading={loading}

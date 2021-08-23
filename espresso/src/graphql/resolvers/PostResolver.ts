@@ -1,3 +1,4 @@
+import { FileUpload } from "graphql-upload";
 import {
   Arg,
   Authorized,
@@ -9,15 +10,14 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { getRepository } from "typeorm";
 import { Post } from "../../entities/Post";
 import { User } from "../../entities/User";
+import { UserPostLike } from "../../entities/UserPostLike";
 import { createError } from "../../utils/createError";
-import { ReturnStructure } from "../generics";
-import { FileUpload } from "graphql-upload";
-import { EncryptedID, Upload } from "../scalars";
 import { UploadToS3 } from "../../utils/s3Bucket";
 import { sleep } from "../../utils/sleep";
+import { ReturnStructure } from "../generics";
+import { EncryptedID, Upload } from "../scalars";
 @InputType()
 class InputNewPost {
   @Field()
@@ -59,7 +59,7 @@ export class PostResolver {
   @Mutation(() => ReturnPost)
   async newPost(
     @Arg("input", { nullable: false }) { content, media }: InputNewPost,
-    @Ctx("user") userTest: User
+    @Ctx("user") { id }: User
   ): Promise<ReturnPost> {
     if (content.length <= 0) {
       return {
@@ -67,12 +67,10 @@ export class PostResolver {
         errors: [createError("content", "content must not be empty")],
       };
     }
-    // console.log("id", id);
-    console.log("userFromContext", userTest);
 
     const user = await User.findOne({
       relations: ["profile"],
-      where: { id: 4 },
+      where: { id },
     });
 
     console.log("user", user);
@@ -83,43 +81,77 @@ export class PostResolver {
         status: 0,
       };
     }
-    const postRepo = getRepository(Post);
     let media_file_name;
     if (media) {
       media_file_name = await UploadToS3(media);
     }
-    const post = postRepo.create({
+    const post = await Post.create({
       content,
       media: media_file_name,
       user: user,
-    });
-    await postRepo.save(post);
+    }).save();
+
     return {
       status: 1,
       post,
     };
   }
 
+  @Authorized()
   @Mutation(() => ReturnPost)
-  async likePost(
-    @Arg("postId", () => EncryptedID) postId: number
+  async likeUnlikePost(
+    @Arg("postId", () => EncryptedID) postId: number,
+    @Ctx("user") { id }: User
   ): Promise<ReturnPost> {
-    const post = await Post.findOne({ id: postId });
-
+    const post = await Post.findOne({
+      relations: ["userConnection"],
+      where: { id: postId },
+    });
     if (!post) {
       return {
         status: 0,
         errors: [createError("post", "no post found")],
       };
     }
+    const user = await User.findOne({
+      relations: ["profile"],
+      where: {
+        id,
+      },
+    });
+    if (!user?.profile) {
+      return {
+        status: 0,
+        errors: [createError("profile", "no profile found")],
+      };
+    }
+    let existing = false;
+    post.userConnection.forEach(({ userId }) => {
+      if (userId === user.id) {
+        return (existing = true);
+      }
+    });
+    if (!existing) {
+      await UserPostLike.create({
+        userId: id,
+        postId,
+      }).save();
+    } else {
+      // Remove Like
+      await UserPostLike.delete({
+        userId: id,
+        postId,
+      });
+    }
     return {
       status: 1,
       post,
     };
   }
 
+  @Authorized()
   @Query(() => ReturnPosts)
-  async fetchPost(
+  async fetchPosts(
     @Arg("input", { nullable: true })
     { limit, offset, username }: InputFetchPost
   ): Promise<ReturnPosts> {
@@ -143,6 +175,30 @@ export class PostResolver {
       posts: posts,
       // posts: posts,
       status: 1,
+    };
+  }
+
+  @Query(() => ReturnPost)
+  async fetchPost(
+    @Arg("postId", () => EncryptedID) postId: number
+  ): Promise<ReturnPost> {
+    const post = await Post.findOne({
+      relations: ["user", "user.profile"],
+      where: {
+        id: postId,
+      },
+    });
+    console.log(post);
+    if (!post) {
+      return {
+        status: 0,
+        errors: [createError("post", "no post found")],
+      };
+    }
+
+    return {
+      status: 1,
+      post,
     };
   }
 }

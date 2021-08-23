@@ -13,6 +13,7 @@ import { EncryptedID } from "../graphql/scalars";
 import { Profile } from "./Profile";
 import { Post } from "./Post";
 import { RefreshToken } from "./RefreshToken";
+import { UserPostLike } from "./UserPostLike";
 
 @Entity()
 @ObjectType()
@@ -48,6 +49,10 @@ export class User extends BaseEntity {
 
   @OneToOne(() => RefreshToken, (refresh_token) => refresh_token.user)
   refresh_token: RefreshToken;
+
+  @OneToMany(() => UserPostLike, (upl) => upl.post)
+  postConnection: UserPostLike[];
+  // postConnection: Promise<UserPostLike[]>;
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;

@@ -1,12 +1,11 @@
-query FetchPost($input: InputFetchPost!) {
-  fetchPost(input: $input) {
+query FetchPost($postId: EncryptedID!) {
+  fetchPost(postId: $postId) {
     status
-    has_more
+    post {
+      ...post
+    }
     errors {
       ...fieldErrors
-    }
-    posts {
-      ...post
     }
   }
 }

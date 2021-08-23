@@ -8,15 +8,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Post = void 0;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const scalars_1 = require("../graphql/scalars");
 const S3File_1 = require("../graphql/scalars/S3File");
-const Profile_1 = require("./Profile");
 const User_1 = require("./User");
+const UserPostLike_1 = require("./UserPostLike");
 let Post = class Post extends typeorm_1.BaseEntity {
+    async likes({ userPostLikeDataloader }) {
+        return await userPostLikeDataloader.load(this.id);
+    }
 };
 __decorate([
     type_graphql_1.Field(() => scalars_1.EncryptedID),
@@ -49,10 +55,10 @@ __decorate([
     __metadata("design:type", Number)
 ], Post.prototype, "userId", void 0);
 __decorate([
-    typeorm_1.ManyToMany(() => Profile_1.Profile),
-    typeorm_1.JoinTable(),
+    type_graphql_1.Field(() => [UserPostLike_1.UserPostLike]),
+    typeorm_1.OneToMany(() => UserPostLike_1.UserPostLike, (upl) => upl.post),
     __metadata("design:type", Array)
-], Post.prototype, "likes", void 0);
+], Post.prototype, "userConnection", void 0);
 __decorate([
     typeorm_1.CreateDateColumn({ name: "created_at" }),
     __metadata("design:type", Date)
@@ -62,6 +68,13 @@ __decorate([
     typeorm_1.UpdateDateColumn({ name: "updated_at" }),
     __metadata("design:type", Date)
 ], Post.prototype, "UpdatedAt", void 0);
+__decorate([
+    type_graphql_1.Field(() => [User_1.User], { nullable: true }),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], Post.prototype, "likes", null);
 Post = __decorate([
     typeorm_1.Entity(),
     type_graphql_1.ObjectType()

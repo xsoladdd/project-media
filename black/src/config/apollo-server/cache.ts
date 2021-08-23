@@ -6,7 +6,7 @@ export const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
-        fetchPost: {
+        fetchPosts: {
           // Key args basically means put the variables that is important to this cache.
           // Dont put limit so it wont reflect on caching
           keyArgs: ["input.username"],

@@ -18,7 +18,6 @@ export const createProfileDataloader = () =>
     // Sort data array
     profiles.forEach((u) => {
       userIdToProfile[u.userId] = u;
-      // console.log(userIdToProfile);
     });
     // Return map new array with proper structure
     return userIds.map((userId) => userIdToProfile[userId]);

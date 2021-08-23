@@ -6,9 +6,8 @@ const uuid_1 = require("uuid");
 const constants_1 = require("../constants");
 const files_1 = require("./files");
 const UploadToS3 = async (file) => {
-    const { createReadStream, filename } = await file;
+    const { createReadStream, filename } = file;
     const stream = createReadStream();
-    console.log(`File name: `, filename);
     const storedFileName = `${uuid_1.v4()}.${files_1.getFileExtension(filename)}`;
     const storedFileUrl = constants_1.AWS_S3_BASE_URL + `${storedFileName}`;
     await new Promise((resolve, reject) => {

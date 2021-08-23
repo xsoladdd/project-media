@@ -12,6 +12,7 @@ const Profile_1 = require("../entities/Profile");
 const RefreshToken_1 = require("../entities/RefreshToken");
 const Post_1 = require("../entities/Post");
 const Comments_1 = require("../entities/Comments");
+const UserPostLike_1 = require("../entities/UserPostLike");
 dotenv_1.config();
 exports.default = typeorm_1.createConnection({
     type: "mysql",
@@ -21,7 +22,7 @@ exports.default = typeorm_1.createConnection({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     logging: !constants_1.isProduction,
-    entities: [User_1.User, Profile_1.Profile, Comments_1.Comments, Post_1.Post, RefreshToken_1.RefreshToken],
+    entities: [User_1.User, Profile_1.Profile, Comments_1.Comments, Post_1.Post, RefreshToken_1.RefreshToken, UserPostLike_1.UserPostLike],
     migrations: [path_1.default.join(__dirname + `../migration/**/*.ts`)],
 });
 //# sourceMappingURL=typeorm.js.map

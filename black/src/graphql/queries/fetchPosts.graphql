@@ -1,0 +1,12 @@
+query fetchPosts($input: InputFetchPost!) {
+  fetchPosts(input: $input) {
+    status
+    has_more
+    errors {
+      ...fieldErrors
+    }
+    posts {
+      ...post
+    }
+  }
+}

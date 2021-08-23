@@ -8,6 +8,7 @@ import app from "../app";
 import connection from "../config/typeorm";
 import buildSchema from "../graphql";
 import { createProfileDataloader } from "../graphql/dataloader/createProfileDataloader";
+import { createUserPostLikeDataloader } from "../graphql/dataloader/createUserPostLikeDataloader";
 import { contextObject } from "../types";
 import { verifyAccessToken } from "../utils";
 
@@ -41,6 +42,7 @@ const main = async () => {
         token: token || "",
         user,
         profileDataloader: createProfileDataloader(),
+        userPostLikeDataloader: createUserPostLikeDataloader(),
       };
       return context;
     },

@@ -1,0 +1,11 @@
+mutation LikeUnlikePost($postId: EncryptedID!) {
+  likeUnlikePost(postId: $postId) {
+    post {
+      ...post
+    }
+    status
+    errors {
+      ...fieldErrors
+    }
+  }
+}

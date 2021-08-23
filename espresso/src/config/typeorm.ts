@@ -7,6 +7,7 @@ import { Profile } from "../entities/Profile";
 import { RefreshToken } from "../entities/RefreshToken";
 import { Post } from "../entities/Post";
 import { Comments } from "../entities/Comments";
+import { UserPostLike } from "../entities/UserPostLike";
 config();
 
 export default createConnection({
@@ -18,7 +19,7 @@ export default createConnection({
   database: process.env.DB_NAME,
   // synchronize: true,
   logging: !isProduction,
-  entities: [User, Profile, Comments, Post, RefreshToken],
+  entities: [User, Profile, Comments, Post, RefreshToken, UserPostLike],
   migrations: [path.join(__dirname + `../migration/**/*.ts`)],
   // subscribers: ["src/subscriber/**/*.ts"],
   // cli: {

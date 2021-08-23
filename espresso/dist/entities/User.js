@@ -16,6 +16,7 @@ const scalars_1 = require("../graphql/scalars");
 const Profile_1 = require("./Profile");
 const Post_1 = require("./Post");
 const RefreshToken_1 = require("./RefreshToken");
+const UserPostLike_1 = require("./UserPostLike");
 let User = class User extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -59,6 +60,10 @@ __decorate([
     typeorm_1.OneToOne(() => RefreshToken_1.RefreshToken, (refresh_token) => refresh_token.user),
     __metadata("design:type", RefreshToken_1.RefreshToken)
 ], User.prototype, "refresh_token", void 0);
+__decorate([
+    typeorm_1.OneToMany(() => UserPostLike_1.UserPostLike, (upl) => upl.post),
+    __metadata("design:type", Array)
+], User.prototype, "postConnection", void 0);
 __decorate([
     typeorm_1.CreateDateColumn({ name: "created_at" }),
     __metadata("design:type", Date)
