@@ -5,7 +5,8 @@ import { AWS_S3_BASE_URL } from "../constants";
 import { getFileExtension } from "./files";
 
 export const UploadToS3 = async (file: FileUpload) => {
-  const { createReadStream, filename } = file;
+  // Await is a must
+  const { createReadStream, filename } = await file;
   const stream = createReadStream();
   const storedFileName = `${v4()}.${getFileExtension(filename)}`;
   const storedFileUrl = AWS_S3_BASE_URL + `${storedFileName}`;

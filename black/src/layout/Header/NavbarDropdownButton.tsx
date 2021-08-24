@@ -12,6 +12,7 @@ import {
   removeRefreshToken,
   removeUserIdentifier,
 } from "../../lib/jscookies";
+import Avatar from "../../ui/Avatar/Avatar";
 import { navigationMenuItems } from "../NavigationMenuItems";
 
 interface NavbarDropdownButtonProps {}
@@ -25,19 +26,7 @@ const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
       <Menu as="div" className="relative inline-block text-left">
         <div>
           <Menu.Button className="ml-auto inline-flex items-center    border-0 py-1 px-3 focus:outline-none   rounded text-base mt-4 md:mt-0">
-            <div className="w-10 h-10 rounded-full  overflow-hidden border-gray-900 border-2">
-              {data?.me.user?.profile?.display_image ? (
-                <div className="w-full h-full relative">
-                  <NextImage
-                    src={data?.me.user?.profile?.display_image}
-                    layout="fill"
-                    objectFit="cover"
-                  />
-                </div>
-              ) : (
-                <NextImage src={defaultProfilePicture} className="" />
-              )}
-            </div>
+            <Avatar src={data?.me.user?.profile?.display_image} />
           </Menu.Button>
         </div>
         <Transition

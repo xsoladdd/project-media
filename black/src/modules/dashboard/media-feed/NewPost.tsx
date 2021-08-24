@@ -4,7 +4,7 @@ import NextImage from "next/image";
 import React, { Fragment, useState } from "react";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import {
-  FetchPostDocument,
+  FetchPostsDocument,
   useNewPostMutation,
 } from "../../../generated/graphql";
 import { getBase64 } from "../../../lib/files";
@@ -22,7 +22,7 @@ const NewPost: React.FC<NewPostProps> = ({}) => {
   const [imagePreview, setImagePreview] = useState<string>("");
 
   const [createNewPost, { loading }] = useNewPostMutation({
-    refetchQueries: [FetchPostDocument],
+    refetchQueries: [FetchPostsDocument],
     onCompleted: () => {
       closeModal();
     },
@@ -208,7 +208,6 @@ const NewPost: React.FC<NewPostProps> = ({}) => {
                                       className="sr-only"
                                       accept="image/png, image/jpeg"
                                       onChange={(e) => {
-                                        // console.log(e.target.files);
                                         const files = e.target.files;
                                         if (files !== null) {
                                           let file = files[0];

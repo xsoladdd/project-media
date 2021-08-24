@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import NextImage from "next/image";
 import { useEffect } from "react";
 import {
+  LikeUnlikePostMutation,
   Post as PostType,
   PostFragmentDoc,
   useLikeUnlikePostMutation,
@@ -13,6 +14,8 @@ import moment from "moment";
 import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
 import apolloClient from "../../config/apollo-server/client";
 import { debounce } from "lodash";
+import { updateLikeUnlikeCache } from "./updateLikeUnlikeCache";
+import Avatar from "../../ui/Avatar/Avatar";
 
 interface PostProps {
   image?: string;
@@ -44,25 +47,7 @@ const Post: React.FC<PostProps> = ({
   const [likeUnlike, { loading }] = useLikeUnlikePostMutation({
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "no-cache",
-    onCompleted: ({ likeUnlikePost }) => {
-      if (!likeUnlikePost.post) {
-        return;
-      }
-      const data = apolloClient.readFragment({
-        fragmentName: `post`,
-        id: `Post:${likeUnlikePost.post.id}`,
-        fragment: PostFragmentDoc,
-      });
-      apolloClient.writeFragment({
-        fragmentName: `post`,
-        id: `Post:${likeUnlikePost.post.id}`,
-        fragment: PostFragmentDoc,
-        data: {
-          ...data,
-          likes: likeUnlikePost.post.likes,
-        } as PostType,
-      });
-    },
+    onCompleted: (data) => updateLikeUnlikeCache(data),
   });
 
   useEffect(() => {
@@ -81,26 +66,20 @@ const Post: React.FC<PostProps> = ({
               href="#"
               className="flex flex-row items-center focus:outline-none focus:shadow-outline "
             >
-              <div className=" w-12 h-12 rounded-full overflow-hidden">
-                <div className=" relative w-full h-full ">
-                  <NextImage
-                    src={
-                      user.profile?.display_image
-                        ? user.profile?.display_image
-                        : defaultProfilePicture
-                    }
-                    layout="fill"
-                    objectFit="cover"
-                  />
-                </div>
-              </div>
+              <Avatar
+                src={
+                  user.profile?.display_image
+                    ? user.profile?.display_image
+                    : defaultProfilePicture
+                }
+              />
+
               <div className="ml-2 mt-0.5">
                 <NextLink href={`/u/${user.username}`}>
                   <div>
                     <p className="block font-medium text-base leading-snug text-black dark:text-gray-100">
                       {user.profile?.first_name} {user.profile?.middle_name}{" "}
                       {user.profile?.last_name}{" "}
-                      {/* {user.profile?.nickname && `(${user.profile?.nickname})`} */}
                     </p>
                     <span className="block text-sm text-gray-500 dark:text-gray-400 font-light leading-snug">
                       @{user.username}
@@ -142,7 +121,7 @@ const Post: React.FC<PostProps> = ({
                   postId: id,
                 },
               });
-            }, 500)}
+            }, 300)}
           >
             {isLiked ? <FaHeart /> : <FaRegHeart />}
             <span className="ml-1">{likes}</span>
