@@ -1,4 +1,5 @@
 import User from "./entities/User";
+import { createCommentDataloader } from "./graphql/dataloader/createCommentDataloader";
 import { createProfileDataloader } from "./graphql/dataloader/createProfileDataloader";
 import { createUserPostLikeDataloader } from "./graphql/dataloader/createUserPostLikeDataloader";
 
@@ -17,4 +18,5 @@ export type contextObject = {
   user: User | null;
   profileDataloader: ReturnType<typeof createProfileDataloader>;
   userPostLikeDataloader: ReturnType<typeof createUserPostLikeDataloader>;
+  commentDataloader: ReturnType<typeof createCommentDataloader>;
 };

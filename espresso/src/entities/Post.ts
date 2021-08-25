@@ -65,10 +65,12 @@ export class Post extends BaseEntity {
   }
   //  TODO
   @Field(() => Int)
-  async commentCount(): Promise<number> {
-    // const comments = await commentDataloader.load(this.id);
-    // return comments?.length ? comments?.length : 0;
-    return 0;
+  async commentCount(
+    @Ctx() { commentDataloader }: contextObject
+  ): Promise<number> {
+    const comments = await commentDataloader.load(this.id);
+    return comments?.length ? comments?.length : 0;
+    // return 3000;
   }
 
   @Field(() => Comments)

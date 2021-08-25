@@ -6,3 +6,4 @@ tmp/
 temp/
 assets/images/
 dist/
+.env
