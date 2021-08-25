@@ -9,8 +9,15 @@ const UserResolver_1 = require("./resolvers/UserResolver");
 const PostResolver_1 = require("./resolvers/PostResolver");
 const DummyResolver_1 = require("./resolvers/DummyResolver");
 const ProfileResolver_1 = require("./resolvers/ProfileResolver");
+const CommentResolver_1 = require("./resolvers/CommentResolver");
 exports.default = type_graphql_1.buildSchema({
-    resolvers: [UserResolver_1.UserResolver, PostResolver_1.PostResolver, DummyResolver_1.DummyResolver, ProfileResolver_1.ProfileResolver],
+    resolvers: [
+        UserResolver_1.UserResolver,
+        PostResolver_1.PostResolver,
+        DummyResolver_1.DummyResolver,
+        ProfileResolver_1.ProfileResolver,
+        CommentResolver_1.CommentResolver,
+    ],
     authChecker: authChecker_1.default,
 });
 //# sourceMappingURL=index.js.map

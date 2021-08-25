@@ -56,14 +56,12 @@ export const OAuthButtons: React.FC<OAuthButtonsProps> = ({
   const handleSocialMedia = async (provider: firebase.auth.AuthProvider) => {
     const res: any = await signinWithProvider(provider);
     let email;
-    console.log(res);
     // Check if using google
     if (res.additionalUserInfo) {
       email = res.additionalUserInfo.profile.email;
     } else if (res.email) {
       email = res.email;
     }
-    console.log(res);
     if (res.code !== "auth/popup-closed-by-user") {
       handleOAuth({
         variables: {

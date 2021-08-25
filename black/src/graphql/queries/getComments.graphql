@@ -1,0 +1,8 @@
+query GetComments($input: InputGetComments!) {
+  getComments(input: $input) {
+    has_more
+    comments {
+      ...comment
+    }
+  }
+}

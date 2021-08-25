@@ -1,5 +1,5 @@
 import { InMemoryCache } from "@apollo/client";
-import { ReturnPosts } from "../../generated/graphql";
+import { ReturnComments, ReturnPosts } from "../../generated/graphql";
 // import { ReturnPosts } from "../../types";
 
 export const cache = new InMemoryCache({
@@ -18,6 +18,22 @@ export const cache = new InMemoryCache({
             return {
               ...incoming,
               posts: [...(existing?.posts || []), ...incoming.posts],
+            };
+          },
+        },
+        getComments: {
+          keyArgs: ["input.postId"],
+          merge(
+            existing: ReturnComments | undefined,
+            incoming: ReturnComments
+            // { args }
+          ): ReturnComments {
+            return {
+              ...incoming,
+              comments: [
+                ...(existing?.comments || []),
+                ...(incoming?.comments || []),
+              ],
             };
           },
         },

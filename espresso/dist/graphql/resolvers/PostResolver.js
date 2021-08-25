@@ -86,7 +86,6 @@ let PostResolver = class PostResolver {
             relations: ["profile"],
             where: { id },
         });
-        console.log("user", user);
         if (!user) {
             return {
                 errors: [createError_1.createError("user", "user not found")],
@@ -182,7 +181,6 @@ let PostResolver = class PostResolver {
                 id: postId,
             },
         });
-        console.log(post);
         if (!post) {
             return {
                 status: 0,

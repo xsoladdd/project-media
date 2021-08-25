@@ -73,8 +73,6 @@ export class PostResolver {
       where: { id },
     });
 
-    console.log("user", user);
-
     if (!user) {
       return {
         errors: [createError("user", "user not found")],
@@ -188,7 +186,6 @@ export class PostResolver {
         id: postId,
       },
     });
-    console.log(post);
     if (!post) {
       return {
         status: 0,

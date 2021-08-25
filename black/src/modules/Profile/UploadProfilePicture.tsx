@@ -13,11 +13,9 @@ const UploadProfile: React.FC<UploadProfileProps> = ({ children }) => {
   const [imageData, setImageData] = useState<Blob | null>(null);
   const [imagePreview, setImagePreview] = useState("");
 
-  const [uploadProfilePicture, { loading }] = useUploadProfilePictureMutation({
-    onCompleted: ({ uploadProfilePicture }) => {
-      console.log(uploadProfilePicture);
-    },
-  });
+  const [uploadProfilePicture, { loading }] = useUploadProfilePictureMutation(
+    {}
+  );
 
   const handleUploadButton = () => {
     uploadProfilePicture({
@@ -133,7 +131,6 @@ const UploadProfile: React.FC<UploadProfileProps> = ({ children }) => {
                         className="sr-only"
                         accept="image/png, image/jpeg"
                         onChange={(e) => {
-                          // console.log(e.target.files);
                           const files = e.target.files;
                           if (files !== null) {
                             let file = files[0];

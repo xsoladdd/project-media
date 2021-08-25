@@ -1,0 +1,11 @@
+mutation AddComment($input: InputComment!) {
+  addComment(input: $input) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    comment {
+      ...comment
+    }
+  }
+}

@@ -1,3 +1,3 @@
-import Post from "../../modules/post/Post";
+import Post from "../../modules/singlePost/Post";
 
 export default Post;

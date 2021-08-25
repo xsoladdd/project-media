@@ -17,6 +17,7 @@ import { BsBoxArrowInUpLeft } from "react-icons/bs";
 import UploadProfileBanner from "./UploadProfileBanner";
 import PostLoading from "../../components/PostLoading";
 import NextLink from "next/link";
+import NewPost from "../../components/Post/NewPost";
 
 interface UserPanelProps {
   user: User;
@@ -141,42 +142,54 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
           </div>
         </div>
 
-        {loading ? (
-          <PostLoading />
-        ) : (
-          <div className="grid grid-cols-1 gap-6 my-6 px-4 ">
-            {data?.fetchPosts.posts.length === 0 && <NoPost />}
-            {data?.fetchPosts.posts.map(
-              ({ content, user, UpdatedAt, media, likes, id }) => {
-                return (
-                  <Post
-                    id={id}
-                    key={id}
-                    description={content}
-                    user={user as User}
-                    lastUpdateTime={UpdatedAt}
-                    image={media}
-                    likes={likes?.length}
-                    isLiked={
-                      !!likes?.find(({ id }) => id === meData?.me.user?.id)
-                    }
-                  />
-                );
-              }
-            )}
-            {data?.fetchPosts.has_more && (
-              <Button
-                onClick={handleShowMore}
-                disabled={!data?.fetchPosts.has_more}
-                className="uppercase"
-                variant="green"
-                loading={loading}
-              >
-                Show More
-              </Button>
-            )}
-          </div>
-        )}
+        <div className="grid grid-cols-1 gap-6 my-6 px-4 ">
+          <NewPost />
+          {loading ? (
+            <PostLoading />
+          ) : (
+            <>
+              {data?.fetchPosts.posts.length === 0 && <NoPost />}
+              {data?.fetchPosts.posts.map(
+                ({
+                  content,
+                  user,
+                  UpdatedAt,
+                  media,
+                  likes,
+                  id,
+                  commentCount,
+                }) => {
+                  return (
+                    <Post
+                      id={id}
+                      key={id}
+                      description={content}
+                      user={user as User}
+                      lastUpdateTime={UpdatedAt}
+                      image={media}
+                      likes={likes?.length}
+                      isLiked={
+                        !!likes?.find(({ id }) => id === meData?.me.user?.id)
+                      }
+                      commentsCount={commentCount}
+                    />
+                  );
+                }
+              )}
+              {data?.fetchPosts.has_more && (
+                <Button
+                  onClick={handleShowMore}
+                  disabled={!data?.fetchPosts.has_more}
+                  className="uppercase"
+                  variant="green"
+                  loading={loading}
+                >
+                  Show More
+                </Button>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </>
   );

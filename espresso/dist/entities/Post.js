@@ -17,11 +17,15 @@ const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const scalars_1 = require("../graphql/scalars");
 const S3File_1 = require("../graphql/scalars/S3File");
+const Comments_1 = require("./Comments");
 const User_1 = require("./User");
 const UserPostLike_1 = require("./UserPostLike");
 let Post = class Post extends typeorm_1.BaseEntity {
     async likes({ userPostLikeDataloader }) {
         return await userPostLikeDataloader.load(this.id);
+    }
+    async commentCount() {
+        return 0;
     }
 };
 __decorate([
@@ -75,6 +79,17 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], Post.prototype, "likes", null);
+__decorate([
+    type_graphql_1.Field(() => type_graphql_1.Int),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], Post.prototype, "commentCount", null);
+__decorate([
+    type_graphql_1.Field(() => Comments_1.Comments),
+    typeorm_1.OneToMany(() => Comments_1.Comments, (comment) => comment.post),
+    __metadata("design:type", Array)
+], Post.prototype, "comments", void 0);
 Post = __decorate([
     typeorm_1.Entity(),
     type_graphql_1.ObjectType()

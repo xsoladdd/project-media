@@ -13,6 +13,8 @@ import {
 import { EncryptedID } from "../graphql/scalars";
 import { S3File } from "../graphql/scalars/S3File";
 import { contextObject } from "../types";
+// import { CommentPost } from "./CommentPost";
+import { Comments } from "./Comments";
 import { User } from "./User";
 import { UserPostLike } from "./UserPostLike";
 
@@ -61,4 +63,15 @@ export class Post extends BaseEntity {
   ): Promise<User[] | null> {
     return await userPostLikeDataloader.load(this.id);
   }
+  //  TODO
+  @Field(() => Int)
+  async commentCount(): Promise<number> {
+    // const comments = await commentDataloader.load(this.id);
+    // return comments?.length ? comments?.length : 0;
+    return 0;
+  }
+
+  @Field(() => Comments)
+  @OneToMany(() => Comments, (comment) => comment.post)
+  comments: Comments[];
 }

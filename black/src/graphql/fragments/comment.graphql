@@ -1,0 +1,8 @@
+fragment comment on Comments {
+  id
+  content
+  UpdatedAt
+  user {
+    ...user
+  }
+}

@@ -10,11 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
-const typeorm_1 = require("typeorm");
 const type_graphql_1 = require("type-graphql");
+const typeorm_1 = require("typeorm");
 const scalars_1 = require("../graphql/scalars");
-const Profile_1 = require("./Profile");
+const Comments_1 = require("./Comments");
 const Post_1 = require("./Post");
+const Profile_1 = require("./Profile");
 const RefreshToken_1 = require("./RefreshToken");
 const UserPostLike_1 = require("./UserPostLike");
 let User = class User extends typeorm_1.BaseEntity {
@@ -72,6 +73,11 @@ __decorate([
     typeorm_1.UpdateDateColumn({ name: "updated_at" }),
     __metadata("design:type", Date)
 ], User.prototype, "UpdatedAt", void 0);
+__decorate([
+    type_graphql_1.Field(() => Comments_1.Comments, { nullable: true }),
+    typeorm_1.OneToMany(() => Comments_1.Comments, (comments) => comments.user, { nullable: true }),
+    __metadata("design:type", Array)
+], User.prototype, "comments", void 0);
 User = __decorate([
     typeorm_1.Entity(),
     type_graphql_1.ObjectType()

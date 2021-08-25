@@ -1,17 +1,18 @@
+import { Field, ObjectType } from "type-graphql";
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  CreateDateColumn,
-  UpdateDateColumn,
-  OneToMany,
   BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
-import { ObjectType, Field } from "type-graphql";
 import { EncryptedID } from "../graphql/scalars";
-import { Profile } from "./Profile";
+import { Comments } from "./Comments";
 import { Post } from "./Post";
+import { Profile } from "./Profile";
 import { RefreshToken } from "./RefreshToken";
 import { UserPostLike } from "./UserPostLike";
 
@@ -59,4 +60,8 @@ export class User extends BaseEntity {
 
   @UpdateDateColumn({ name: "updated_at" })
   UpdatedAt!: Date;
+
+  @Field(() => Comments, { nullable: true })
+  @OneToMany(() => Comments, (comments) => comments.user, { nullable: true })
+  comments: Comments[];
 }

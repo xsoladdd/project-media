@@ -82,7 +82,6 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
     onCompleted: (data) => {
       const { user, status } = data.setupProfile;
       if (user && status === 1) {
-        console.log(user);
         apolloClient.writeQuery({
           query: MeDocument,
           data: {

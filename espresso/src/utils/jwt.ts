@@ -40,7 +40,6 @@ export const verifyRefreshToken = (
       token,
       process.env.SECRET_KEY_X as string
     ) as tokenObject;
-    console.log(decoded);
     return decoded;
   } catch (error) {
     if (error.toString().includes("jwt expired")) {

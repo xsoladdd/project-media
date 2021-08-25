@@ -35,7 +35,6 @@ exports.signRefreshToken = signRefreshToken;
 const verifyRefreshToken = (token) => {
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY_X);
-        console.log(decoded);
         return decoded;
     }
     catch (error) {

@@ -86,7 +86,6 @@ const UniqueIdentifier: React.FC<UniqueIdentifierProps> = ({
     let fetch = true;
     if (fetch) {
       if (uniqueData.mobileNumber.length >= 11) {
-        console.log(uniqueData.mobileNumber.length);
         checkMobileNumberUnique({
           variables: {
             input: {

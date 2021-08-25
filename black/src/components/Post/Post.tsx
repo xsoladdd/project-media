@@ -1,21 +1,13 @@
-import React, { useState } from "react";
-import NextImage from "next/image";
-import { useEffect } from "react";
-import {
-  LikeUnlikePostMutation,
-  Post as PostType,
-  PostFragmentDoc,
-  useLikeUnlikePostMutation,
-  User,
-} from "../../generated/graphql";
-import { FaRegCommentDots, FaRegHeart, FaHeart } from "react-icons/fa";
-import NextLink from "next/link";
-import moment from "moment";
-import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
-import apolloClient from "../../config/apollo-server/client";
 import { debounce } from "lodash";
-import { updateLikeUnlikeCache } from "./updateLikeUnlikeCache";
+import moment from "moment";
+import NextImage from "next/image";
+import NextLink from "next/link";
+import React, { useEffect, useState } from "react";
+import { FaHeart, FaRegCommentDots, FaRegHeart } from "react-icons/fa";
+import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
+import { useLikeUnlikePostMutation, User } from "../../generated/graphql";
 import Avatar from "../../ui/Avatar/Avatar";
+import { updateLikeUnlikeCache } from "./updateLikeUnlikeCache";
 
 interface PostProps {
   image?: string;

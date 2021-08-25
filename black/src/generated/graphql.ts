@@ -22,6 +22,21 @@ export type Scalars = {
   Upload: any;
 };
 
+export type CommentPost = {
+  __typename?: 'CommentPost';
+  id: Scalars['EncryptedID'];
+  postId: Scalars['String'];
+  commentId: Scalars['String'];
+};
+
+export type Comments = {
+  __typename?: 'Comments';
+  id: Scalars['EncryptedID'];
+  content: Scalars['String'];
+  UpdatedAt: Scalars['String'];
+  user: User;
+};
+
 
 
 export type FieldError = {
@@ -35,6 +50,11 @@ export type InputCheckUnique = {
   mobile_number?: Maybe<Scalars['String']>;
 };
 
+export type InputComment = {
+  content: Scalars['String'];
+  postId: Scalars['EncryptedID'];
+};
+
 export type InputFetchPost = {
   offset: Scalars['Float'];
   limit: Scalars['Float'];
@@ -43,6 +63,12 @@ export type InputFetchPost = {
 
 export type InputFileUpload = {
   file: Scalars['Upload'];
+};
+
+export type InputGetComments = {
+  offset: Scalars['Float'];
+  limit: Scalars['Float'];
+  postId: Scalars['EncryptedID'];
 };
 
 export type InputNewPost = {
@@ -88,6 +114,7 @@ export type Mutation = {
   updateProfile: ReturnUserWithProfile;
   uploadProfilePicture: ReturnUserWithProfile;
   uploadProfileBanner: ReturnUserWithProfile;
+  addComment: ReturnComment;
 };
 
 
@@ -140,6 +167,11 @@ export type MutationUploadProfileBannerArgs = {
   profileBanner: Scalars['Upload'];
 };
 
+
+export type MutationAddCommentArgs = {
+  input: InputComment;
+};
+
 export type Post = {
   __typename?: 'Post';
   id: Scalars['EncryptedID'];
@@ -150,6 +182,9 @@ export type Post = {
   userConnection: Array<UserPostLike>;
   UpdatedAt: Scalars['String'];
   likes?: Maybe<Array<User>>;
+  comments?: Maybe<Array<Comments>>;
+  commentCount: Scalars['Int'];
+  commentConnection: Array<CommentPost>;
 };
 
 export type Profile = {
@@ -177,6 +212,7 @@ export type Query = {
   checkUnique: Scalars['Boolean'];
   getProfile: ReturnUserWithProfile;
   getAllUsers: Array<User>;
+  getComments: ReturnComments;
 };
 
 
@@ -207,6 +243,26 @@ export type QueryCheckUniqueArgs = {
 
 export type QueryGetProfileArgs = {
   username: Scalars['String'];
+};
+
+
+export type QueryGetCommentsArgs = {
+  input: InputGetComments;
+};
+
+export type ReturnComment = {
+  __typename?: 'ReturnComment';
+  status: Scalars['Int'];
+  errors?: Maybe<Array<FieldError>>;
+  comment: Comments;
+};
+
+export type ReturnComments = {
+  __typename?: 'ReturnComments';
+  status: Scalars['Int'];
+  errors?: Maybe<Array<FieldError>>;
+  comments?: Maybe<Array<Comments>>;
+  has_more: Scalars['Boolean'];
 };
 
 export type ReturnPost = {
@@ -255,6 +311,7 @@ export type User = {
   username?: Maybe<Scalars['String']>;
   mobile_number?: Maybe<Scalars['String']>;
   profile?: Maybe<Profile>;
+  comments?: Maybe<Comments>;
 };
 
 export type UserPostLike = {
@@ -262,20 +319,29 @@ export type UserPostLike = {
   id: Scalars['EncryptedID'];
 };
 
+export type CommentFragment = { __typename?: 'Comments', id: any, content: string, UpdatedAt: string, user: { __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> } };
+
 export type FieldErrorsFragment = { __typename: 'FieldError', field: string, message: string };
 
-export type PostFragment = { __typename?: 'Post', id: any, content: string, media?: Maybe<any>, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>, likes?: Maybe<Array<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>> };
+export type PostFragment = { __typename?: 'Post', id: any, content: string, media?: Maybe<any>, commentCount: number, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>, likes?: Maybe<Array<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>> };
 
 export type ProfileFragment = { __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number };
 
 export type UserFragment = { __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> };
+
+export type AddCommentMutationVariables = Exact<{
+  input: InputComment;
+}>;
+
+
+export type AddCommentMutation = { __typename?: 'Mutation', addComment: { __typename?: 'ReturnComment', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, comment: { __typename?: 'Comments', id: any, content: string, UpdatedAt: string, user: { __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> } } } };
 
 export type LikeUnlikePostMutationVariables = Exact<{
   postId: Scalars['EncryptedID'];
 }>;
 
 
-export type LikeUnlikePostMutation = { __typename?: 'Mutation', likeUnlikePost: { __typename?: 'ReturnPost', status: number, post?: Maybe<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>, likes?: Maybe<Array<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>> }>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>> } };
+export type LikeUnlikePostMutation = { __typename?: 'Mutation', likeUnlikePost: { __typename?: 'ReturnPost', status: number, post?: Maybe<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, commentCount: number, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>, likes?: Maybe<Array<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>> }>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>> } };
 
 export type LoginNormalMutationVariables = Exact<{
   input: LoginRegistrationInput;
@@ -289,7 +355,7 @@ export type NewPostMutationVariables = Exact<{
 }>;
 
 
-export type NewPostMutation = { __typename?: 'Mutation', newPost: { __typename?: 'ReturnPost', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, post?: Maybe<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>, likes?: Maybe<Array<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>> }> } };
+export type NewPostMutation = { __typename?: 'Mutation', newPost: { __typename?: 'ReturnPost', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, post?: Maybe<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, commentCount: number, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>, likes?: Maybe<Array<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>> }> } };
 
 export type RegisterUserMutationVariables = Exact<{
   input: LoginRegistrationInput;
@@ -338,14 +404,21 @@ export type FetchPostQueryVariables = Exact<{
 }>;
 
 
-export type FetchPostQuery = { __typename?: 'Query', fetchPost: { __typename?: 'ReturnPost', status: number, post?: Maybe<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>, likes?: Maybe<Array<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>> }>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>> } };
+export type FetchPostQuery = { __typename?: 'Query', fetchPost: { __typename?: 'ReturnPost', status: number, post?: Maybe<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, commentCount: number, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>, likes?: Maybe<Array<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>> }>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>> } };
 
 export type FetchPostsQueryVariables = Exact<{
   input: InputFetchPost;
 }>;
 
 
-export type FetchPostsQuery = { __typename?: 'Query', fetchPosts: { __typename?: 'ReturnPosts', status: number, has_more: boolean, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, posts: Array<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>, likes?: Maybe<Array<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>> }> } };
+export type FetchPostsQuery = { __typename?: 'Query', fetchPosts: { __typename?: 'ReturnPosts', status: number, has_more: boolean, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, posts: Array<{ __typename?: 'Post', id: any, content: string, media?: Maybe<any>, commentCount: number, UpdatedAt: string, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>, likes?: Maybe<Array<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>> }> } };
+
+export type GetCommentsQueryVariables = Exact<{
+  input: InputGetComments;
+}>;
+
+
+export type GetCommentsQuery = { __typename?: 'Query', getComments: { __typename?: 'ReturnComments', has_more: boolean, comments?: Maybe<Array<{ __typename?: 'Comments', id: any, content: string, UpdatedAt: string, user: { __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> } }>> } };
 
 export type GetProfileQueryVariables = Exact<{
   username: Scalars['String'];
@@ -366,13 +439,6 @@ export type OAuthHandlerMutationVariables = Exact<{
 
 export type OAuthHandlerMutation = { __typename?: 'Mutation', oauthHandler: { __typename?: 'ReturnRegisterLogin', status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
 
-export const FieldErrorsFragmentDoc = gql`
-    fragment fieldErrors on FieldError {
-  field
-  message
-  __typename
-}
-    `;
 export const ProfileFragmentDoc = gql`
     fragment profile on Profile {
   id
@@ -401,6 +467,23 @@ export const UserFragmentDoc = gql`
   __typename
 }
     ${ProfileFragmentDoc}`;
+export const CommentFragmentDoc = gql`
+    fragment comment on Comments {
+  id
+  content
+  UpdatedAt
+  user {
+    ...user
+  }
+}
+    ${UserFragmentDoc}`;
+export const FieldErrorsFragmentDoc = gql`
+    fragment fieldErrors on FieldError {
+  field
+  message
+  __typename
+}
+    `;
 export const PostFragmentDoc = gql`
     fragment post on Post {
   id
@@ -412,9 +495,50 @@ export const PostFragmentDoc = gql`
   likes {
     ...user
   }
+  commentCount
   UpdatedAt
 }
     ${UserFragmentDoc}`;
+export const AddCommentDocument = gql`
+    mutation AddComment($input: InputComment!) {
+  addComment(input: $input) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    comment {
+      ...comment
+    }
+  }
+}
+    ${FieldErrorsFragmentDoc}
+${CommentFragmentDoc}`;
+export type AddCommentMutationFn = Apollo.MutationFunction<AddCommentMutation, AddCommentMutationVariables>;
+
+/**
+ * __useAddCommentMutation__
+ *
+ * To run a mutation, you first call `useAddCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addCommentMutation, { data, loading, error }] = useAddCommentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAddCommentMutation(baseOptions?: Apollo.MutationHookOptions<AddCommentMutation, AddCommentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddCommentMutation, AddCommentMutationVariables>(AddCommentDocument, options);
+      }
+export type AddCommentMutationHookResult = ReturnType<typeof useAddCommentMutation>;
+export type AddCommentMutationResult = Apollo.MutationResult<AddCommentMutation>;
+export type AddCommentMutationOptions = Apollo.BaseMutationOptions<AddCommentMutation, AddCommentMutationVariables>;
 export const LikeUnlikePostDocument = gql`
     mutation LikeUnlikePost($postId: EncryptedID!) {
   likeUnlikePost(postId: $postId) {
@@ -857,6 +981,44 @@ export function useFetchPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions
 export type FetchPostsQueryHookResult = ReturnType<typeof useFetchPostsQuery>;
 export type FetchPostsLazyQueryHookResult = ReturnType<typeof useFetchPostsLazyQuery>;
 export type FetchPostsQueryResult = Apollo.QueryResult<FetchPostsQuery, FetchPostsQueryVariables>;
+export const GetCommentsDocument = gql`
+    query GetComments($input: InputGetComments!) {
+  getComments(input: $input) {
+    has_more
+    comments {
+      ...comment
+    }
+  }
+}
+    ${CommentFragmentDoc}`;
+
+/**
+ * __useGetCommentsQuery__
+ *
+ * To run a query within a React component, call `useGetCommentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCommentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCommentsQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGetCommentsQuery(baseOptions: Apollo.QueryHookOptions<GetCommentsQuery, GetCommentsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCommentsQuery, GetCommentsQueryVariables>(GetCommentsDocument, options);
+      }
+export function useGetCommentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCommentsQuery, GetCommentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCommentsQuery, GetCommentsQueryVariables>(GetCommentsDocument, options);
+        }
+export type GetCommentsQueryHookResult = ReturnType<typeof useGetCommentsQuery>;
+export type GetCommentsLazyQueryHookResult = ReturnType<typeof useGetCommentsLazyQuery>;
+export type GetCommentsQueryResult = Apollo.QueryResult<GetCommentsQuery, GetCommentsQueryVariables>;
 export const GetProfileDocument = gql`
     query GetProfile($username: String!) {
   getProfile(username: $username) {

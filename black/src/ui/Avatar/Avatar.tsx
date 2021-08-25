@@ -1,8 +1,7 @@
-import React, { HTMLAttributes } from "react";
 import NextImage from "next/image";
-import { joinClass } from "../../lib/joinClass";
-
+import React from "react";
 import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
+import { joinClass } from "../../lib/joinClass";
 
 interface AvatarProps
   extends React.DetailedHTMLProps<

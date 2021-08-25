@@ -20,11 +20,7 @@ const UploadProfileBanner: React.FC<UploadProfileBannerProps> = ({
   const [imageData, setImageData] = useState<Blob | null>(null);
   const [imagePreview, setImagePreview] = useState("");
 
-  const [uploadProfileBanner, { loading }] = useUploadProfileBannerMutation({
-    onCompleted: ({ uploadProfileBanner }) => {
-      console.log(uploadProfileBanner);
-    },
-  });
+  const [uploadProfileBanner, { loading }] = useUploadProfileBannerMutation({});
 
   const handleUploadButton = () => {
     uploadProfileBanner({
@@ -140,7 +136,6 @@ const UploadProfileBanner: React.FC<UploadProfileBannerProps> = ({
                         className="sr-only"
                         accept="image/png, image/jpeg"
                         onChange={(e) => {
-                          // console.log(e.target.files);
                           const files = e.target.files;
                           if (files !== null) {
                             let file = files[0];

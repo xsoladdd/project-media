@@ -1,9 +1,7 @@
 import { Menu, Transition } from "@headlessui/react";
-import NextImage from "next/image";
 import { useRouter } from "next/router";
 import React, { Fragment } from "react";
 import { FiLogOut } from "react-icons/fi";
-import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
 import apolloClient from "../../config/apollo-server/client";
 import { useMeQuery } from "../../generated/graphql";
 import { joinClass } from "../../lib/joinClass";
@@ -24,11 +22,9 @@ const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
   return (
     <>
       <Menu as="div" className="relative inline-block text-left">
-        <div>
-          <Menu.Button className="ml-auto inline-flex items-center    border-0 py-1 px-3 focus:outline-none   rounded text-base mt-4 md:mt-0">
-            <Avatar src={data?.me.user?.profile?.display_image} />
-          </Menu.Button>
-        </div>
+        <Menu.Button className="ml-auto inline-flex items-center    border-0 py-1 px-3 focus:outline-none   rounded text-base mt-4 md:mt-0">
+          <Avatar src={data?.me.user?.profile?.display_image} />
+        </Menu.Button>
         <Transition
           as={Fragment}
           enter="transition ease-out duration-100"

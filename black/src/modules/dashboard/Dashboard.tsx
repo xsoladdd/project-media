@@ -11,7 +11,7 @@ import {
 import Layout from "../../layout/Layout";
 import Button from "../../ui/Button";
 import NoPost from "../profile/NoPost";
-import NewPost from "./media-feed/NewPost";
+import NewPost from "../../components/Post/NewPost";
 
 interface MainProps {}
 
@@ -54,17 +54,29 @@ const Dashboard: React.FC<MainProps> = ({}) => {
         <div className=" flex flex-col place-content-center place-items-center py-4">
           <h1 className="text-3xl font-semibold uppercase">Media Feed</h1>
           {/* New Post */}
-          <div className="pt-5">
-            <NewPost />
-          </div>
+          {/* <div className="pt-5"> */}
+          {/* <NewPost /> */}
+          {/* </div> */}
         </div>
 
         <div className="">
           {/* Post item */}
           <div className="grid grid-cols-1 gap-6 my-6 px-4 ">
+            {/* New post */}
+            <NewPost />
+
+            {/* Post  */}
             {data?.fetchPosts.posts.length === 0 && <NoPost />}
             {data?.fetchPosts.posts.map(
-              ({ content, user, UpdatedAt, media, likes, id }) => {
+              ({
+                content,
+                user,
+                UpdatedAt,
+                media,
+                likes,
+                id,
+                commentCount,
+              }) => {
                 return (
                   <Post
                     id={id}
@@ -77,6 +89,7 @@ const Dashboard: React.FC<MainProps> = ({}) => {
                     isLiked={
                       !!likes?.find(({ id }) => id === meData?.me.user?.id)
                     }
+                    commentsCount={commentCount}
                   />
                 );
               }

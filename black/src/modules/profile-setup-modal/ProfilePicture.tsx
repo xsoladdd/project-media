@@ -28,11 +28,9 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
     const imageSrc = webcamRef.current?.getScreenshot();
 
     if (typeof imageSrc === "string") {
-      // setPartialImage(imageSrc);
       setImagePreview(imageSrc);
       setImageData(await getBlobFromBase64(imageSrc));
     }
-    // console.log(imageSrc);
   }, [webcamRef]);
 
   return (
@@ -92,7 +90,6 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
                       className="sr-only"
                       accept="image/png, image/jpeg"
                       onChange={(e) => {
-                        // console.log(e.target.files);
                         const files = e.target.files;
                         if (files !== null) {
                           let file = files[0];
