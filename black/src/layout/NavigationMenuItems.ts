@@ -1,4 +1,4 @@
-import { FiCommand, FiSearch, FiSettings, FiUser } from "react-icons/fi";
+import { FiCommand, FiSearch, FiUser } from "react-icons/fi";
 import { NavMenuLink } from "../global";
 
 export const navigationMenuItems: Array<NavMenuLink> = [
@@ -17,14 +17,9 @@ export const navigationMenuItems: Array<NavMenuLink> = [
     Icon: FiUser,
     label: "Profile",
   },
-  {
-    href: "/settings",
-    Icon: FiSettings,
-    label: "Settings",
-  },
-  {
-    href: "/",
-    Icon: FiUser,
-    label: "Logout",
-  },
+  // {
+  //   href: "/settings",
+  //   Icon: FiSettings,
+  //   label: "Settings",
+  // },
 ];

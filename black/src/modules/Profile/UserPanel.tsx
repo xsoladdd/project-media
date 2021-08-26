@@ -15,7 +15,7 @@ import apolloClient from "../../config/apollo-server/client";
 import UploadProfile from "./UploadProfilePicture";
 import { BsBoxArrowInUpLeft } from "react-icons/bs";
 import UploadProfileBanner from "./UploadProfileBanner";
-import PostLoading from "../../components/PostLoading";
+import MiniLoading from "../../components/MiniLoading";
 import NextLink from "next/link";
 import NewPost from "../../components/Post/NewPost";
 
@@ -145,7 +145,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
         <div className="grid grid-cols-1 gap-6 my-6 px-4 ">
           <NewPost />
           {loading ? (
-            <PostLoading />
+            <MiniLoading />
           ) : (
             <>
               {data?.fetchPosts.posts.length === 0 && <NoPost />}

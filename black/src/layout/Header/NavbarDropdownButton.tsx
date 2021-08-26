@@ -37,7 +37,7 @@ const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
           <Menu.Items className="absolute z-50  right-0 w-56 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div className="px-1 py-1 ">
               {navigationMenuItems
-                .filter(({ label }) => label !== "Logout" && label !== "Search")
+                // .filter(({ label }) => label !== "Logout")
                 .map(({ label, href, Icon }, idx) => {
                   const active =
                     label === "Profile"

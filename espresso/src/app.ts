@@ -28,7 +28,10 @@ app.post("/refreshToken", async (req, res) => {
 
   // If user is exist, refrseh token is good and not expired
   // Return if refrseh token is bad
+
   if (decrypted === "RESFRSEH_TOKEN_EXPIRE") {
+    console.log("REFRESH_TOKEN_EXPIRE");
+
     const decrypted_user_id = parseInt(decrypt(user_id));
     if (decrypted_user_id === NaN) {
       return res.json({
@@ -38,7 +41,9 @@ app.post("/refreshToken", async (req, res) => {
     }
 
     // Create new refresh token via user_id json data
-    const user = await getRepository(User).findOne({ id: decrypted_user_id });
+    const user = await User.findOne({
+      id: decrypted_user_id,
+    });
     if (!user) {
       return res.json({
         message: `No user found with the user_id given`,
@@ -72,6 +77,35 @@ app.post("/refreshToken", async (req, res) => {
       resfresh_token: rt,
     });
   }
+  const decryptedUserId = parseInt(decrypt(user_id));
+
+  if (typeof decryptedUserId !== "number") {
+    return res.json({
+      message: `invalid user id`,
+      status: 0,
+    });
+  }
+  console.log(decryptedUserId);
+
+  const rt = await RefreshToken.findOne({
+    where: {
+      userId: decryptedUserId,
+    },
+  });
+
+  if (!rt) {
+    return res.json({
+      message: `invalid user id`,
+      status: 0,
+    });
+  }
+  if (rt.refresh_token !== refresh_token) {
+    return res.json({
+      message: `invalid refresh token`,
+      status: 0,
+    });
+  }
+
   return res.json({
     message: `Success`,
     status: 1,

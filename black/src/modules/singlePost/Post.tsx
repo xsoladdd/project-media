@@ -19,6 +19,8 @@ import Avatar from "../../ui/Avatar/Avatar";
 import Button from "../../ui/Button";
 import NewComment from "./comments/NewComment";
 import NextImage from "next/image";
+import Loading from "../../components/Loading/Loading";
+import MiniLoading from "../../components/MiniLoading";
 
 const Post: NextPage<{ postId: string }, {}> = ({ postId }) => {
   const limit = 5;
@@ -28,13 +30,18 @@ const Post: NextPage<{ postId: string }, {}> = ({ postId }) => {
     return () => {};
   }, []);
 
-  const { data } = useFetchPostQuery({
+  const { data, error, loading } = useFetchPostQuery({
     fetchPolicy: "cache-first",
     variables: {
       postId: postId as string,
     },
   });
-  const { data: meData } = useMeQuery({
+
+  const {
+    data: meData,
+    loading: meLoading,
+    error: meError,
+  } = useMeQuery({
     fetchPolicy: "cache-first",
   });
 
@@ -61,7 +68,11 @@ const Post: NextPage<{ postId: string }, {}> = ({ postId }) => {
       onCompleted: (data) => updateLikeUnlikeCache(data),
     });
 
-  if (!meData?.me.user) {
+  if (meLoading || loading) {
+    return <Loading />;
+  }
+
+  if (!meData?.me.user || error || meError) {
     return <h1> Something went wrong</h1>;
   }
 
@@ -97,7 +108,7 @@ const Post: NextPage<{ postId: string }, {}> = ({ postId }) => {
             </div>
           </div>
         </div>
-        <p className="text-gray-800 text-sm mt-2 leading-normal md:leading-relaxed">
+        <div className="text-gray-800 text-sm mt-2 leading-normal md:leading-relaxed">
           {data.fetchPost.post?.media && (
             <div className="py-3">
               <div className=" relative w-full h-44 rounded-lg overflow-hidden">
@@ -110,7 +121,7 @@ const Post: NextPage<{ postId: string }, {}> = ({ postId }) => {
             </div>
           )}
           {data.fetchPost.post?.content}
-        </p>
+        </div>
         <div className="text-gray-700 text-xs flex items-center mt-3">
           <div className="pb-2 flex flex-row items-center">
             <button
@@ -159,6 +170,8 @@ const Post: NextPage<{ postId: string }, {}> = ({ postId }) => {
               />
             )
           )}
+
+          {commentLoading ? <MiniLoading /> : <></>}
           {commentData?.getComments.has_more && (
             <div className="grid py-3">
               <Button

@@ -1,11 +1,10 @@
 import NextImage from "next/image";
+import NextLink from "next/link";
 import React, { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import logoIllu from "../assets/svg/logo.svg";
-import Search from "../components/Search";
 import MobileNavPopout from "./Header/MobileNavPopout";
 import NavbarDropdownButton from "./Header/NavbarDropdownButton";
-import NextLink from "next/link";
 interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = ({}) => {
@@ -48,9 +47,7 @@ const Header: React.FC<HeaderProps> = ({}) => {
               </a>
             </NextLink>
             <div className="ml-auto flex">
-              <div className="z-0">
-                <Search />
-              </div>
+              <div className="z-0">{/* <Search /> */}</div>
               <NavbarDropdownButton />
             </div>
           </div>

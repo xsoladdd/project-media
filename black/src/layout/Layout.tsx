@@ -32,7 +32,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {/* Body */}
         <div className="flex h-full container mx-auto">
           <div className=" w-screen max-w-3xl  min-h-full mx-auto">
-            <div className="py-2 border-l border-r min-h-full ">{children}</div>
+            <div className="py-2 border-l border-r min-h-full pb-10">
+              {children}
+            </div>
           </div>
         </div>
       </div>
