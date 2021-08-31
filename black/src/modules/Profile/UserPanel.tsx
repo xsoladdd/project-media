@@ -1,23 +1,22 @@
+import NextImage from "next/image";
+import NextLink from "next/link";
 import React from "react";
+import defaultProfileBanner from "../../assets/images/defaultProfileBanner.png";
+import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
+import NewPost from "../../components/Post/NewPost";
+import Post from "../../components/Post/Post";
+import PostSekeletonLoading from "../../components/Post/PostSekeletonLoading";
+import apolloClient from "../../config/apollo-server/client";
 import {
   FetchPostsQueryVariables,
   useFetchPostsQuery,
   useMeQuery,
   User,
 } from "../../generated/graphql";
-import NextImage from "next/image";
-import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
-import defaultProfileBanner from "../../assets/images/defaultProfileBanner.png";
-import Post from "../../components/Post/Post";
 import Button from "../../ui/Button";
 import NoPost from "./NoPost";
-import apolloClient from "../../config/apollo-server/client";
-import UploadProfile from "./UploadProfilePicture";
-import { BsBoxArrowInUpLeft } from "react-icons/bs";
 import UploadProfileBanner from "./UploadProfileBanner";
-import MiniLoading from "../../components/MiniLoading";
-import NextLink from "next/link";
-import NewPost from "../../components/Post/NewPost";
+import UploadProfile from "./UploadProfilePicture";
 
 interface UserPanelProps {
   user: User;
@@ -108,7 +107,10 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
                       {meData?.me.user?.username === user.username && (
                         <UploadProfile>
                           <div className="w-32 h-32 transition relative bg-gray-700 bg-opacity-0 hover:bg-opacity-80 hover:opacity-80 cursor-pointer flex place-items-center place-content-center opacity-0">
-                            <BsBoxArrowInUpLeft size="50" color="white" />
+                            {/* <BsBoxArrowInUpLeft size="50" color="white" /> */}
+                            <p className="text-white">
+                              Upload new display photo
+                            </p>
                           </div>
                         </UploadProfile>
                       )}
@@ -145,7 +147,11 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
         <div className="grid grid-cols-1 gap-6 my-6 px-4 ">
           <NewPost />
           {loading ? (
-            <MiniLoading />
+            <>
+              <PostSekeletonLoading />
+              <PostSekeletonLoading />
+              <PostSekeletonLoading />
+            </>
           ) : (
             <>
               {data?.fetchPosts.posts.length === 0 && <NoPost />}

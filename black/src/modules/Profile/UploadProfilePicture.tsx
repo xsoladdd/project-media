@@ -45,7 +45,7 @@ const UploadProfile: React.FC<UploadProfileProps> = ({ children }) => {
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog
           as="div"
-          className="fixed inset-0 z-10 overflow-y-auto"
+          className="fixed inset-0 z-10 overflow-y-auto bg-gray-800 bg-opacity-80"
           onClose={closeModal}
         >
           <div className="min-h-screen px-4 text-center">

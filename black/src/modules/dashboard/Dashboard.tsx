@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import Post from "../../components/Post/Post";
-import MiniLoading from "../../components/MiniLoading";
 import apolloClient from "../../config/apollo-server/client";
 import {
   FetchPostsQueryVariables,
@@ -13,6 +12,7 @@ import Button from "../../ui/Button";
 import NoPost from "../profile/NoPost";
 import NewPost from "../../components/Post/NewPost";
 import Error from "../../components/Error/Error";
+import PostSekeletonLoading from "../../components/Post/PostSekeletonLoading";
 
 interface MainProps {}
 
@@ -96,7 +96,14 @@ const Dashboard: React.FC<MainProps> = ({}) => {
                     );
                   }
                 )}
-                {loading && <MiniLoading />}
+                {loading && (
+                  <>
+                    <PostSekeletonLoading />
+                    <PostSekeletonLoading />
+                    <PostSekeletonLoading />
+                  </>
+                )}
+                {/* {true &&} */}
                 {data?.fetchPosts.has_more && (
                   <Button
                     onClick={handleShowMore}

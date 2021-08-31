@@ -88,7 +88,8 @@ const Post: React.FC<PostProps> = ({
           </div>
         </div>
         {image && (
-          <div className=" relative w-full h-44 rounded-lg overflow-hidden">
+          <div className=" relative w-full h-44 rounded-lg overflow-hidden ">
+            <div className="animate-pulse bg-gray-200 w-full h-full"></div>
             <NextImage src={image} layout="fill" objectFit="cover" />
           </div>
         )}

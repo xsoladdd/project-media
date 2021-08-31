@@ -41,7 +41,7 @@ const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
                 .map(({ label, href, Icon }, idx) => {
                   const active =
                     label === "Profile"
-                      ? asPath === `/u/${data?.me.user?.username}`
+                      ? asPath === `/u/${data?.me.user?.username}`.toLowerCase()
                       : asPath === href;
                   return (
                     <Menu.Item key={idx}>
@@ -51,13 +51,13 @@ const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
                           active ? " font-semibold" : ""
                         )}
                         disabled={active}
-                        onClick={() =>
+                        onClick={() => {
                           push(
                             label === "Profile"
                               ? `/u/${data?.me.user?.username?.toLowerCase()}`
                               : href
-                          )
-                        }
+                          );
+                        }}
                       >
                         {Icon && <Icon />} {label}
                       </button>

@@ -1,25 +1,15 @@
 import React from "react";
-import Comments from "../components/Comments/Comments";
-import { useAddCommentMutation } from "../generated/graphql";
+import Error from "../components/Error/Error";
+import Layout from "../layout/Layout";
 
 interface testProps {}
 
 const Test: React.FC<testProps> = ({}) => {
-  const [addComment] = useAddCommentMutation({
-    fetchPolicy: "no-cache",
-  });
-
   return (
     <>
-      <div className="antialiased mx-auto max-w-screen-sm">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">Comments</h3>
-
-        <div className="space-y-4">
-          {/* <Comments content="aw" />
-          <Comments content="awy" />
-          <Comments content="awx" /> */}
-        </div>
-      </div>
+      <Layout>
+        <Error />
+      </Layout>
     </>
   );
 };
