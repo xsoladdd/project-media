@@ -11,7 +11,7 @@ export const PublicPageWrapper: React.FC<PublicPageWrapperProps> = ({
 }) => {
   // usePublicRoute();
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col bg-white">
       <div className="py-6 my-auto">
         <div className="flex bg-white rounded-lg shadow-lg overflow-hidden mx-auto max-w-sm lg:max-w-4xl">
           <div className="hidden lg:block lg:w-1/2 bg-cover">

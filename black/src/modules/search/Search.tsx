@@ -30,7 +30,7 @@ const Search: React.FC<SearchProps> = ({}) => {
 
   return (
     <Layout>
-      <div className="px-2">
+      <div className="px-2 ">
         {/* Search Bar */}
         <section className="relative w-full max-w-md px-5 py-4 mx-auto rounded-md">
           <div className="relative">

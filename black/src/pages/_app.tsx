@@ -8,6 +8,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Loading from "../components/Loading/Loading";
+import { ThemeProvider } from "next-themes";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -34,9 +35,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       {pageLoading ? (
         <Loading />
       ) : (
-        <ApolloProvider>
-          <Component {...pageProps} />
-        </ApolloProvider>
+        <ThemeProvider attribute="class">
+          <ApolloProvider>
+            <Component {...pageProps} />
+          </ApolloProvider>
+        </ThemeProvider>
       )}
     </>
   );

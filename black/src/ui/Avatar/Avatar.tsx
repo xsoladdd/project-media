@@ -17,7 +17,7 @@ const Avatar: React.FC<AvatarProps> = ({ src, className = "", ...rest }) => {
     <>
       <div
         className={joinClass(
-          "h-12 w-12 rounded-full overflow-hidden bg-white ",
+          "h-12 w-12 rounded-full overflow-hidden bg-white border border-gray-300",
           className
         )}
         {...rest}

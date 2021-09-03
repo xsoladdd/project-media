@@ -3,6 +3,7 @@ import NextLink from "next/link";
 import React, { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import logoIllu from "../assets/svg/logo.svg";
+import DarkmodeSwitch from "../components/DarkmodeSwitch/DarkmodeSwitch";
 import MobileNavPopout from "./Header/MobileNavPopout";
 import NavbarDropdownButton from "./Header/NavbarDropdownButton";
 interface HeaderProps {}
@@ -36,18 +37,22 @@ const Header: React.FC<HeaderProps> = ({}) => {
       </div>
       {/* Desktop Header */}
       <div className="hidden lg:block">
-        <header className="text-gray-600 body-font shadow-md ">
+        <header className="text-gray-600 body-font shadow-md  dark:bg-gray-800">
           <div className=" container mx-auto  max-w-6xl  flex flex-wrap py-3 flex-row items-center ">
             <NextLink href="/dashboard">
               <a className="flex title-font font-medium items-center text-gray-900 mb-0">
                 <div className="w-12 z-0 cursor-pointer">
                   <NextImage src={logoIllu} />
                 </div>
-                <span className="ml-3 text-xl">Project Media</span>
+                <span className="ml-3 text-xl text-gray-800 dark:text-gray-100">
+                  Project Media
+                </span>
               </a>
             </NextLink>
             <div className="ml-auto flex">
-              <div className="z-0">{/* <Search /> */}</div>
+              <div className="my-auto">
+                <DarkmodeSwitch />
+              </div>
               <NavbarDropdownButton />
             </div>
           </div>

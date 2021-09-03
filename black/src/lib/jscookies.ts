@@ -53,3 +53,13 @@ export const removeUserIdentifier = (): boolean => {
   const id = Cookies.get("user_identifier");
   return typeof id === "undefined";
 };
+
+export const setDarkMode = (isDarkMode: boolean) => {
+  return Cookies.set("isDarkMode", `${isDarkMode}`);
+};
+
+export const getDarkModeStatus = (): boolean => {
+  const isDarkMode = Cookies.get("isDarkMode");
+
+  return isDarkMode === "true";
+};

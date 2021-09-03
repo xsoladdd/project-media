@@ -87,7 +87,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
           {/* Profile area */}
 
           <div className="flex justify-center bg-white">
-            <div className="w-full relative   ">
+            <div className="w-full relative  dark:bg-gray-800">
               <div className="w-full h-44 relative overflow-hidden border-b ">
                 {profile.banner_image ? (
                   <NextImage
@@ -102,8 +102,8 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
               {/* Name Area */}
               <div className="">
                 <div className="flex justify-between z-20">
-                  <div className="rounded-full overflow-hidden border-4 border-white inline-block -mt-16 w-32 h-32 ml-3  ">
-                    <div className="w-32 h-32 relative bg-gray-50 f ">
+                  <div className="rounded-full overflow-hidden border-4  inline-block -mt-16 w-32 h-32 ml-3 bg-gray-50  ">
+                    <div className="w-32 h-32 relative bg-gray-50  ">
                       {profile.display_image ? (
                         <NextImage
                           src={display_image}
@@ -143,12 +143,12 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
                             setBannerModal(false);
                             console.log(`dismiss`);
                           }}
-                          className="rounded-full  text-xs  px-3 py-2 mt-3 mr-3 transition hover:bg-blue-50 inline-block border-2 border-gray-600 text-gray-600 font-bold"
+                          className="rounded-full  text-xs  px-3 py-2 mt-3 mr-3 transition hover:text-opacity-90 inline-block border-2 dark:border-gray-300 hover:dark:bg-red-300 dark:text-gray-300 border-gray-600 text-gray-600 font-bold"
                         >
                           Update Banner
                         </UploadProfileBanner>
                         <NextLink href="/edit-profile">
-                          <button className="rounded-full text-xs   px-3 py-2 mt-3 mr-3 transition hover:bg-blue-50 inline-block border-2 border-green-600 text-green-600 font-bold">
+                          <button className="rounded-full text-xs   px-3 py-2 mt-3 mr-3 transition hover:text-opacity-90 inline-block border-2 dark:border-green-300 dark:text-green-300 border-green-600 text-green-600 font-bold">
                             Edit Profile
                           </button>
                         </NextLink>

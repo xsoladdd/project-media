@@ -61,7 +61,7 @@ const UploadProfileBanner: React.FC<UploadProfileBannerProps> = ({
       <Transition appear show={isOpen || open} as={Fragment}>
         <Dialog
           as="div"
-          className="fixed inset-0 z-10 overflow-y-auto bg-gray-800 bg-opacity-80"
+          className="fixed inset-0 z-10 overflow-y-auto bg-gray-800 bg-opacity-80 "
           onClose={closeModal}
         >
           <div className="min-h-screen px-4 text-center">
@@ -93,10 +93,10 @@ const UploadProfileBanner: React.FC<UploadProfileBannerProps> = ({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+              <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-700 shadow-xl rounded-2xl">
                 <Dialog.Title
                   as="h3"
-                  className="text-lg pb-10 font-medium leading-6 text-gray-900"
+                  className="text-lg pb-10 font-medium leading-6 text-gray-900 dark:text-gray-100"
                 >
                   Upload Profile Banner
                 </Dialog.Title>
@@ -140,7 +140,7 @@ const UploadProfileBanner: React.FC<UploadProfileBannerProps> = ({
                     htmlFor="file-upload"
                     className="flex text-sm text-gray-600 place-content-center py-24 md:py-40"
                   >
-                    <div className="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500">
+                    <div className="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 dark:bg-gray-700 dark:text-green-300">
                       <span>Click here to upload file</span>
                       <input
                         id="file-upload"

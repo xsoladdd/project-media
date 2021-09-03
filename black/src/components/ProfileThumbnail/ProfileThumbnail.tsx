@@ -11,7 +11,7 @@ const ProfileThumbnail: React.FC<ProfileThumbnailProps> = ({ user }) => {
   return (
     <>
       <NextLink href={`/u/${user.username}`}>
-        <div className="mx-auto px-8 py-4 bg-white shadow rounded-lg min-w-full cursor-pointer ">
+        <div className="mx-auto px-8 py-4 bg-white shadow rounded-lg min-w-full cursor-pointer dark:bg-gray-850">
           <div className="py-2 flex flex-row items-center justify-between">
             <div className="flex flex-row items-center">
               <a

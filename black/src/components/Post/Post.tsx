@@ -51,7 +51,7 @@ const Post: React.FC<PostProps> = ({
 
   return (
     <>
-      <div className="mx-auto px-8 py-4 bg-white shadow rounded-lg min-w-full ">
+      <div className="mx-auto px-8 py-4 bg-white shadow dark:bg-gray-850 rounded-lg min-w-full ">
         <div className="py-2 flex flex-row items-center justify-between">
           <div className="flex flex-row items-center">
             <a
@@ -83,7 +83,10 @@ const Post: React.FC<PostProps> = ({
         </div>
         {image && (
           <div className=" relative w-full h-44 rounded-lg overflow-hidden ">
-            <div className="animate-pulse bg-gray-200 w-full h-full"></div>
+            <div
+              className="animate-pulse bg-gray-200 w-full h-full dark:bg-gray-700
+            "
+            ></div>
             <NextImage src={image} layout="fill" objectFit="cover" />
           </div>
         )}

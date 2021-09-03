@@ -27,12 +27,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <>
       {!data?.me.user?.profile && <ProfileSetup />}
-      <div className="h-screen flex flex-col">
+      <div className="h-screen flex flex-col  ">
         <Header />
         {/* Body */}
-        <div className="flex h-full container mx-auto">
+        <div className="flex h-full container mx-auto ">
           <div className=" w-screen max-w-3xl  min-h-full mx-auto">
-            <div className="py-2 border-l border-r min-h-full pb-10">
+            <div className="py-2 border-l border-r min-h-full pb-10 dark:border-gray-900">
               {children}
             </div>
           </div>

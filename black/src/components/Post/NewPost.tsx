@@ -43,11 +43,12 @@ const NewPost: React.FC<NewPostProps> = ({}) => {
   if (meLoading) {
     return <></>;
   }
+  // 1a222d
 
   const { user } = meData?.me;
   return (
     <>
-      <div className="mx-auto px-8 py-4 bg-white shadow rounded-lg min-w-full ">
+      <div className="mx-auto px-8 py-4 bg-white dark:bg-gray-850 shadow rounded-lg min-w-full ">
         <div className="py-2 flex flex-row items-center justify-between">
           <div className="flex flex-row items-center">
             <a

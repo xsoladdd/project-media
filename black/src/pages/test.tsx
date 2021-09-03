@@ -1,20 +1,20 @@
 import React from "react";
-import Layout from "../layout/Layout";
-import Menu from "../ui/Menu";
+import DarkmodeSwitch from "../components/DarkmodeSwitch/DarkmodeSwitch";
 
 interface testProps {}
 
 const Test: React.FC<testProps> = ({}) => {
+  // const { theme, setTheme } = useTheme();
+  // const [isTrue, setIsTrue] = useState(true);
   return (
     <>
-      <Layout>
-        <Menu
-          items={[{ title: "title", onClick: () => console.log("aw") }]}
-          direction="left"
-        >
-          hey
-        </Menu>
-      </Layout>
+      <h1 className=" dark:bg-yellow-800 text-3xl text-pink-500 ">
+        Welcome to Your App
+      </h1>
+
+      <div className="bg-red-300 h-24 w-24 dark:bg-yellow-300"></div>
+
+      <DarkmodeSwitch />
     </>
   );
 };
