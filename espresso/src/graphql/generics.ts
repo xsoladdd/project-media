@@ -25,6 +25,11 @@ export class ReturnUserWithProfile extends ReturnStructure {
   @Field(() => User, { nullable: true })
   user?: User;
 }
+@ObjectType()
+export class ReturnUsersWithProfile extends ReturnStructure {
+  @Field(() => [User], { nullable: true })
+  users?: User[];
+}
 
 @ObjectType()
 export class ReturnProfile extends ReturnStructure {

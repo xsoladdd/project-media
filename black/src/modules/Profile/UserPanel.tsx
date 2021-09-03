@@ -1,22 +1,25 @@
 import NextImage from "next/image";
 import NextLink from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import defaultProfileBanner from "../../assets/images/defaultProfileBanner.png";
 import defaultProfilePicture from "../../assets/images/defaultProfilePicture.png";
+import SomethingWentWrong from "../../components/Error/SomethingWentWrong";
 import NewPost from "../../components/Post/NewPost";
 import Post from "../../components/Post/Post";
 import PostSekeletonLoading from "../../components/Post/PostSekeletonLoading";
-import apolloClient from "../../config/apollo-server/client";
 import {
   FetchPostsQueryVariables,
   useFetchPostsQuery,
   useMeQuery,
   User,
 } from "../../generated/graphql";
+import { useApolloEvict } from "../../hooks/useApolloEvict";
 import Button from "../../ui/Button";
+import Menu from "../../ui/Menu";
 import NoPost from "./NoPost";
 import UploadProfileBanner from "./UploadProfileBanner";
 import UploadProfile from "./UploadProfilePicture";
+import { useRouter } from "next/router";
 
 interface UserPanelProps {
   user: User;
@@ -32,13 +35,19 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
   const { first_name, last_name, display_image, middle_name, nickname } =
     profile;
 
-  React.useEffect(() => {
-    return () => {
-      apolloClient.cache.evict({ fieldName: "fetchPosts" });
-    };
-  }, []);
+  useApolloEvict(`fetchPosts`);
 
-  const { data, loading, fetchMore } = useFetchPostsQuery({
+  const [bannerModal, setBannerModal] = useState(false);
+  const [displayPhotoModal, setDisplayPhotoModal] = useState(false);
+
+  const { push } = useRouter();
+
+  const {
+    data,
+    loading,
+    fetchMore,
+    error: PostError,
+  } = useFetchPostsQuery({
     fetchPolicy: "cache-first",
     notifyOnNetworkStatusChange: true,
     variables: {
@@ -63,9 +72,13 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
     }
   };
 
-  const { data: meData } = useMeQuery({
+  const { data: meData, error: MeError } = useMeQuery({
     fetchPolicy: "cache-first",
   });
+
+  if (MeError || PostError) {
+    return <SomethingWentWrong />;
+  }
 
   return (
     <>
@@ -90,7 +103,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
               <div className="">
                 <div className="flex justify-between z-20">
                   <div className="rounded-full overflow-hidden border-4 border-white inline-block -mt-16 w-32 h-32 ml-3  ">
-                    <div className="w-32 h-32 relative">
+                    <div className="w-32 h-32 relative bg-gray-50 f ">
                       {profile.display_image ? (
                         <NextImage
                           src={display_image}
@@ -105,28 +118,63 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
                         />
                       )}
                       {meData?.me.user?.username === user.username && (
-                        <UploadProfile>
-                          <div className="w-32 h-32 transition relative bg-gray-700 bg-opacity-0 hover:bg-opacity-80 hover:opacity-80 cursor-pointer flex place-items-center place-content-center opacity-0">
-                            {/* <BsBoxArrowInUpLeft size="50" color="white" /> */}
-                            <p className="text-white">
-                              Upload new display photo
-                            </p>
-                          </div>
-                        </UploadProfile>
+                        <div className="hidden md:block">
+                          <UploadProfile
+                            dismissModal={() => setDisplayPhotoModal(false)}
+                            open={displayPhotoModal}
+                          >
+                            <div className="w-32 h-32 transition relative bg-gray-700 bg-opacity-0 hover:bg-opacity-80 hover:opacity-80 cursor-pointer flex place-items-center place-content-center opacity-0">
+                              {/* <BsBoxArrowInUpLeft size="50" color="white" /> */}
+                              <p className="text-white">
+                                Upload new display photo
+                              </p>
+                            </div>
+                          </UploadProfile>
+                        </div>
                       )}
                     </div>
                   </div>
                   {meData?.me.user?.username === user.username && (
-                    <div className="hidden md:block">
-                      <UploadProfileBanner className="rounded-full  text-xs  px-3 py-2 mt-3 mr-3 transition hover:bg-blue-50 inline-block border-2 border-gray-600 text-gray-600 font-bold">
-                        Update Banner
-                      </UploadProfileBanner>
-                      <NextLink href="/edit-profile">
-                        <button className="rounded-full text-xs   px-3 py-2 mt-3 mr-3 transition hover:bg-blue-50 inline-block border-2 border-green-600 text-green-600 font-bold">
-                          Edit Profile
-                        </button>
-                      </NextLink>
-                    </div>
+                    <>
+                      <div className="hidden md:block">
+                        <UploadProfileBanner
+                          open={bannerModal}
+                          dismissModal={() => {
+                            setBannerModal(false);
+                            console.log(`dismiss`);
+                          }}
+                          className="rounded-full  text-xs  px-3 py-2 mt-3 mr-3 transition hover:bg-blue-50 inline-block border-2 border-gray-600 text-gray-600 font-bold"
+                        >
+                          Update Banner
+                        </UploadProfileBanner>
+                        <NextLink href="/edit-profile">
+                          <button className="rounded-full text-xs   px-3 py-2 mt-3 mr-3 transition hover:bg-blue-50 inline-block border-2 border-green-600 text-green-600 font-bold">
+                            Edit Profile
+                          </button>
+                        </NextLink>
+                      </div>
+                      <div className="block md:hidden pt-3 pr-5">
+                        <Menu
+                          items={[
+                            {
+                              title: "Change Display Photo",
+                              onClick: () => setDisplayPhotoModal(true),
+                            },
+                            {
+                              title: "Update Banner",
+                              onClick: () => setBannerModal(true),
+                            },
+                            {
+                              title: "Edit Profile",
+                              onClick: () => push("/edit-profile"),
+                            },
+                          ]}
+                          direction="right"
+                        >
+                          Menu
+                        </Menu>
+                      </div>
+                    </>
                   )}
                 </div>
                 <div className="ml-3">
@@ -145,7 +193,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ user }) => {
         </div>
 
         <div className="grid grid-cols-1 gap-6 my-6 px-4 ">
-          <NewPost />
+          {meData?.me.user?.username === user.username && <NewPost />}
           {loading ? (
             <>
               <PostSekeletonLoading />

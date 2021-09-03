@@ -33,6 +33,7 @@
     "react-icons": "^4.2.0",
     "react-is": "^17.0.2",
     "react-webcam": "^5.2.4",
+    "shortid": "^2.2.16",
     "urql": "^2.0.4",
     "yup": "^0.32.9"
   },
@@ -47,6 +48,7 @@
     "@graphql-codegen/urql-introspection": "2.0.0",
     "@types/js-cookie": "^2.2.7",
     "@types/react": "17.0.16",
+    "@types/shortid": "^0.0.29",
     "autoprefixer": "^10.3.1",
     "eslint": "7.32.0",
     "eslint-config-next": "11.0.1",

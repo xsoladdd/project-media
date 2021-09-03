@@ -18,9 +18,13 @@ import {
   FieldResolver,
   Root,
 } from "type-graphql";
-import { getRepository } from "typeorm";
+import { getRepository, Like } from "typeorm";
 import { User } from "../../entities/User";
-import { ReturnStructure, ReturnUserWithProfile } from "../generics";
+import {
+  ReturnStructure,
+  ReturnUsersWithProfile,
+  ReturnUserWithProfile,
+} from "../generics";
 import { RefreshToken } from "../../entities/RefreshToken";
 import { validateEmail } from "../../utils/validation";
 import { createError } from "../../utils/createError";
@@ -54,7 +58,6 @@ export class UserResolver {
   ) {
     return profileDataloader.load(user.id);
   }
-
   @Mutation(() => ReturnRegisterLogin)
   async registerUser(
     @Arg("input") { email, password }: LoginRegistrationInput
@@ -65,13 +68,19 @@ export class UserResolver {
         errors: [createError("email", "invald email format")],
       };
     }
-    const userRepo = getRepository(User);
-    const user: User = userRepo.create({
-      email,
-      password: await hash(password),
-    });
+
     try {
-      await userRepo.save(user);
+      const user = await User.create({
+        email,
+        password: await hash(password),
+      }).save();
+
+      return {
+        status: 1,
+        token: signAccessToken(user),
+        refresh_token: signRefreshToken(user),
+        user,
+      };
     } catch (err) {
       // if()
       if (err.code === "ER_DUP_ENTRY") {
@@ -80,13 +89,11 @@ export class UserResolver {
           errors: [createError("email", "email already exist")],
         };
       }
+      return {
+        status: 0,
+        errors: [createError("email", "invald email format")],
+      };
     }
-    return {
-      status: 1,
-      token: signAccessToken(user),
-      refresh_token: signRefreshToken(user),
-      user,
-    };
   }
 
   @Mutation(() => ReturnRegisterLogin)
@@ -223,6 +230,49 @@ export class UserResolver {
     return {
       status: 1,
       user,
+    };
+  }
+
+  @Query(() => ReturnUsersWithProfile)
+  async search(
+    @Arg(`keyword`) keyword: string
+  ): Promise<ReturnUsersWithProfile> {
+    if (keyword === "") {
+      return {
+        status: 1,
+        users: [],
+      };
+    }
+
+    const users = await User.find({
+      relations: ["profile"],
+      where: [
+        {
+          profile: {
+            nickname: Like(`%${keyword}%`),
+          },
+        },
+        {
+          profile: {
+            first_name: Like(`%${keyword}%`),
+          },
+        },
+        {
+          profile: {
+            middle_name: Like(`%${keyword}%`),
+          },
+        },
+        {
+          profile: {
+            last_name: Like(`%${keyword}%`),
+          },
+        },
+      ],
+    });
+    console.log(users);
+    return {
+      status: 1,
+      users,
     };
   }
 }

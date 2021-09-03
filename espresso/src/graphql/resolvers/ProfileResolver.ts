@@ -12,6 +12,7 @@ import { getConnection, getRepository } from "typeorm";
 import { Profile } from "../../entities/Profile";
 import { User } from "../../entities/User";
 import { createError } from "../../utils/createError";
+import { generateAvatar } from "../../utils/generateAvatar";
 import { UploadToS3 } from "../../utils/s3Bucket";
 import { ReturnUserWithProfile } from "../generics";
 import { Upload } from "../scalars";
@@ -44,6 +45,9 @@ class InputUniqueData extends InputProfile {
   @Field(() => Upload, { nullable: true })
   display_image?: FileUpload;
 
+  @Field(() => String)
+  avatar_id: string;
+
   @Field(() => Upload, { nullable: true })
   banner_image?: FileUpload;
 
@@ -75,6 +79,7 @@ export class ProfileResolver {
       nickname,
       username,
       mobileNumber,
+      avatar_id,
     }: InputUniqueData,
     @Ctx("user") { id }: User
   ): Promise<ReturnUserWithProfile> {
@@ -99,6 +104,11 @@ export class ProfileResolver {
       };
     }
 
+    console.log({
+      type: typeof avatar_id,
+      value: avatar_id,
+    });
+
     await getConnection()
       .createQueryBuilder()
       .update(User)
@@ -109,17 +119,19 @@ export class ProfileResolver {
       .where("id=:id", { id })
       .execute();
 
-    const profileRepo = getRepository(Profile);
     let display_image_name;
     if (display_image) {
       display_image_name = await UploadToS3(display_image);
+    } else {
+      display_image_name = generateAvatar(avatar_id);
     }
+
     let banner_image_name;
     if (banner_image) {
       banner_image_name = await UploadToS3(banner_image);
     }
 
-    const profile = profileRepo.create({
+    await Profile.create({
       first_name: firstName,
       last_name: lastName,
       middle_name: middleName,
@@ -129,9 +141,7 @@ export class ProfileResolver {
       nickname,
       birthday,
       user,
-    });
-
-    await profileRepo.save(profile);
+    }).save();
 
     const userWithProfile = await User.findOne({ where: { id } });
 

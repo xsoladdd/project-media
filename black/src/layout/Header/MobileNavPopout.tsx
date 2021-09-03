@@ -119,7 +119,8 @@ const MobileNavPopout: React.FC<MobileNavPopoutProps> = ({
                             label={label}
                             active={
                               label === "Profile"
-                                ? asPath === `/u/${data?.me.user?.username}`
+                                ? asPath ===
+                                  `/u/${data?.me.user?.username}`.toLowerCase()
                                 : asPath === href
                             }
                           ></MobileNavMenuItem>
@@ -127,11 +128,11 @@ const MobileNavPopout: React.FC<MobileNavPopoutProps> = ({
                       })}
                     <a
                       className={`flex w-full gap-5 px-2 py-4 cursor-pointer`}
-                      onClick={async () => {
+                      onClick={() => {
                         removeAccessToken();
                         removeRefreshToken();
                         removeUserIdentifier();
-                        await apolloClient.resetStore();
+                        apolloClient.resetStore();
                         replace("/");
                       }}
                     >

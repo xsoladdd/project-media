@@ -69,12 +69,12 @@ const NavbarDropdownButton: React.FC<NavbarDropdownButtonProps> = ({}) => {
               <Menu.Item>
                 <button
                   className={`text-gray-900 group flex rounded-md items-center w-full px-2 py-2 text-sm hover:bg-gray-100 gap-3`}
-                  onClick={async () => {
+                  onClick={() => {
+                    apolloClient.resetStore();
                     removeAccessToken();
                     removeRefreshToken();
                     removeUserIdentifier();
-                    await apolloClient.resetStore();
-                    replace("/");
+                    push("/");
                   }}
                 >
                   <FiLogOut />

@@ -17,17 +17,17 @@ const Avatar: React.FC<AvatarProps> = ({ src, className = "", ...rest }) => {
     <>
       <div
         className={joinClass(
-          "h-12 w-12 rounded-full overflow-hidden",
+          "h-12 w-12 rounded-full overflow-hidden bg-white ",
           className
         )}
         {...rest}
       >
-        <div className=" relative w-full h-full ">
+        <div className=" relative w-full h-full  ">
           <NextImage
             src={src ? src : defaultProfilePicture}
             objectFit="fill"
             layout="fill"
-            // className="animate-pulse bg-gray-200"
+            className="object-center object-cover pointer-events-none"
           />
         </div>
       </div>

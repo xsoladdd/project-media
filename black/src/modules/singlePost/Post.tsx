@@ -1,34 +1,30 @@
 import { debounce } from "lodash";
 import { NextPage } from "next";
+import NextImage from "next/image";
 import React, { useEffect } from "react";
 import { FaHeart, FaRegCommentDots, FaRegHeart } from "react-icons/fa";
 import Comments from "../../components/Comments/Comments";
+import CommentSkeletonLoading from "../../components/Comments/CommentSkeletonLoading";
+import SomethingWentWrong from "../../components/Error/SomethingWentWrong";
+import Loading from "../../components/Loading/Loading";
 import { updateLikeUnlikeCache } from "../../components/Post/updateLikeUnlikeCache";
-import apolloClient from "../../config/apollo-server/client";
 import {
   InputGetComments,
-  // PostType,
-  // PostFragmentDoc,
   useFetchPostQuery,
   useGetCommentsQuery,
   useLikeUnlikePostMutation,
   useMeQuery,
 } from "../../generated/graphql";
+import { useApolloEvict } from "../../hooks/useApolloEvict";
 import Layout from "../../layout/Layout";
 import Avatar from "../../ui/Avatar/Avatar";
 import Button from "../../ui/Button";
 import NewComment from "./comments/NewComment";
-import NextImage from "next/image";
-import Loading from "../../components/Loading/Loading";
-import MiniLoading from "../../components/MiniLoading";
 
 const Post: NextPage<{ postId: string }, {}> = ({ postId }) => {
   const limit = 5;
 
-  useEffect(() => {
-    apolloClient.cache.evict({ fieldName: "getComments" });
-    return () => {};
-  }, []);
+  useApolloEvict(`getComments`);
 
   const { data, error, loading } = useFetchPostQuery({
     fetchPolicy: "cache-first",
@@ -73,7 +69,7 @@ const Post: NextPage<{ postId: string }, {}> = ({ postId }) => {
   }
 
   if (!meData?.me.user || error || meError) {
-    return <h1> Something went wrong</h1>;
+    return <SomethingWentWrong />;
   }
 
   if (!data) {
@@ -97,11 +93,6 @@ const Post: NextPage<{ postId: string }, {}> = ({ postId }) => {
                 {data.fetchPost.post?.user?.profile?.middle_name}{" "}
                 {data.fetchPost.post?.user?.profile?.last_name}
               </span>
-              {data.fetchPost.post?.user?.profile?.nickname && (
-                <span className="text-gray-500 pl-2">
-                  {data.fetchPost.post?.user?.profile?.nickname}
-                </span>
-              )}
             </div>
             <div className="text-gray-500 text-xs ">
               @{data.fetchPost.post?.user?.username}
@@ -158,7 +149,9 @@ const Post: NextPage<{ postId: string }, {}> = ({ postId }) => {
         <div className="space-y-4">
           <NewComment user={meData?.me?.user} postId={postId} />
           {commentData?.getComments?.comments?.length === 0 && (
-            <p>No comments available</p>
+            <div className="flex place-content-center py-5">
+              <p>No comments available</p>
+            </div>
           )}
           {commentData?.getComments?.comments?.map(
             ({ UpdatedAt, content, id, user }) => (
@@ -170,8 +163,12 @@ const Post: NextPage<{ postId: string }, {}> = ({ postId }) => {
               />
             )
           )}
-
-          {commentLoading ? <MiniLoading /> : <></>}
+          {commentLoading && (
+            <>
+              <CommentSkeletonLoading />
+              <CommentSkeletonLoading />
+            </>
+          )}
           {commentData?.getComments.has_more && (
             <div className="grid py-3">
               <Button

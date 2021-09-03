@@ -1,6 +1,6 @@
 import React from "react";
-import Error from "../components/Error/Error";
 import Layout from "../layout/Layout";
+import Menu from "../ui/Menu";
 
 interface testProps {}
 
@@ -8,7 +8,12 @@ const Test: React.FC<testProps> = ({}) => {
   return (
     <>
       <Layout>
-        <Error />
+        <Menu
+          items={[{ title: "title", onClick: () => console.log("aw") }]}
+          direction="left"
+        >
+          hey
+        </Menu>
       </Layout>
     </>
   );

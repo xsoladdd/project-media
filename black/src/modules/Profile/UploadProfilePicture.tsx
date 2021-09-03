@@ -6,16 +6,23 @@ import Button from "../../ui/Button";
 import NextImage from "next/image";
 import { useUploadProfilePictureMutation } from "../../generated/graphql";
 
-interface UploadProfileProps {}
+interface UploadProfileProps {
+  open?: boolean;
+  dismissModal?: () => void;
+}
 
-const UploadProfile: React.FC<UploadProfileProps> = ({ children }) => {
+const UploadProfile: React.FC<UploadProfileProps> = ({
+  children,
+  open = false,
+  dismissModal = () => null,
+}) => {
   let [isOpen, setIsOpen] = useState(false);
   const [imageData, setImageData] = useState<Blob | null>(null);
   const [imagePreview, setImagePreview] = useState("");
 
-  const [uploadProfilePicture, { loading }] = useUploadProfilePictureMutation(
-    {}
-  );
+  const [uploadProfilePicture, { loading }] = useUploadProfilePictureMutation({
+    onCompleted: () => closeModal(),
+  });
 
   const handleUploadButton = () => {
     uploadProfilePicture({
@@ -23,11 +30,13 @@ const UploadProfile: React.FC<UploadProfileProps> = ({ children }) => {
         ProfilePicture: imageData,
       },
     });
-    setIsOpen(false);
   };
 
   function closeModal() {
+    setImageData(null);
+    setImagePreview("");
     setIsOpen(false);
+    dismissModal();
   }
 
   function openModal() {
@@ -42,7 +51,7 @@ const UploadProfile: React.FC<UploadProfileProps> = ({ children }) => {
         {children}
       </button>
 
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={isOpen || open} as={Fragment}>
         <Dialog
           as="div"
           className="fixed inset-0 z-10 overflow-y-auto bg-gray-800 bg-opacity-80"
@@ -93,6 +102,7 @@ const UploadProfile: React.FC<UploadProfileProps> = ({ children }) => {
                         variant="yellow"
                         onClick={() => {
                           setImagePreview("");
+                          setImageData(null);
                         }}
                       >
                         <AiOutlineCloseCircle size="20" />
@@ -110,7 +120,8 @@ const UploadProfile: React.FC<UploadProfileProps> = ({ children }) => {
                         variant="yellow"
                         size="xs"
                         onClick={() => {
-                          // setImageData("");
+                          setImagePreview("");
+                          setImageData(null);
                         }}
                       >
                         <AiOutlineCloseCircle size="20" />
@@ -150,12 +161,13 @@ const UploadProfile: React.FC<UploadProfileProps> = ({ children }) => {
                   </label>
                 )}
                 <div className=" flex gap-2 py-2 justify-end">
-                  <Button variant="gray" onClick={() => setIsOpen(false)}>
+                  <Button variant="gray" onClick={() => closeModal()}>
                     Cancel
                   </Button>
                   <Button
                     variant="green"
                     loading={loading}
+                    disabled={imageData === null}
                     onClick={() => handleUploadButton()}
                   >
                     Upload

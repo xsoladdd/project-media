@@ -7,6 +7,14 @@ export const S3File = new GraphQLScalarType({
   description: "Scalar for files uploaded in Amazon S3",
   serialize(value: string | number): string {
     // check the type of received value
+
+    // Check if already link
+    if (typeof value === "string") {
+      if (value.includes("http") || value.includes("https")) {
+        return value;
+      }
+    }
+
     return `${partialS3Link}${value}`; // value sent to the client
   },
   parseValue(value: string) {

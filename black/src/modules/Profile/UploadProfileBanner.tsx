@@ -10,17 +10,26 @@ interface UploadProfileBannerProps
   extends React.DetailedHTMLProps<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
-  > {}
+  > {
+  open?: boolean;
+  dismissModal?: () => void;
+}
 
 const UploadProfileBanner: React.FC<UploadProfileBannerProps> = ({
   children,
   className,
+  open = false,
+  dismissModal = () => null,
 }) => {
   let [isOpen, setIsOpen] = useState(false);
   const [imageData, setImageData] = useState<Blob | null>(null);
   const [imagePreview, setImagePreview] = useState("");
 
-  const [uploadProfileBanner, { loading }] = useUploadProfileBannerMutation({});
+  const [uploadProfileBanner, { loading }] = useUploadProfileBannerMutation({
+    onCompleted: () => {
+      closeModal();
+    },
+  });
 
   const handleUploadButton = () => {
     uploadProfileBanner({
@@ -28,11 +37,13 @@ const UploadProfileBanner: React.FC<UploadProfileBannerProps> = ({
         profileBanner: imageData,
       },
     });
-    setIsOpen(false);
   };
 
   function closeModal() {
+    setImageData(null);
+    setImagePreview("");
     setIsOpen(false);
+    dismissModal();
   }
 
   function openModal() {
@@ -47,7 +58,7 @@ const UploadProfileBanner: React.FC<UploadProfileBannerProps> = ({
         {children}
       </button>
 
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={isOpen || open} as={Fragment}>
         <Dialog
           as="div"
           className="fixed inset-0 z-10 overflow-y-auto bg-gray-800 bg-opacity-80"
@@ -98,6 +109,7 @@ const UploadProfileBanner: React.FC<UploadProfileBannerProps> = ({
                         variant="yellow"
                         onClick={() => {
                           setImagePreview("");
+                          setImageData(null);
                         }}
                       >
                         <AiOutlineCloseCircle size="20" />
@@ -115,7 +127,8 @@ const UploadProfileBanner: React.FC<UploadProfileBannerProps> = ({
                         variant="yellow"
                         size="xs"
                         onClick={() => {
-                          // setImageData("");
+                          setImagePreview("");
+                          setImageData(null);
                         }}
                       >
                         <AiOutlineCloseCircle size="20" />
@@ -155,12 +168,13 @@ const UploadProfileBanner: React.FC<UploadProfileBannerProps> = ({
                   </label>
                 )}
                 <div className=" flex gap-2 py-2 justify-end">
-                  <Button variant="gray" onClick={() => setIsOpen(false)}>
+                  <Button variant="gray" onClick={() => closeModal()}>
                     Cancel
                   </Button>
                   <Button
                     variant="green"
                     loading={loading}
+                    disabled={imageData === null}
                     onClick={() => handleUploadButton()}
                   >
                     Upload

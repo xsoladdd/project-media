@@ -91,8 +91,8 @@ export const LoginPage: React.FC = ({}) => {
           )}
         </div>
         <div className="mt-4">
-          <div className="flex justify-between">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
+          <div className="flex justify-between pb-2">
+            <label className="block text-gray-700 text-sm font-bold ">
               Password
             </label>
             <a

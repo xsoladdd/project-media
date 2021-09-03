@@ -1,0 +1,11 @@
+query Search($keyword: String!) {
+  search(keyword: $keyword) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    users {
+      ...user
+    }
+  }
+}

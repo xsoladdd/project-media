@@ -22,19 +22,15 @@ export type Scalars = {
   Upload: any;
 };
 
-export type CommentPost = {
-  __typename?: 'CommentPost';
-  id: Scalars['EncryptedID'];
-  postId: Scalars['String'];
-  commentId: Scalars['String'];
-};
-
 export type Comments = {
   __typename?: 'Comments';
   id: Scalars['EncryptedID'];
   content: Scalars['String'];
   UpdatedAt: Scalars['String'];
   user: User;
+  userId: Scalars['Int'];
+  post: Post;
+  postId: Scalars['Int'];
 };
 
 
@@ -93,6 +89,7 @@ export type InputUniqueData = {
   mobileNumber: Scalars['String'];
   username: Scalars['String'];
   display_image?: Maybe<Scalars['Upload']>;
+  avatar_id: Scalars['String'];
   banner_image?: Maybe<Scalars['Upload']>;
   birthday: Scalars['DateTime'];
 };
@@ -182,9 +179,8 @@ export type Post = {
   userConnection: Array<UserPostLike>;
   UpdatedAt: Scalars['String'];
   likes?: Maybe<Array<User>>;
-  comments?: Maybe<Array<Comments>>;
   commentCount: Scalars['Int'];
-  commentConnection: Array<CommentPost>;
+  comments: Comments;
 };
 
 export type Profile = {
@@ -204,6 +200,7 @@ export type Profile = {
 export type Query = {
   __typename?: 'Query';
   me: ReturnUserWithProfile;
+  search: ReturnUsersWithProfile;
   fetchPosts: ReturnPosts;
   fetchPost: ReturnPost;
   getEncryptedValue: Scalars['String'];
@@ -213,6 +210,11 @@ export type Query = {
   getProfile: ReturnUserWithProfile;
   getAllUsers: Array<User>;
   getComments: ReturnComments;
+};
+
+
+export type QuerySearchArgs = {
+  keyword: Scalars['String'];
 };
 
 
@@ -300,6 +302,13 @@ export type ReturnUserWithProfile = {
   status: Scalars['Int'];
   errors?: Maybe<Array<FieldError>>;
   user?: Maybe<User>;
+};
+
+export type ReturnUsersWithProfile = {
+  __typename?: 'ReturnUsersWithProfile';
+  status: Scalars['Int'];
+  errors?: Maybe<Array<FieldError>>;
+  users?: Maybe<Array<User>>;
 };
 
 
@@ -438,6 +447,13 @@ export type OAuthHandlerMutationVariables = Exact<{
 
 
 export type OAuthHandlerMutation = { __typename?: 'Mutation', oauthHandler: { __typename?: 'ReturnRegisterLogin', status: number, token?: Maybe<string>, refresh_token?: Maybe<string>, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }> } };
+
+export type SearchQueryVariables = Exact<{
+  keyword: Scalars['String'];
+}>;
+
+
+export type SearchQuery = { __typename?: 'Query', search: { __typename?: 'ReturnUsersWithProfile', status: number, errors?: Maybe<Array<{ __typename: 'FieldError', field: string, message: string }>>, users?: Maybe<Array<{ __typename: 'User', id: any, email: string, username?: Maybe<string>, mobile_number?: Maybe<string>, profile?: Maybe<{ __typename: 'Profile', id: any, first_name: string, middle_name?: Maybe<string>, last_name: string, birthday: any, nickname?: Maybe<string>, display_image?: Maybe<any>, banner_image?: Maybe<any>, bio?: Maybe<string>, userId: number }> }>> } };
 
 export const ProfileFragmentDoc = gql`
     fragment profile on Profile {
@@ -1144,3 +1160,45 @@ export function useOAuthHandlerMutation(baseOptions?: Apollo.MutationHookOptions
 export type OAuthHandlerMutationHookResult = ReturnType<typeof useOAuthHandlerMutation>;
 export type OAuthHandlerMutationResult = Apollo.MutationResult<OAuthHandlerMutation>;
 export type OAuthHandlerMutationOptions = Apollo.BaseMutationOptions<OAuthHandlerMutation, OAuthHandlerMutationVariables>;
+export const SearchDocument = gql`
+    query Search($keyword: String!) {
+  search(keyword: $keyword) {
+    status
+    errors {
+      ...fieldErrors
+    }
+    users {
+      ...user
+    }
+  }
+}
+    ${FieldErrorsFragmentDoc}
+${UserFragmentDoc}`;
+
+/**
+ * __useSearchQuery__
+ *
+ * To run a query within a React component, call `useSearchQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchQuery({
+ *   variables: {
+ *      keyword: // value for 'keyword'
+ *   },
+ * });
+ */
+export function useSearchQuery(baseOptions: Apollo.QueryHookOptions<SearchQuery, SearchQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchQuery, SearchQueryVariables>(SearchDocument, options);
+      }
+export function useSearchLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchQuery, SearchQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchQuery, SearchQueryVariables>(SearchDocument, options);
+        }
+export type SearchQueryHookResult = ReturnType<typeof useSearchQuery>;
+export type SearchLazyQueryHookResult = ReturnType<typeof useSearchLazyQuery>;
+export type SearchQueryResult = Apollo.QueryResult<SearchQuery, SearchQueryVariables>;

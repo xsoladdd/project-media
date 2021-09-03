@@ -1,33 +1,29 @@
-import React, { useEffect } from "react";
+import React from "react";
+import SomethingWentWrong from "../../components/Error/SomethingWentWrong";
+import NewPost from "../../components/Post/NewPost";
 import Post from "../../components/Post/Post";
-import apolloClient from "../../config/apollo-server/client";
+import PostSekeletonLoading from "../../components/Post/PostSekeletonLoading";
 import {
   FetchPostsQueryVariables,
   useFetchPostsQuery,
   useMeQuery,
   User,
 } from "../../generated/graphql";
+import { useApolloEvict } from "../../hooks/useApolloEvict";
 import Layout from "../../layout/Layout";
 import Button from "../../ui/Button";
 import NoPost from "../profile/NoPost";
-import NewPost from "../../components/Post/NewPost";
-import Error from "../../components/Error/Error";
-import PostSekeletonLoading from "../../components/Post/PostSekeletonLoading";
 
 interface MainProps {}
 
 const Dashboard: React.FC<MainProps> = ({}) => {
   const limit = 5;
-  useEffect(() => {
-    return () => {
-      apolloClient.cache.evict({ fieldName: "fetchPosts" });
-    };
-  }, []);
 
-  const { data: meData } = useMeQuery();
-  const { data, loading, fetchMore } = useFetchPostsQuery({
+  useApolloEvict(`fetchPosts`);
+
+  const { data: meData, error: MeError } = useMeQuery();
+  const { data, loading, fetchMore, error } = useFetchPostsQuery({
     fetchPolicy: "cache-first",
-    // fetchPolicy: "network-only",
     variables: {
       input: {
         offset: 0,
@@ -52,8 +48,8 @@ const Dashboard: React.FC<MainProps> = ({}) => {
   return (
     <>
       <Layout>
-        {false ? (
-          <Error />
+        {error || MeError ? (
+          <SomethingWentWrong />
         ) : (
           <>
             <div className=" flex flex-col place-content-center place-items-center py-4">

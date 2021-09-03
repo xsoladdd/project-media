@@ -23,6 +23,9 @@ import {
 } from "../../generated/graphql";
 import apolloClient from "../../config/apollo-server/client";
 import Welcome from "./Welcome";
+import { generateAvatar } from "../../lib/generateAvatar";
+import { generate } from "shortid";
+import { getUserIdentifier } from "../../lib/jscookies";
 
 interface ProfileSetupProps {}
 
@@ -59,6 +62,8 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
     moment("01-01-2000", "MM-DD-YYYY").toDate()
   );
   const [imageData, setImageData] = useState<Blob | null>(null);
+  const [avatar_id] = useState(generate());
+  const [avatar] = useState(generateAvatar(avatar_id));
 
   const [imagePreview, setImagePreview] = useState("");
 
@@ -182,6 +187,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
         variables: {
           input: {
             birthday,
+            avatar_id: avatar_id,
             firstName: nameData.firstName,
             middleName: nameData.middleName,
             lastName: nameData.lastName,
@@ -296,6 +302,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({}) => {
           >
             <FinalizeProfile
               imagePreview={imagePreview}
+              avatar={avatar}
               birthday={birthday}
               // displayPhoto={imageData}
               nameData={nameData}

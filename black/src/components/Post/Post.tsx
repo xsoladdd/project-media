@@ -58,13 +58,7 @@ const Post: React.FC<PostProps> = ({
               href="#"
               className="flex flex-row items-center focus:outline-none focus:shadow-outline "
             >
-              <Avatar
-                src={
-                  user.profile?.display_image
-                    ? user.profile?.display_image
-                    : defaultProfilePicture
-                }
-              />
+              <Avatar src={user.profile?.display_image} />
 
               <div className="ml-2 mt-0.5">
                 <NextLink href={`/u/${user.username}`}>
